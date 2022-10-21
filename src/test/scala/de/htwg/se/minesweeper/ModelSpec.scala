@@ -2,6 +2,7 @@ package de.htwg.se.minesweeper
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
+import scala.collection.immutable.HashSet
 
 class ModelSpec extends AnyWordSpec {
     val eol = sys.props("line.separator")
@@ -28,13 +29,22 @@ class ModelSpec extends AnyWordSpec {
     }
 
     "The new minesweeper fields" should {
-        val board1 = new Game(2, 4).generateBoard
-        val board2 = new Game(4, 2).generateBoard
-        val board3 = new Game(4, 4).generateBoard
-        "be 15% mines" in {
-            board1.mines.size shouldBe (2*4*MINE_PERCENTAGE).floor.toInt
-            board2.mines.size shouldBe (4*2*MINE_PERCENTAGE).floor.toInt
-            board3.mines.size shouldBe (4*4*MINE_PERCENTAGE).floor.toInt
+        val game1 = new Game(2, 4)
+        val game2 = new Game(4, 2)
+        val game3 = new Game(4, 4)
+        "be 15% mines at random positions" in {
+            game1.generateBoard.mines.size shouldBe (2*4*MINE_PERCENTAGE).floor.toInt
+            game2.generateBoard.mines.size shouldBe (4*2*MINE_PERCENTAGE).floor.toInt
+            game3.generateBoard.mines.size shouldBe (4*4*MINE_PERCENTAGE).floor.toInt
+
+            game1.randomPositions(1, HashSet.empty).size shouldBe 1
+            game2.randomPositions(8, HashSet().empty).size shouldBe 8
+            game3.randomPositions(12, HashSet.empty).size shouldBe 12
+        }
+        "be displayed with their assigned symbols" in {
+            game1.whichSymbol(Position(1, 2)) shouldBe " O "
+            game2.whichSymbol(Position(2, 3)) shouldBe " O "
+            game3.whichSymbol(Position(3, 3)) shouldBe " O "
         }
     }
 }

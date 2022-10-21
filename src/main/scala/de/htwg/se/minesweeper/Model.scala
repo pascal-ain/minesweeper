@@ -44,7 +44,7 @@ class Game(val width: Int = 9, val height: Int = 9):
       else whichSymbol(Position(x, y)))
     .mkString
 
-  protected def whichSymbol(pos: Position): String =
+  def whichSymbol(pos: Position): String =
     this.board.openFields.contains(pos) match
       case true => if this.board.mines.contains(pos) then
         " B "
