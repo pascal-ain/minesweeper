@@ -1,11 +1,11 @@
-import Model.*
+package de.htwg.se.minesweeper
 
 val eol = sys.props("line.separator")
 
 @main def run(difficulty: String*): Unit =
   val msg =
     "start the program with <easy> for 9x9 board" + eol + "<medium> for 16x16 board" + eol + "<hard> for 30x16 board" + eol
-  if difficulty.isEmpty then print(Game())
+  if difficulty.isEmpty then print(Game(4, 2))
   else
     difficulty.apply(0) match
       case "easy"   => print(Game())
