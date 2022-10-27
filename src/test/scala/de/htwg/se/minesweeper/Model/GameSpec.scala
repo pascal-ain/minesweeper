@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper
+package de.htwg.se.minesweeper.Model
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
@@ -6,10 +6,12 @@ import scala.collection.immutable.HashSet
 
 class GameSpec extends AnyWordSpec {
   val eol = sys.props("line.separator")
+  def calculateMines(width: Int, height: Int, percentage: Double) =
+    (width * height * percentage).toInt
+  val game1 = new Game(2, 4, 0.15)
+  val game2 = new Game(4, 2, 0.30)
+  val game3 = new Game(4, 4, 0.50)
   "The minesweeper game" should {
-    val game1 = new Game(2, 4)
-    val game2 = new Game(4, 2)
-    val game3 = new Game(4, 4)
     "have a scalable width" in {
       game1.toString should startWith(" O  O " + eol)
       game2.toString should startWith(" O  O  O  O " + eol)
@@ -19,6 +21,23 @@ class GameSpec extends AnyWordSpec {
       game1.toString should fullyMatch regex ("( O  O " + eol + "){4}")
       game2.toString should fullyMatch regex ("( O  O  O  O " + eol + "){2}")
       game3.toString should fullyMatch regex ("( O  O  O  O " + eol + "){4}")
+    }
+    "have the correct symbols" in {
+      game1.openField(Position(0, 0)).toString() should startWith regex (
+        " [0¤]  O " + eol
+      )
+      game2.flagField(Position(0, 0)).toString() should startWith(
+        " F  O  O  O " + eol
+      )
+      game3
+        .openField(Position(2, 0))
+        .openField(Position(2, 0))
+        .toString() should startWith regex (" O  O  [0¤]  O " + eol)
+    }
+    "have a scalable minecount" in {
+      game1.board.mines.size shouldBe calculateMines(2, 4, 0.15)
+      game2.board.mines.size shouldBe calculateMines(4, 2, 0.30)
+      game3.board.mines.size shouldBe calculateMines(4, 4, 0.50)
     }
     "only have mines populated when created" in {
       game1.board.mines should not be empty
