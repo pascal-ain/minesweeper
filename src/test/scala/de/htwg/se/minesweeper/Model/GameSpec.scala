@@ -33,6 +33,8 @@ class GameSpec extends AnyWordSpec {
         .openField(Position(2, 0))
         .openField(Position(2, 0))
         .toString() should startWith regex (" O  O  [0¤]  O " + eol)
+      val mine = game1.board.mines.toVector(0)
+      game1.openField(mine).toString should include(" ¤ ")
     }
     "have a scalable minecount" in {
       game1.board.mines.size shouldBe calculateMines(2, 4, 0.15)
