@@ -31,7 +31,9 @@ class GameSpec extends AnyWordSpec {
       )
       game3
         .openField(Position(2, 0))
+        .get
         .openField(Position(2, 0))
+        .get
         .toString() should startWith regex (" O  O  [0¤]  O " + eol)
       val mine = game1.board.mines.toVector(0)
       game1.openField(mine).toString should include(" ¤ ")

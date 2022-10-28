@@ -20,7 +20,8 @@ final case class Game(bounds: Bounds, lost: Boolean, board: Board):
     val openFields = board.insertPosition(pos, bounds, Field.Open) match
       case None        => board
       case Some(value) => value
-    copy(board = openFields)
+    if board.mines.contains(pos) then None
+    else Some(copy(board = openFields))
   def flagField(pos: Position) =
     val flaggedFields = board.insertPosition(pos, bounds, Field.Flag) match
       case None        => board
