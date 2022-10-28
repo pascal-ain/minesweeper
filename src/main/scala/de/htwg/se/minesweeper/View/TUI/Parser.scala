@@ -2,21 +2,15 @@ package de.htwg.se.minesweeper.View.TUI
 import de.htwg.se.minesweeper.Model.*
 import de.htwg.se.minesweeper.Controller.*
 
-//TODO fix parsing
+// TODO: maybe don't start counting the x,y from 0?
 
 def parse(command: String, game: Game): Option[Game] =
-  val token = command.split("\\s+")
-  checkToken(token, game)
+  checkToken(command.split("\\s+"), game)
 
 def checkToken(tokens: Array[String], game: Game): Option[Game] =
-  if tokens.length == 1 || tokens.length == 2 then None
-  else
-    tokens(0).toLowerCase() match
-      case "exit" => Some(handleCommand(game, Commands.Exit, Position(0, 0)))
-      case "open" | "flag" =>
-        if tokens.length == 2 then Some(parsePosition(tokens, game))
-        else None
-      case _ => Some(handleCommand(game, Commands.Invalid, Position(0, 0)))
+  if tokens.length == 1 && tokens(0).toLowerCase() == "exit" then exitGame
+  else if tokens.length == 2 then parsePosition(tokens, game)
+  else None
 
 def parsePosition(tokens: Array[String], game: Game) =
   if tokens(1).matches("\\d+,\\d+") then
@@ -24,7 +18,7 @@ def parsePosition(tokens: Array[String], game: Game) =
     val x = coords(0).toInt
     val y = coords(1).toInt
     tokens(0) match
-      case "open" => openField(game, Position(x, y))
-      case "flag" => flagField(game, Position(x, y))
-      case _      => game
-  else game
+      case "open" => Some(openField(game, Position(x, y)))
+      case "flag" => Some(flagField(game, Position(x, y)))
+      case _      => None
+  else None
