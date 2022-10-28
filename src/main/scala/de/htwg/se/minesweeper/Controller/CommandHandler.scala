@@ -2,6 +2,7 @@ package de.htwg.se.minesweeper.Controller
 
 import de.htwg.se.minesweeper.Model.*
 
+// possibly removing handleCommand
 def handleCommand(game: Game, command: Commands, pos: Position): Game =
   command match
     case Commands.Open    => openField(game, pos)
@@ -11,10 +12,7 @@ def handleCommand(game: Game, command: Commands, pos: Position): Game =
 
 def openField(game: Game, pos: Position) =
   if game.lost then game
-  else
-    game.openField(pos) match
-      case Some(game) => game
-      case None       => game.copy(lost = true)
+  else game.openField(pos)
 
 def flagField(game: Game, pos: Position) =
   if game.lost then game
