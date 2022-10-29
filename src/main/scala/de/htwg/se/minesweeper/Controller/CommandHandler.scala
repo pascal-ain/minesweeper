@@ -9,6 +9,3 @@ def openField(game: Game, pos: Position) =
 def flagField(game: Game, pos: Position) =
   if game.lost then game
   else game.flagField(pos)
-
-def exitGame =
-  sys.exit(0)

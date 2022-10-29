@@ -8,7 +8,7 @@ def parse(command: String, game: Game): Option[Game] =
   checkToken(command.split("\\s+"), game)
 
 def checkToken(tokens: Array[String], game: Game): Option[Game] =
-  if tokens.length == 1 && tokens(0).toLowerCase() == "exit" then exitGame
+  if tokens.length == 1 && tokens(0).toLowerCase() == "exit" then sys.exit(0)
   else if tokens.length == 2 then parsePosition(tokens, game)
   else None
 
