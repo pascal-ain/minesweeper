@@ -53,11 +53,5 @@ class GameSpec extends AnyWordSpec {
       game2.lost shouldBe false
       game3.lost shouldBe false
     }
-    "be frozen when lost" in {
-      val findMine = game1.board.mines.toVector(0)
-      val lostGame = game1.openField(findMine)
-      lostGame.openField(Position(0, 0)) shouldEqual (lostGame)
-      lostGame.flagField(Position(0, 0)) shouldEqual (lostGame)
-    }
   }
 }
