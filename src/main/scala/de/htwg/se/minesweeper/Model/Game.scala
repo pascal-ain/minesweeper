@@ -5,21 +5,41 @@ import de.htwg.se.minesweeper.Field
 // The state of the game
 final case class Game(bounds: Bounds, lost: Boolean, board: Board):
   def openField(pos: Position): Game =
-    if lost then this
+    val mines = board.surroundingMines(pos, bounds)
+    val openField = board.insertPosition(pos, bounds, Field.Open) match
+      case None        => board
+      case Some(value) => value
+    if board.mines.contains(pos) then copy(board = openField, lost = true)
+    else openSurroundingFields(openField, pos, mines)
+
+  // TODO: proud of this but looks messy
+  def openSurroundingFields(fields: Board, pos: Position, mines: Int): Game =
+    if mines != 0 then copy(board = fields)
     else
-      val openFields = board.insertPosition(pos, bounds, Field.Open) match
-        case None        => board
-        case Some(value) => value
-      if board.mines.contains(pos) then copy(board = openFields, lost = true)
-      else copy(board = openFields)
+      def recur(
+          game: Game,
+          toOpen: Iterator[Position]
+      ): Game =
+        toOpen.nextOption() match
+          case Some(value) =>
+            if game.board.surroundingMines(value, bounds) != 0 then
+              recur(game.openField(value), toOpen)
+            else
+              recur(
+                game.copy(board =
+                  game.board.insertPosition(value, bounds, Field.Open).get
+                ),
+                (toOpen ++ game.board.neighbors(value, bounds)).distinct
+                  .filterNot(game.board.openFields.contains(_))
+              )
+          case None => game
+      recur(this, board.neighbors(pos, bounds))
 
   def flagField(pos: Position) =
-    if lost then this
-    else
-      val flaggedFields = board.insertPosition(pos, bounds, Field.Flag) match
-        case None        => board
-        case Some(value) => value
-      copy(board = flaggedFields)
+    val flaggedField = board.insertPosition(pos, bounds, Field.Flag) match
+      case None        => board
+      case Some(value) => value
+    copy(board = flaggedField)
 
   override def toString() =
     (for
@@ -34,9 +54,9 @@ final case class Game(bounds: Bounds, lost: Boolean, board: Board):
 
   def whichSymbol(pos: Position) =
     board.openFields.get(pos) match
-      case Some(value) if board.mines.contains(pos) => " ¤ "
+      case Some(_) if board.mines.contains(pos) => " ¤ "
       case Some(value) =>
-        " " + board.surroundingMines(pos, bounds).toString + " "
+        " " + value + " "
       case None =>
         if board.flaggedFields.contains(pos) then " F "
         else " O "

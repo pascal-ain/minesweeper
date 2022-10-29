@@ -31,7 +31,7 @@ final case class Board(
             Some(copy(flaggedFields = flaggedFields.excl(pos)))
           else Some(copy(flaggedFields = flaggedFields.incl(pos)))
 
-  def neighbors(pos: Position, bounds: Bounds) =
+  def neighbors(pos: Position, bounds: Bounds): Iterator[Position] =
     val (x, y) = (pos.x, pos.y)
     val (width, height) = (bounds.width, bounds.height)
     /* from max(x - 1, 1) - 1 to min(x + 1, width - 1)
@@ -46,7 +46,8 @@ final case class Board(
           Position(posx, posy)
         )
       )
-      .filter(same => same != pos) // exclude input pos
+      .filterNot(_ == pos)
+      .iterator // exclude input pos
 
   def surroundingMines(pos: Position, bounds: Bounds) =
     neighbors(pos, bounds).count(mines.contains(_))
