@@ -8,9 +8,9 @@ class GameSpec extends AnyWordSpec {
   val eol = sys.props("line.separator")
   def calculateMines(width: Int, height: Int, percentage: Double) =
     (width * height * percentage).toInt
-  val game1 = new Game(2, 4, 0.15)
-  val game2 = new Game(4, 2, 0.30)
-  val game3 = new Game(4, 4, 0.50)
+  val game1 = Game(2, 4, 0.15)
+  val game2 = Game(4, 2, 0.30)
+  val game3 = Game(4, 4, 0.50)
   "The minesweeper game" should {
     "have a scalable width" in {
       game1.toString should startWith(" O  O " + eol)
@@ -23,18 +23,18 @@ class GameSpec extends AnyWordSpec {
       game3.toString should fullyMatch regex ("( O  O  O  O " + eol + "){4}")
     }
     "have the correct symbols" in {
-      game1.openField(Position(0, 0)).toString() should startWith regex (
-        " [0¤]  O " + eol
+      val mines = game1.board.surroundingMines(Position(0, 0), game1.bounds)
+      game1.openField(Position(0, 0)).toString() should include regex (
+        s"[$mines¤]"
       )
       game2.flagField(Position(0, 0)).toString() should startWith(
         " F  O  O  O " + eol
       )
+      val mines3 = game3.board.surroundingMines(Position(2, 0), game3.bounds)
       game3
         .openField(Position(2, 0))
-        .get
         .openField(Position(2, 0))
-        .get
-        .toString() should startWith regex (" O  O  [0¤]  O " + eol)
+        .toString() should startWith regex (s" O  O  [¤$mines3]  O " + eol)
       val mine = game1.board.mines.toVector(0)
       game1.openField(mine).toString should include(" ¤ ")
     }
