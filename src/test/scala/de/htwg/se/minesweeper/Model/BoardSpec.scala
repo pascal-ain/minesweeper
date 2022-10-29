@@ -17,7 +17,7 @@ class BoardSpec extends AnyWordSpec {
         Position(1, 1) -> game1Open.board
           .surroundingMines(Position(1, 1), game1Open.bounds)
       )
-      game2.openField(Position(2, 1)).board.openFields.size shouldBe 1
+      game2.openField(Position(2, 1)).board.openFields.size should be >= 1
       game3Open.board.openFields should not contain (Position(5, 3))
       game1
         .flagField(Position(1, 1))
@@ -37,6 +37,13 @@ class BoardSpec extends AnyWordSpec {
       )
       game3.flagField(Position(2, 7)).board.flaggedFields.size shouldBe 0
       game1Open.flagField(Position(1, 1)).board.flaggedFields.size shouldBe 0
+    }
+    "be opened when it is save to do so" in {
+      val bigGame = Game(20, 20, 0.1)
+      val safeFields = (0 until bigGame.bounds.width)
+        .flatMap(x => (0 until bigGame.bounds.height).map(Position(x, _)))
+        .filter(bigGame.board.surroundingMines(_, bigGame.bounds) == 0)
+      bigGame.openField(safeFields(0)).board.openFields.size should be >= 3
     }
   }
 }

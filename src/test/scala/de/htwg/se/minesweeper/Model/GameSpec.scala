@@ -24,8 +24,8 @@ class GameSpec extends AnyWordSpec {
     }
     "have the correct symbols" in {
       val mines = game1.board.surroundingMines(Position(0, 0), game1.bounds)
-      game1.openField(Position(0, 0)).toString() should startWith regex (
-        s" [$mines¤]  O " + eol
+      game1.openField(Position(0, 0)).toString() should include regex (
+        s"[$mines¤]"
       )
       game2.flagField(Position(0, 0)).toString() should startWith(
         " F  O  O  O " + eol

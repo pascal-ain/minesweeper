@@ -6,11 +6,11 @@ import de.htwg.se.minesweeper.Field
 final case class Game(bounds: Bounds, lost: Boolean, board: Board):
   def openField(pos: Position): Game =
     val mines = board.surroundingMines(pos, bounds)
-    val openField = board.insertPosition(pos, bounds, Field.Open) match
-      case None        => board
-      case Some(value) => value
-    if board.mines.contains(pos) then copy(board = openField, lost = true)
-    else openSurroundingFields(openField, pos, mines)
+    board.insertPosition(pos, bounds, Field.Open) match
+      case None => this
+      case Some(value) =>
+        if board.mines.contains(pos) then copy(board = value, lost = true)
+        else openSurroundingFields(value, pos, mines)
 
   // TODO: proud of this but looks messy
   def openSurroundingFields(fields: Board, pos: Position, mines: Int): Game =
