@@ -15,7 +15,7 @@ class GameSpec extends AnyWordSpec {
     "have a scalable width" in {
       game1.toString should startWith(" O  O " + eol)
       game2.toString should startWith(" O  O  O  O " + eol)
-      game3.toString() should startWith(" O  O  O  O " + eol)
+      game3.toString() should startWith(" O  O  O  O " + eol) // toString()?
     }
     "have a scalable height" in {
       game1.toString should fullyMatch regex ("( O  O " + eol + "){4}")

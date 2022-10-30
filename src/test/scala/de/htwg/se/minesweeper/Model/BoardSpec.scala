@@ -35,8 +35,14 @@ class BoardSpec extends AnyWordSpec {
       game2.flagField(Position(1, 1)).board.flaggedFields should contain(
         Position(1, 1)
       )
-      game3.flagField(Position(2, 7)).board.flaggedFields.size shouldBe 0
-      game1Open.flagField(Position(1, 1)).board.flaggedFields.size shouldBe 0
+      game3
+        .flagField(Position(2, 7))
+        .board
+        .flaggedFields should not contain (Position(2, 7))
+      game1Open
+        .flagField(Position(1, 1))
+        .board
+        .flaggedFields should not contain Position(1, 1)
     }
     "be opened when it is save to do so" in {
       val bigGame = Game(20, 20, 0.1)
