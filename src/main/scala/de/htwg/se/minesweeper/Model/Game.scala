@@ -42,14 +42,12 @@ final case class Game(bounds: Bounds, lost: Boolean, board: Board):
     copy(board = flaggedField)
 
   override def toString() =
-    (for
-      y <- 0 until bounds.height
-      x <- 0 until bounds.width
-    yield
-      val pos = Position(x, y)
-      if x == bounds.width - 1 then
-        whichSymbol(pos) + sys.props("line.separator")
-      else whichSymbol(pos)
+    (0 until bounds.height).flatMap(posy =>
+      (0 until bounds.width).map(posx =>
+        if posx == bounds.width - 1 then
+          whichSymbol(Position(posx, posy)) + sys.props("line.separator")
+        else whichSymbol(Position(posx, posy))
+      )
     ).mkString
 
   def whichSymbol(pos: Position) =
