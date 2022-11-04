@@ -46,11 +46,12 @@ class BoardSpec extends AnyWordSpec {
         .flaggedFields should not contain pos1_1
     }
     "be opened when it is save to do so" in {
-      val bigGame = Game(20, 20, 0.1)
-      val safeFields = (0 until bigGame.bounds.width)
-        .flatMap(x => (0 until bigGame.bounds.height).map(Position(x, _)))
-        .filter(bigGame.board.surroundingMines(_, bigGame.bounds) == 0)
-      bigGame.openField(safeFields(0)).board.openFields.size should be >= 3
+      val bigGame = Game(20, 20, 0)
+      bigGame
+        .openField(Position(0, 0))
+        .board
+        .openFields
+        .size should be >= 20 * 20
     }
   }
 }

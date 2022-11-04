@@ -20,6 +20,7 @@ class ParserSpec extends AnyWordSpec {
       parse("flag     ", game) shouldBe None
       parse("not ", game) shouldBe None
       parse("when 2,2", game) shouldBe None
+      checkToken(Array("2", "bla", "bla"), game) shouldBe None
 
     }
   }
