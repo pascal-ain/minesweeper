@@ -16,7 +16,7 @@ class GameSpec extends AnyWordSpec {
     "have a scalable width" in {
       game1.toString should startWith(" O  O " + eol)
       game2.toString should startWith(" O  O  O  O " + eol)
-      game3.toString() should startWith(" O  O  O  O " + eol)
+      game3.toString() should startWith(" O  O  O  O " + eol) // toString()?
     }
     "have a scalable height" in {
       game1.toString should fullyMatch regex ("( O  O " + eol + "){4}")
@@ -28,8 +28,10 @@ class GameSpec extends AnyWordSpec {
       game1.openField(Position(0, 0)).toString() should include regex (
         s"[$mines¤]"
       )
-      game2.flagField(Position(0, 0)).toString() should startWith(
-        " F  O  O  O " + eol
+      game2
+        .flagField(Position(0, 0))
+        .whichSymbol(Position(0, 0)) shouldBe (
+        " F "
       )
       val mines3 = game3.board.surroundingMines(Position(2, 0), game3.bounds)
       game3
@@ -37,7 +39,18 @@ class GameSpec extends AnyWordSpec {
         .openField(Position(2, 0))
         .toString() should startWith regex (s" O  O  [¤$mines3]  O " + eol)
       val mine = game1.board.mines.toVector(0)
-      game1.openField(mine).toString should include(" ¤ ")
+      game1.openField(mine).whichSymbol(mine) shouldBe (" ¤ ")
+
+      val bigGame = Game(20, 20, 0.15)
+      val safeFields = (0 until bigGame.bounds.height)
+        .flatMap(y => (0 until bigGame.bounds.width).map(Position(_, y)))
+        .filter(bigGame.board.surroundingMines(_, bigGame.bounds) == 2)
+      bigGame
+        .openField(safeFields(0))
+        .whichSymbol(safeFields(0)) shouldBe (
+        " 2 "
+      )
+
     }
     "have a scalable minecount" in {
       game1.board.mines.size shouldBe calculateMines(2, 4, 0.15)

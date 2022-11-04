@@ -12,6 +12,7 @@ class ParserSpec extends AnyWordSpec {
       parse("flag     1,1", game).get should equal(
         game.flagField(Position(1, 1))
       )
+      // parse("exit", game).get
     }
     "be rejected when malformed" in {
       parse("jdfhsdjfsdf 2221", game) shouldBe None
@@ -19,6 +20,7 @@ class ParserSpec extends AnyWordSpec {
       parse("flag     ", game) shouldBe None
       parse("not ", game) shouldBe None
       parse("when 2,2", game) shouldBe None
+      checkToken(Array("2", "bla", "bla"), game) shouldBe None
 
     }
   }

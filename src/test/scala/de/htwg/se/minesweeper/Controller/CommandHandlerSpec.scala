@@ -12,13 +12,17 @@ class CommandHandlerSpec extends AnyWordSpec {
     "be frozen" in {
       val mine = game1.board.mines.toVector(0)
       val lostGame = openField(game1, mine)
+
       openField(lostGame, Position(2, 2)) should equal(lostGame)
       flagField(lostGame, Position(2, 2)) should equal(lostGame)
     }
   }
   "When not lost the game" should {
     "work as expected" in {
-      flagField(game1, Position(1, 1)).board.flaggedFields.size shouldBe 1
+      flagField(game1, Position(1, 1)).board.flaggedFields should contain(
+        Position(1, 1)
+      )
+
       val safeFields = (0 until game1.bounds.width)
         .flatMap(x => (0 until game1.bounds.height).map(Position(x, _)))
         .filterNot(game1.board.mines.contains(_))
