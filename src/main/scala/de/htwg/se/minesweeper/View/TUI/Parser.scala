@@ -12,7 +12,7 @@ def checkToken(tokens: Array[String], game: Game): Option[Game] =
   else if tokens.length == 2 then parsePosition(tokens, game)
   else None
 
-def parsePosition(tokens: Array[String], game: Game) =
+def parsePosition(tokens: Array[String], game: Game): Option[Game] =
   if tokens(1).matches("\\d+,\\d+") then
     val coords = tokens(1).split(",")
     val x = coords(0).toInt

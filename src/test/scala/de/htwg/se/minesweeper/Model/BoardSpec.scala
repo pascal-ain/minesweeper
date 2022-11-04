@@ -3,6 +3,7 @@ package de.htwg.se.minesweeper.Model
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import scala.collection.immutable.HashSet
+import de.htwg.se.minesweeper.Util.Helper
 
 class BoardSpec extends AnyWordSpec {
   val game1 = Game(2, 4, 0.15)
@@ -40,9 +41,10 @@ class BoardSpec extends AnyWordSpec {
     }
     "be opened when it is save to do so" in {
       val bigGame = Game(20, 20, 0.1)
-      val safeFields = (0 until bigGame.bounds.width)
-        .flatMap(x => (0 until bigGame.bounds.height).map(Position(x, _)))
+      val safeFields = Helper
+        .getAllPositions(bigGame)
         .filter(bigGame.board.surroundingMines(_, bigGame.bounds) == 0)
+        .toVector
       bigGame.openField(safeFields(0)).board.openFields.size should be >= 3
     }
   }

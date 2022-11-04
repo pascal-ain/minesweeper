@@ -3,6 +3,7 @@ package de.htwg.se.minesweeper.Model
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import scala.collection.immutable.HashSet
+import de.htwg.se.minesweeper.Util.*
 
 class GameSpec extends AnyWordSpec {
   val eol = sys.props("line.separator")
@@ -49,9 +50,18 @@ class GameSpec extends AnyWordSpec {
       game3.board.openFields shouldBe empty
     }
     "be ongoing (not lost) when created" in {
-      game1.lost shouldBe false
-      game2.lost shouldBe false
-      game3.lost shouldBe false
+      game1.state shouldBe State.OnGoing
+    }
+    "is won when all fields without mines are open" in {
+      val wonGame = Helper
+        .openFields(
+          game1,
+          Helper.getAllPositions(game1).filterNot(game1.board.mines.contains(_))
+        )
+        .won_?()
+      wonGame.won_?().state shouldBe State.Won
+
+      game1.won_?() shouldBe game1
     }
   }
 }

@@ -1,5 +1,6 @@
 package de.htwg.se.minesweeper.Controller
 
+import de.htwg.se.minesweeper.Util.Helper
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import de.htwg.se.minesweeper.Model.*
@@ -22,6 +23,21 @@ class CommandHandlerSpec extends AnyWordSpec {
         .flatMap(x => (0 until game1.bounds.height).map(Position(x, _)))
         .filterNot(game1.board.mines.contains(_))
       openField(game1, safeFields(0)).board.openFields.size should be >= 1
+    }
+  }
+  "When won the game" should {
+    "be frozen" in {
+      val wonGame = Helper
+        .openFields(
+          game1,
+          Helper
+            .getAllPositions(game1)
+            .filterNot(game1.board.mines.contains(_))
+            .iterator
+        )
+        .won_?()
+      openField(wonGame, Position(0, 0)) shouldBe wonGame
+      flagField(wonGame, Position(0, 0)) shouldBe wonGame
     }
   }
 }

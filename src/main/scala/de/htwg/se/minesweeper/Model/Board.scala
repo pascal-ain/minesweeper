@@ -14,7 +14,7 @@ final case class Board(
       bounds: Bounds,
       field: Field
   ): Option[Board] =
-    if pos.x >= bounds.width || pos.y >= bounds.height then None
+    if isInBounds(pos, bounds) then None
     else
       field match
         case Field.Open =>
@@ -31,7 +31,13 @@ final case class Board(
             Some(copy(flaggedFields = flaggedFields.excl(pos)))
           else Some(copy(flaggedFields = flaggedFields.incl(pos)))
 
-  def neighbors(pos: Position, bounds: Bounds): Iterator[Position] =
+  def isInBounds(pos: Position, bounds: Bounds) =
+    pos.x >= bounds.width || pos.y >= bounds.height
+
+  def getSurroundingPositions(
+      pos: Position,
+      bounds: Bounds
+  ): Iterator[Position] =
     val (x, y) = (pos.x, pos.y)
     val (width, height) = (bounds.width, bounds.height)
     /* from max(x - 1, 1) - 1 to min(x + 1, width - 1)
@@ -46,11 +52,11 @@ final case class Board(
           Position(posx, posy)
         )
       )
-      .filterNot(_ == pos)
-      .iterator // exclude input pos
+      .filterNot(_ == pos) // exclude input pos
+      .iterator
 
   def surroundingMines(pos: Position, bounds: Bounds) =
-    neighbors(pos, bounds).count(mines.contains(_))
+    getSurroundingPositions(pos, bounds).count(mines.contains(_))
 
 object Board:
   def apply(mines: Set[Position]) =

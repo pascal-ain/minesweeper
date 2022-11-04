@@ -4,15 +4,17 @@ import de.htwg.se.minesweeper.Controller.*
 import scala.io.StdIn.readLine
 
 def repl(game: Game): Unit =
-  if game.lost then println("You lost!")
-  else
-    print(">> ")
-    parse(readLine(), game) match
-      case Some(x) => {
-        print(x)
-        repl(x)
-      }
-      case None => {
-        println(game.toString() + "invalid command")
-        repl(game)
-      }
+  game.state match
+    case State.Lost => println("You lost!")
+    case State.Won  => println("You won!")
+    case State.OnGoing =>
+      print(">> ")
+      parse(readLine(), game) match
+        case Some(x) => {
+          print(x)
+          repl(x)
+        }
+        case None => {
+          println(game.toString() + "invalid command")
+          repl(game)
+        }
