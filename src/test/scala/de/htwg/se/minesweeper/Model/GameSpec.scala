@@ -41,16 +41,14 @@ class GameSpec extends AnyWordSpec {
       val mine = game1.board.mines.toVector(0)
       game1.openField(mine).whichSymbol(mine) shouldBe (" ¤ ")
 
-      val bigGame = Game(20, 20, 0.15)
-      val safeFields = (0 until bigGame.bounds.height)
-        .flatMap(y => (0 until bigGame.bounds.width).map(Position(_, y)))
-        .filter(bigGame.board.surroundingMines(_, bigGame.bounds) == 2)
+      val bigGame = Game(20, 20, 0.2)
+      val safeFields = Helper
+        .getAllPositions(bigGame)
+        .filter(pos => bigGame.board.surroundingMines(pos, bigGame.bounds) == 2)
+      val toOpen = safeFields.next
       bigGame
-        .openField(safeFields(0))
-        .whichSymbol(safeFields(0)) shouldBe (
-        " 2 "
-      )
-
+        .openField(toOpen)
+        .whichSymbol(toOpen) shouldBe " 2 "
     }
     "have a scalable minecount" in {
       game1.board.mines.size shouldBe calculateMines(2, 4, 0.15)
