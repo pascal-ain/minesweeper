@@ -21,7 +21,7 @@ class REPLSpec extends AnyWordSpec {
       repl.handleTokens(Array("open", "12,44")) should not be None
       repl.handleTokens(Array("this", "cant", "be")) shouldBe None
       repl.handleTokens(Array("flag", "12,44")) should not be None
-      repl.insertPosition(Array("no")) shouldBe None
+      repl.insertPosition(Array("no", "4,4")) shouldBe None
     }
   }
 }

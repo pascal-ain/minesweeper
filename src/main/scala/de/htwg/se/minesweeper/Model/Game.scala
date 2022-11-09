@@ -12,23 +12,34 @@ final case class Game(bounds: Bounds, state: State, board: Board):
     val newGame =
       if board.mines.contains(pos) then
         copy(board = revealAllMines, state = State.Lost)
-      else
-        copy(board =
-          board.copy(openFields =
-            board.openFields.updated(pos, board.surroundingMines(pos, bounds))
-          )
-        )
+      else if mines != 0 then copy(board = updateOpenFields(pos))
+      else recursiveOpen(this, board.getSurroundingPositions(pos, bounds))
     won_?(newGame)
 
-  def won_?(game: Game) =
-    if game.board.openFields.size == game.bounds.size - game.board.mines.size
-    then game.copy(state = State.Won)
-    else game
+  def recursiveOpen(game: Game, toOpen: Iterator[Position]): Game =
+    toOpen.nextOption() match
+      case None => game
+      case Some(pos) =>
+        val mines = game.board.surroundingMines(pos, game.bounds)
+        if mines != 0 then recursiveOpen(game.canOpen(pos), toOpen)
+        else
+          recursiveOpen(
+            game.copy(board = game.updateOpenFields(pos)),
+            toOpen
+              .concat(game.board.getSurroundingPositions(pos, game.bounds))
+              .withFilter(!game.board.openFields.contains(_))
+              .distinct
+          )
+
+  def updateOpenFields(pos: Position) =
+    board.copy(openFields =
+      board.openFields.updated(pos, board.surroundingMines(pos, bounds))
+    )
 
   def revealAllMines: Board =
     board.mines.iterator
       .foldLeft(board)((iteration, pos) =>
-        iteration.copy(openFields = iteration.openFields + (pos -> "¤"))
+        iteration.copy(openFields = iteration.openFields.updated(pos, "¤"))
       )
 
   def flagField(pos: Position) =
@@ -78,3 +89,8 @@ object Game:
         )
       )
     )
+
+def won_?(game: Game) =
+  if game.board.openFields.size == game.bounds.size - game.board.mines.size
+  then game.copy(state = State.Won)
+  else game

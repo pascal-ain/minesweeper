@@ -92,14 +92,14 @@ class GameSpec extends AnyWordSpec {
         .canOpen(Position(0, 0))
         .openField(Position(0, 0)) shouldBe InsertResult.AlreadyOpen
     }
-    // "with 0 surrounding mines open its neighbors" in {
-    //   val bigGame = Game(20, 20, 0.1)
-    //   val safeField = Helper
-    //     .getAllPositions(bigGame)
-    //     .filter(bigGame.board.surroundingMines(_, bigGame.bounds) == 0)
-    //     .next()
-    //   bigGame.canOpen(safeField).board.openFields.size should be >= 3
-    // } TODO: Implement this without bugs
+    "with 0 surrounding mines open its neighbors" in {
+      val bigGame = Game(20, 20, 0.1)
+      val safeField = Helper
+        .getAllPositions(bigGame)
+        .filter(bigGame.board.surroundingMines(_, bigGame.bounds) == 0)
+        .next()
+      bigGame.canOpen(safeField).board.openFields.size should be >= 3
+    }
   }
   "Flagging fields" should {
     "handle error and success" in {
@@ -123,18 +123,28 @@ class GameSpec extends AnyWordSpec {
     }
   }
   "The state of the game" should {
+    val bigGame = Game(80, 20, 0.15)
+    val noMines = Helper
+      .getAllPositions(bigGame)
+      .filterNot(bigGame.board.mines.contains(_))
+    val wonGame = Helper.openFields(bigGame, noMines)
+
     val notMines =
       Helper.getAllPositions(game1).filterNot(game1.board.mines.contains(_))
     val lostGame = game2
       .canOpen(game2.board.mines.toVector(0))
-
-    "change to winning when all fields which are not mines are open" in {
-      Helper.openFields(game1, notMines).state shouldBe State.Won
-      val bigGame = Game(10, 20, 0.15)
-      val noMines = Helper
-        .getAllPositions(bigGame)
-        .filterNot(bigGame.board.mines.contains(_))
-      Helper.openFields(bigGame, noMines).state shouldBe State.Won
+    "be no fields to open when won" in {
+      Helper
+        .getAllPositions(wonGame)
+        .filter(pos =>
+          !wonGame.board.mines.contains(pos)
+            && !wonGame.board.openFields.contains(pos)
+        )
+        .toVector
+        .size shouldBe 0
+    }
+    "be won when no fields are left to open" in {
+      won_?(wonGame).state shouldBe State.Won
     }
     "change to lost when a mine was opened" in {
       lostGame.state shouldBe State.Lost
