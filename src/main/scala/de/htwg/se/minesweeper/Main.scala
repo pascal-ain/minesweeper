@@ -10,14 +10,11 @@ val eol = sys.props("line.separator")
   val msg =
     "start the program with <easy> for 9x9 board" + eol + "<medium> for 16x16 board" + eol + "<hard> for 30x16 board" + eol
   if difficulty.length != 0 || difficulty.length > 1 then print(msg)
-  else if difficulty.isEmpty then
-    val game = Game(9, 9, 0.15)
-    print(game)
-    repl(game)
+  else if difficulty.isEmpty then new REPL(Game(2, 4, 0)).run()
   else
     difficulty.apply(0) match
-      case "easy"   => repl(Game())
-      case "medium" => repl(Game(16, 16, 0.15))
-      case "hard"   => repl(Game(30, 16, 0.15))
+      case "easy"   => new REPL(Game()).run()
+      case "medium" => new REPL(Game(16, 16, 0.15)).run()
+      case "hard"   => new REPL(Game(30, 16, 0.15)).run()
       case _        => print(msg)
 // $COVERAGE-ON$

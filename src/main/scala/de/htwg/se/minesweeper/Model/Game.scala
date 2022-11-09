@@ -1,51 +1,46 @@
 package de.htwg.se.minesweeper.Model
 
-import de.htwg.se.minesweeper.Field
-
 // The state of the game
 final case class Game(bounds: Bounds, state: State, board: Board):
-  def openField(pos: Position): Game =
+  def openField(pos: Position): InsertResult =
+    if !bounds.isInBounds(pos) then InsertResult.NotInBounds
+    else if board.openFields.contains(pos) then InsertResult.AlreadyOpen
+    else InsertResult.Success(canOpen(pos))
+
+  def canOpen(pos: Position): Game =
     val mines = board.surroundingMines(pos, bounds)
-    board.insertPosition(pos, bounds, Field.Open) match
-      case None => this
-      case Some(value) =>
-        if board.mines.contains(pos) then
-          copy(board = value, state = State.Lost)
-        else openSurroundingFields(value, pos, mines)
-
-  def flagField(pos: Position): Game =
-    board.insertPosition(pos, bounds, Field.Flag) match
-      case None       => this
-      case Some(flag) => copy(board = flag)
-
-  def won_?(): Game =
-    if board.openFields.size == bounds.width * bounds.height - board.mines.size
-    then copy(state = State.Won)
-    else this
-
-  // TODO: proud of this but looks messy
-  def openSurroundingFields(fields: Board, pos: Position, mines: Int): Game =
-    if mines != 0 then copy(board = fields)
-    else recursiveOpen(this, board.getSurroundingPositions(pos, bounds))
-
-  def recursiveOpen(
-      game: Game,
-      toOpen: Iterator[Position]
-  ): Game =
-    toOpen.nextOption() match
-      case Some(value) =>
-        if game.board.surroundingMines(value, bounds) != 0 then
-          recursiveOpen(game.openField(value), toOpen)
-        else
-          recursiveOpen(
-            game.copy(board =
-              game.board.insertPosition(value, bounds, Field.Open).get
-            ),
-            (toOpen ++ game.board
-              .getSurroundingPositions(value, bounds)).distinct
-              .filterNot(game.board.openFields.contains(_))
+    val newGame =
+      if board.mines.contains(pos) then
+        copy(board = revealAllMines, state = State.Lost)
+      else
+        copy(board =
+          board.copy(openFields =
+            board.openFields.updated(pos, board.surroundingMines(pos, bounds))
           )
-      case None => game
+        )
+    won_?(newGame)
+
+  def won_?(game: Game) =
+    if game.board.openFields.size == game.bounds.size - game.board.mines.size
+    then game.copy(state = State.Won)
+    else game
+
+  def revealAllMines: Board =
+    board.mines.iterator
+      .foldLeft(board)((iteration, pos) =>
+        iteration.copy(openFields = iteration.openFields + (pos -> "¤"))
+      )
+
+  def flagField(pos: Position) =
+    if !bounds.isInBounds(pos) then InsertResult.NotInBounds
+    else if board.openFields.contains(pos) then InsertResult.AlreadyOpen
+    else InsertResult.Success(copy(board = toggle(pos)))
+
+  def toggle(pos: Position) =
+    val flags =
+      if board.flaggedFields.contains(pos) then board.flaggedFields.excl(pos)
+      else board.flaggedFields.incl(pos)
+    board.copy(flaggedFields = flags)
 
   override def toString() =
     (0 until bounds.height)
@@ -60,12 +55,11 @@ final case class Game(bounds: Bounds, state: State, board: Board):
 
   def whichSymbol(pos: Position) =
     board.openFields.get(pos) match
-      case Some(_) if board.mines.contains(pos) => " ¤ "
       case Some(value) =>
         s" $value "
       case None =>
         if board.flaggedFields.contains(pos) then " F "
-        else " O "
+        else "[?]"
 
 object Game:
   def apply(

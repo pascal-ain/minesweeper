@@ -1,38 +1,12 @@
 package de.htwg.se.minesweeper.Model
 import scala.util.Random
-import de.htwg.se.minesweeper.Field
 
 // Data representation of the game board
 final case class Board(
-    openFields: Map[Position, Int],
+    openFields: Map[Position, Int | "¤"],
     mines: Set[Position],
     flaggedFields: Set[Position]
 ):
-
-  def insertPosition(
-      pos: Position,
-      bounds: Bounds,
-      field: Field
-  ): Option[Board] =
-    if isInBounds(pos, bounds) then None
-    else
-      field match
-        case Field.Open =>
-          if flaggedFields.contains(pos) then None
-          else
-            Some(
-              copy(openFields =
-                openFields + (pos -> surroundingMines(pos, bounds))
-              )
-            )
-        case Field.Flag =>
-          if openFields.contains(pos) then None
-          else if flaggedFields.contains(pos) then
-            Some(copy(flaggedFields = flaggedFields.excl(pos)))
-          else Some(copy(flaggedFields = flaggedFields.incl(pos)))
-
-  def isInBounds(pos: Position, bounds: Bounds) =
-    pos.x >= bounds.width || pos.y >= bounds.height
 
   def getSurroundingPositions(
       pos: Position,
