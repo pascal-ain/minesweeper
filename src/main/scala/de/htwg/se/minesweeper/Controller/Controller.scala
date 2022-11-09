@@ -1,9 +1,8 @@
 package de.htwg.se.minesweeper.Controller
 
 import de.htwg.se.minesweeper.Util.Observable
-import de.htwg.se.minesweeper.Model.{Game, Position, State, InsertResult}
+import de.htwg.se.minesweeper.Model.*
 import de.htwg.se.minesweeper.Util.Event
-import de.htwg.se.minesweeper.Field
 import de.htwg.se.minesweeper.Model.State
 
 class Controller(var game: Game) extends Observable:
@@ -30,10 +29,10 @@ class Controller(var game: Game) extends Observable:
   def openField(pos: Position) =
     val openResult = validatePosition(pos, Field.Open)
     openResult match
-      case _: Event.Success => notifyObservers(won_?)
+      case _: Event.Success => notifyObservers(state)
       case _                => notifyObservers(openResult)
 
-  def won_? =
+  def state =
     game.state match
       case State.Won     => Event.Won
       case State.Lost    => Event.Lost

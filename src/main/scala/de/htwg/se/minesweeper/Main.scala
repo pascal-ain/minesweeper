@@ -10,7 +10,7 @@ val eol = sys.props("line.separator")
   val msg =
     "start the program with <easy> for 9x9 board" + eol + "<medium> for 16x16 board" + eol + "<hard> for 30x16 board" + eol
   if difficulty.length != 0 || difficulty.length > 1 then print(msg)
-  else if difficulty.isEmpty then new REPL(Game(9, 9, 0)).run()
+  else if difficulty.isEmpty then new REPL(Game(2, 4, 0)).run()
   else
     difficulty.apply(0) match
       case "easy"   => new REPL(Game()).run()

@@ -1,6 +1,5 @@
 package de.htwg.se.minesweeper.Model
 import scala.util.Random
-import de.htwg.se.minesweeper.Field
 
 // Data representation of the game board
 final case class Board(
