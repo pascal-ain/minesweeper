@@ -4,7 +4,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import scala.collection.immutable.HashSet
 import de.htwg.se.minesweeper.Util.*
-import de.htwg.se.minesweeper.Model.Game
+import de.htwg.se.minesweeper.Model.*
 
 class REPLSpec extends AnyWordSpec {
   "The REPL parses user input which" should {
@@ -22,8 +22,12 @@ class REPLSpec extends AnyWordSpec {
       repl.handleTokens(Array("this", "cant", "be")) shouldBe None
       repl.handleTokens(Array("flag", "12,44")) should not be None
       repl.insertPosition(Array("no", "4,4")) shouldBe None
-      repl.insertPosition(Array("open", "2,2")) shouldBe a[Some[() => Unit]]
-      repl.insertPosition(Array("flag", "2,2")) shouldBe a[Some[() => Unit]]
+      repl.insertPosition(Array("open", "2,2")) shouldBe a[
+        Some[(Position, Position => InsertResult)]
+      ]
+      repl.insertPosition(Array("flag", "2,2")) shouldBe a[Some[
+        (Position, Position => InsertResult)
+      ]]
 
     }
   }

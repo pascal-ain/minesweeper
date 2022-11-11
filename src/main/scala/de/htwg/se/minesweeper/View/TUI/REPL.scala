@@ -37,7 +37,7 @@ class REPL(controller: Controller) extends Observer:
             + "flag <x,y>" + eol
             + "exit"
         )
-      case Some(operation) => operation.apply()
+      case Some(pos, operation) => controller.handleTrigger(operation, pos)
     if onGoing then runREPL()
 
   def parseInput(input: String) =
@@ -52,10 +52,12 @@ class REPL(controller: Controller) extends Observer:
       case "exit"          => sys.exit()
       case _               => None
 
-  def insertPosition(tokens: Array[String]): Option[() => Unit] =
+  def insertPosition(
+      tokens: Array[String]
+  ): Option[(Position, Position => InsertResult)] =
     val coords = tokens(1).split(",").map(_.toInt)
     val pos = Position(coords(0), coords(1))
     tokens(0) match
-      case "open" => Some(() => controller.openField(pos))
-      case "flag" => Some(() => controller.flagField(pos))
+      case "open" => Some(pos, controller.openField)
+      case "flag" => Some(pos, controller.flagField)
       case _      => None

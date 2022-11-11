@@ -8,31 +8,24 @@ import de.htwg.se.minesweeper.Model.State
 class Controller(var game: Game) extends Observable:
   override def toString(): String = game.toString()
 
-  def flagField(pos: Position) =
-    notifyObservers(validatePosition(pos, Field.Flag))
+  val x = game.bounds.width
+  val y = game.bounds.height
 
-  def validatePosition(
-      pos: Position,
-      operation: Field
-  ): Event.InvalidPosition | Event.Success =
-    val (x, y) = (game.bounds.width, game.bounds.height)
-    val newGame = operation match
-      case Field.Open => game.openField(pos)
-      case Field.Flag => game.flagField(pos)
-    newGame match
-      case InsertResult.Success(value) => game = value; Event.Success(value)
+  def handleTrigger(handlePosition: Position => InsertResult, pos: Position) =
+    val result = handlePosition(pos) match
+      case InsertResult.Success(value) => game = value; state
       case InsertResult.NotInBounds =>
         Event.InvalidPosition(s"Not in bounds of width: $x and height: $y")
       case InsertResult.AlreadyOpen =>
         Event.InvalidPosition(s"This field is already revealed")
+    notifyObservers(result)
 
-  def openField(pos: Position) =
-    val openResult = validatePosition(pos, Field.Open)
-    openResult match
-      case _: Event.Success => notifyObservers(state)
-      case _                => notifyObservers(openResult)
+  def openField(pos: Position): InsertResult =
+    game.openField(pos)
+  def flagField(pos: Position): InsertResult =
+    game.flagField(pos)
 
-  def state =
+  def state: Event =
     game.state match
       case State.Won     => Event.Won
       case State.Lost    => Event.Lost

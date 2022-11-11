@@ -5,6 +5,7 @@ final case class Game(bounds: Bounds, state: State, board: Board):
   def openField(pos: Position): InsertResult =
     if !bounds.isInBounds(pos) then InsertResult.NotInBounds
     else if board.openFields.contains(pos) then InsertResult.AlreadyOpen
+    else if board.flaggedFields.contains(pos) then InsertResult.AlreadyOpen
     else InsertResult.Success(canOpen(pos))
 
   def canOpen(pos: Position): Game =

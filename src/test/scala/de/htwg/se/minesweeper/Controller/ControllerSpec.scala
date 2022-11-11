@@ -11,14 +11,19 @@ class ControllerSpec extends AnyWordSpec {
     "tell the view about success or possible errors" in {
       val game = Game(9, 9, 0.25)
       val controller = new Controller(game)
-      controller.validatePosition(Position(0, 420), Field.Open) shouldBe a[
-        Event.InvalidPosition
-      ]
       controller
-        .validatePosition(Position(0, 1), Field.Open) shouldBe a[Event.Success]
-      controller.validatePosition(Position(0, 1), Field.Flag) shouldBe a[
-        Event.InvalidPosition
-      ]
+        .openField(
+          Position(0, 420)
+        ) shouldBe InsertResult.NotInBounds
+
+      controller
+        .openField(Position(0, 1)) shouldBe a[InsertResult.Success]
+
+      controller.handleTrigger(controller.openField, Position(0, 1))
+      controller.flagField(
+        Position(0, 1)
+      ) shouldBe InsertResult.AlreadyOpen
+
     }
     "tell the view about a state change in the game" in {
       val game = Game(10, 10, 0.2)
@@ -30,8 +35,11 @@ class ControllerSpec extends AnyWordSpec {
       result shouldBe a[Event.Success]
 
       controller.state shouldBe Event.Won
+      controller.handleTrigger(
+        controller.openField,
+        controller.game.board.mines.toVector(0)
+      )
 
-      controller.validatePosition(game.board.mines.toVector(0), Field.Open)
       controller.state shouldBe Event.Lost
     }
     "have the same string representation as the model" in {
@@ -48,7 +56,7 @@ class ControllerSpec extends AnyWordSpec {
         def update(e: Event): Unit = bing = e
       val testObserver = TestObserver(controller)
       testObserver.bing should be(Event.Won)
-      controller.openField(Position(11, 11))
+      controller.handleTrigger(controller.openField, Position(11, 11))
       testObserver.bing shouldBe a[Event.InvalidPosition]
       val notMine =
         Helper
@@ -56,14 +64,16 @@ class ControllerSpec extends AnyWordSpec {
           .filterNot(game.board.mines.contains(_))
           .toVector(0)
 
-      controller.openField(notMine)
+      controller.handleTrigger(controller.openField, notMine)
       testObserver.bing shouldBe a[Event.Success]
 
       val controller2 = Controller(game)
       val testObserver2 = TestObserver(controller2)
       testObserver2.bing should be(Event.Won)
-      controller2.flagField(Position(1, 1))
+      controller2.handleTrigger(controller2.flagField, Position(1, 1))
       testObserver2.bing shouldBe a[Event.Success]
+      controller2.handleTrigger(controller2.openField, Position(1, 1))
+      testObserver2.bing shouldBe a[Event.InvalidPosition]
     }
   }
 }

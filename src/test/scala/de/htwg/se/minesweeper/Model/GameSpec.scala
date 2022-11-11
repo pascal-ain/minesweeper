@@ -87,6 +87,8 @@ class GameSpec extends AnyWordSpec {
   "Opening fields" should {
     "handle error and success" in {
       game1.openField(Position(1, 1)) shouldBe a[InsertResult.Success]
+      val flagged = game1.copy(board = game1.toggle(Position(1, 1)))
+      flagged.openField(Position(1, 1)) shouldBe InsertResult.AlreadyOpen
       game1.openField(Position(420, 1337)) shouldBe InsertResult.NotInBounds
       game1
         .canOpen(Position(0, 0))
