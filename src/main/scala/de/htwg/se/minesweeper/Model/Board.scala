@@ -1,37 +1,17 @@
 package de.htwg.se.minesweeper.Model
 import scala.util.Random
-import de.htwg.se.minesweeper.Field
 
 // Data representation of the game board
 final case class Board(
-    openFields: Map[Position, Int],
+    openFields: Map[Position, Int | "¤"],
     mines: Set[Position],
     flaggedFields: Set[Position]
 ):
 
-  def insertPosition(
+  def getSurroundingPositions(
       pos: Position,
-      bounds: Bounds,
-      field: Field
-  ): Option[Board] =
-    if pos.x >= bounds.width || pos.y >= bounds.height then None
-    else
-      field match
-        case Field.Open =>
-          if flaggedFields.contains(pos) then None
-          else
-            Some(
-              copy(openFields =
-                openFields + (pos -> surroundingMines(pos, bounds))
-              )
-            )
-        case Field.Flag =>
-          if openFields.contains(pos) then None
-          else if flaggedFields.contains(pos) then
-            Some(copy(flaggedFields = flaggedFields.excl(pos)))
-          else Some(copy(flaggedFields = flaggedFields.incl(pos)))
-
-  def neighbors(pos: Position, bounds: Bounds): Iterator[Position] =
+      bounds: Bounds
+  ): Iterator[Position] =
     val (x, y) = (pos.x, pos.y)
     val (width, height) = (bounds.width, bounds.height)
     /* from max(x - 1, 1) - 1 to min(x + 1, width - 1)
@@ -46,11 +26,11 @@ final case class Board(
           Position(posx, posy)
         )
       )
-      .filterNot(_ == pos)
-      .iterator // exclude input pos
+      .filterNot(_ == pos) // exclude input pos
+      .iterator
 
   def surroundingMines(pos: Position, bounds: Bounds) =
-    neighbors(pos, bounds).count(mines.contains(_))
+    getSurroundingPositions(pos, bounds).count(mines.contains(_))
 
 object Board:
   def apply(mines: Set[Position]) =

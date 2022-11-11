@@ -3,6 +3,7 @@ package de.htwg.se.minesweeper.Controller
 import de.htwg.se.minesweeper.Util.Observable
 import de.htwg.se.minesweeper.Model.*
 import de.htwg.se.minesweeper.Util.Event
+import de.htwg.se.minesweeper.Model.State
 
 class Controller(var game: Game) extends Observable:
   override def toString(): String = game.toString()

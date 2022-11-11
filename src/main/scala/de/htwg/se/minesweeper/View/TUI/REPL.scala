@@ -2,22 +2,31 @@ package de.htwg.se.minesweeper.View.TUI
 import de.htwg.se.minesweeper.Model.*
 import de.htwg.se.minesweeper.Controller.*
 import scala.io.StdIn.readLine
+import de.htwg.se.minesweeper.Util.{Observer, Event}
 
-def repl(game: Game): Unit =
-  if game.lost then println("You lost!")
-  else
+class REPL(controller: Controller) extends Observer:
+  def this(game: Game) = this(new Controller(game))
+
+  controller.add(this)
+
+  val eol = sys.props("line.separator")
+  var onGoing = true
+
+  def run() =
+    print(controller.game.toString)
+    runREPL()
+
+  override def update(e: Event): Unit =
+    e match
+      case Event.InvalidPosition(msg) => println(game() + eol + msg)
+      case Event.Won  => println(game() + eol + "You won!"); onGoing = false
+      case Event.Lost => println(game() + eol + "You lost!"); onGoing = false
+      case Event.Success(_) => print(game())
+
+  def game() = controller.toString
+
+  def runREPL(): Unit =
     print(">> ")
-<<<<<<< Updated upstream
-    parse(readLine(), game) match
-      case Some(x) => {
-        print(x)
-        repl(x)
-      }
-      case None => {
-        println(game.toString() + "invalid command")
-        repl(game)
-      }
-=======
     parseInput(readLine()) match
       case None =>
         println(
@@ -52,4 +61,3 @@ def repl(game: Game): Unit =
       case "open" => Some(pos, controller.openField)
       case "flag" => Some(pos, controller.flagField)
       case _      => None
->>>>>>> Stashed changes
