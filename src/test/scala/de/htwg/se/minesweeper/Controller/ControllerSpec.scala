@@ -22,11 +22,13 @@ class ControllerSpec extends AnyWordSpec {
     }
     "tell the view about a state change in the game" in {
       val game = Game(10, 10, 0.2)
-      val controller = new Controller(game)
-      controller.state shouldBe a[Event.Success]
       val notMines =
         Helper.getAllPositions(game).filterNot(game.board.mines.contains(_))
-      notMines.foreach(controller.validatePosition(_, Field.Open))
+      val won_game = Helper.openFields(game, notMines)
+      val controller = new Controller(won_game)
+      val result = new Controller(game).state
+      result shouldBe a[Event.Success]
+
       controller.state shouldBe Event.Won
 
       controller.validatePosition(game.board.mines.toVector(0), Field.Open)
@@ -36,6 +38,32 @@ class ControllerSpec extends AnyWordSpec {
       val game = Game(10, 10, 0.2)
       val controller = new Controller(game)
       game.toString should equal(controller.toString)
+    }
+    "notify Observers" in {
+      val game = Game(10, 10, 0.2)
+      val controller = new Controller(game)
+      class TestObserver(c: Controller) extends Observer:
+        c.add(this)
+        var bing = Event.Won
+        def update(e: Event): Unit = bing = e
+      val testObserver = TestObserver(controller)
+      testObserver.bing should be(Event.Won)
+      controller.openField(Position(11, 11))
+      testObserver.bing shouldBe a[Event.InvalidPosition]
+      val notMine =
+        Helper
+          .getAllPositions(game)
+          .filterNot(game.board.mines.contains(_))
+          .toVector(0)
+
+      controller.openField(notMine)
+      testObserver.bing shouldBe a[Event.Success]
+
+      val controller2 = Controller(game)
+      val testObserver2 = TestObserver(controller2)
+      testObserver2.bing should be(Event.Won)
+      controller2.flagField(Position(1, 1))
+      testObserver2.bing shouldBe a[Event.Success]
     }
   }
 }

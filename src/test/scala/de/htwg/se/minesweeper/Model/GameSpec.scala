@@ -144,7 +144,7 @@ class GameSpec extends AnyWordSpec {
         .size shouldBe 0
     }
     "be won when no fields are left to open" in {
-      won_?(wonGame).state shouldBe State.Won
+      won(wonGame).state shouldBe State.Won
     }
     "change to lost when a mine was opened" in {
       lostGame.state shouldBe State.Lost
