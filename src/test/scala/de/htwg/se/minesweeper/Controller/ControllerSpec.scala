@@ -24,6 +24,9 @@ class ControllerSpec extends AnyWordSpec {
         Position(0, 1)
       ) shouldBe InsertResult.AlreadyOpen
 
+      val testFlag = new Controller(game)
+      testFlag.handleTrigger(testFlag.flagField, Position(0, 0))
+      testFlag.openField(Position(0, 0)) shouldBe InsertResult.Flagged
     }
     "tell the view about a state change in the game" in {
       val game = Game(10, 10, 0.2)
@@ -71,6 +74,9 @@ class ControllerSpec extends AnyWordSpec {
 
       controllerToOpen.handleTrigger(controllerToOpen.openField, notMine)
       testOpen.bing shouldBe a[Event.Success]
+
+      controllerToOpen.handleTrigger(controllerToOpen.openField, notMine)
+      testOpen.bing shouldBe a[Event.InvalidPosition]
 
       val controllerToFlag = Controller(game)
       val testFlagging = TestObserver(controllerToFlag)

@@ -72,7 +72,7 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       case None =>
         if board.flaggedFields.contains(pos) then " F "
         else "[?]"
-
+// $COVERAGE-OFF$
 object Game:
   def apply(
       width: Int = 9,
@@ -90,7 +90,7 @@ object Game:
         )
       )
     )
-
+// $COVERAGE-ON$
 def won(game: Game) =
   if game.board.openFields.size == game.bounds.size - game.board.mines.size
   then game.copy(state = State.Won)
