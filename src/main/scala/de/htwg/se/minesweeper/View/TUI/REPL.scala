@@ -30,14 +30,9 @@ class REPL(controller: Controller) extends Observer:
     parseInput(readLine()) match
       case None =>
         println(
-          game() + eol
-            + "Invalid command" + eol
-            + "availabe commands:" + eol
-            + "open <x,y>" + eol
-            + "flag <x,y>" + eol
-            + "exit"
+          s"${game()}$eol Invalid command$eol availabe commands:$eol open <x,y>$eol flag <x,y>$eol exit"
         )
-      case Some(pos, operation) => controller.handleTrigger(operation, pos)
+      case Some(operation, pos) => controller.handleTrigger(operation, pos)
     if onGoing then runREPL()
 
   def parseInput(input: String) =
@@ -54,10 +49,10 @@ class REPL(controller: Controller) extends Observer:
 
   def insertPosition(
       tokens: Array[String]
-  ): Option[(Position, Position => InsertResult)] =
+  ): Option[(Position => InsertResult, Position)] =
     val coords = tokens(1).split(",").map(_.toInt)
     val pos = Position(coords(0), coords(1))
     tokens(0) match
-      case "open" => Some(pos, controller.openField)
-      case "flag" => Some(pos, controller.flagField)
+      case "open" => Some(controller.openField, pos)
+      case "flag" => Some(controller.flagField, pos)
       case _      => None
