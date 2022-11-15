@@ -18,6 +18,8 @@ class Controller(var game: Game) extends Observable:
         Event.InvalidPosition(s"Not in bounds of width: $x and height: $y")
       case InsertResult.AlreadyOpen =>
         Event.InvalidPosition(s"This field is already revealed")
+      case InsertResult.Flagged =>
+        Event.InvalidPosition("This field has been flagged")
     notifyObservers(result)
 
   def openField(pos: Position): InsertResult =

@@ -4,3 +4,4 @@ enum InsertResult:
   case Success(game: Game)
   case NotInBounds
   case AlreadyOpen
+  case Flagged

@@ -3,7 +3,7 @@ package de.htwg.se.minesweeper
 import de.htwg.se.minesweeper.Model.Game
 import de.htwg.se.minesweeper.View.TUI.*
 
-// $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
+// $COVERAGE-OFF$
 val eol = sys.props("line.separator")
 
 @main def run(difficulty: String*): Unit =
