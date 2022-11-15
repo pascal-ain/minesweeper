@@ -56,11 +56,13 @@ class ControllerSpec extends AnyWordSpec {
         def update(e: Event): Unit = bing = e
       val testOpen = TestObserver(controllerToOpen)
       testOpen.bing should be(Event.Won)
+
       controllerToOpen.handleTrigger(
         controllerToOpen.openField,
         Position(11, 11)
       )
       testOpen.bing shouldBe a[Event.InvalidPosition]
+
       val notMine =
         Helper
           .getAllPositions(game)
@@ -73,8 +75,16 @@ class ControllerSpec extends AnyWordSpec {
       val controllerToFlag = Controller(game)
       val testFlagging = TestObserver(controllerToFlag)
       testFlagging.bing should be(Event.Won)
+
+      controllerToFlag.handleTrigger(
+        controllerToFlag.flagField,
+        Position(1337, 1)
+      )
+      testFlagging.bing shouldBe a[Event.InvalidPosition]
+
       controllerToFlag.handleTrigger(controllerToFlag.flagField, Position(1, 1))
       testFlagging.bing shouldBe a[Event.Success]
+
       controllerToFlag.handleTrigger(controllerToFlag.openField, Position(1, 1))
       testFlagging.bing shouldBe a[Event.InvalidPosition]
     }
