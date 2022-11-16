@@ -24,6 +24,9 @@ class ControllerSpec extends AnyWordSpec {
         Position(0, 1)
       ) shouldBe InsertResult.AlreadyOpen
 
+      val flagged = new Controller(game)
+      flagged.handleTrigger(flagged.flagField, Position(0, 0))
+      flagged.openField(Position(0, 0)) shouldBe InsertResult.Flagged
     }
     "tell the view about a state change in the game" in {
       val game = Game(10, 10, 0.2)
@@ -54,6 +57,7 @@ class ControllerSpec extends AnyWordSpec {
         c.add(this)
         var bing = Event.Won
         def update(e: Event): Unit = bing = e
+
       val testOpen = TestObserver(controllerToOpen)
       testOpen.bing should be(Event.Won)
 
@@ -72,9 +76,12 @@ class ControllerSpec extends AnyWordSpec {
       controllerToOpen.handleTrigger(controllerToOpen.openField, notMine)
       testOpen.bing shouldBe a[Event.Success]
 
+      controllerToOpen.handleTrigger(controllerToOpen.openField, notMine)
+      testOpen.bing shouldBe a[Event.InvalidPosition]
+
       val controllerToFlag = Controller(game)
       val testFlagging = TestObserver(controllerToFlag)
-      testFlagging.bing should be(Event.Won)
+      testFlagging.bing shouldBe Event.Won
 
       controllerToFlag.handleTrigger(
         controllerToFlag.flagField,
