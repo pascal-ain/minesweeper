@@ -74,11 +74,7 @@ final case class Game(bounds: Bounds, state: State, board: Board):
         else "[?]"
 
 object Game:
-  def apply(
-      width: Int = 9,
-      height: Int = 9,
-      minePercentage: Double = 0.15
-  ) =
+  def apply(width: Int = 9, height: Int = 9, minePercentage: Double = 0.15) =
     new Game(
       Bounds(width, height),
       State.OnGoing,
