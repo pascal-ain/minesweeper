@@ -14,21 +14,12 @@ class REPLSpec extends AnyWordSpec {
       repl.parseInput("open this") shouldBe None
       repl.parseInput("flag") shouldBe None
       repl.parseInput("open 12.2") shouldBe None
-      repl.parseInput("flag   12,3") should not be None
-      repl.parseInput("open 2,3") should not be Some
-    }
-    "split them accordingly to get the meaning out of them" in {
-      repl.handleTokens(Array("open", "12,44")) should not be None
-      repl.handleTokens(Array("this", "cant", "be")) shouldBe None
-      repl.handleTokens(Array("flag", "12,44")) should not be None
-      repl.insertPosition(Array("no", "4,4")) shouldBe None
-      repl.insertPosition(Array("open", "2,2")) shouldBe a[
-        Some[(Position, Position => InsertResult)]
-      ]
-      repl.insertPosition(Array("flag", "2,2")) shouldBe a[Some[
-        (Position, Position => InsertResult)
+      repl.parseInput("flag   12,3") shouldBe a[Some[
+        (Position => InsertResult, Position)
       ]]
-
+      repl.parseInput("oPen 2,3") shouldBe a[Some[
+        (Position => InsertResult, Position)
+      ]]
     }
   }
 }

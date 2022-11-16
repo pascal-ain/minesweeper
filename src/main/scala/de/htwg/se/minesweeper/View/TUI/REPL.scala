@@ -37,22 +37,12 @@ class REPL(controller: Controller) extends Observer:
 
   def parseInput(input: String) =
     val userInput = input.toLowerCase().trim()
-    if userInput.matches("((open|flag)\\s+\\d+,\\d+)|exit") then
-      handleTokens(userInput.split("\\s+"))
+    if userInput.matches("((open|flag)\\s+\\d+,\\d+)") then
+      val tokens = userInput.split("\\s+")
+      val coords = tokens(1).split(",").map(_.toInt)
+      val pos = Position(coords(0), coords(1))
+      tokens(0) match
+        case "open" => Some(controller.openField, pos)
+        case "flag" => Some(controller.flagField, pos)
+        case _      => None
     else None
-
-  def handleTokens(tokens: Array[String]) =
-    tokens(0) match
-      case "open" | "flag" => insertPosition(tokens)
-      case "exit"          => sys.exit()
-      case _               => None
-
-  def insertPosition(
-      tokens: Array[String]
-  ): Option[(Position => InsertResult, Position)] =
-    val coords = tokens(1).split(",").map(_.toInt)
-    val pos = Position(coords(0), coords(1))
-    tokens(0) match
-      case "open" => Some(controller.openField, pos)
-      case "flag" => Some(controller.flagField, pos)
-      case _      => None
