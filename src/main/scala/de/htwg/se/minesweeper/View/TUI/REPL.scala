@@ -27,10 +27,12 @@ class REPL(controller: Controller) extends Observer:
 
   def runREPL(): Unit =
     print(">> ")
-    parseInput(readLine()) match
+    val input = readLine()
+    if input.matches("q|quit|exit") then return
+    parseInput(input) match
       case None =>
         println(
-          s"${game()}$eol Invalid command$eol availabe commands:$eol open <x,y>$eol flag <x,y>$eol exit"
+          s"${game()}$eol Invalid command$eol availabe commands:$eol open <x,y>$eol flag <x,y>"
         )
       case Some(operation, pos) => controller.handleTrigger(operation, pos)
     if onGoing then runREPL()
