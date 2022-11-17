@@ -17,7 +17,7 @@ class Controller(var game: Game) extends Observable:
       case InsertResult.NotInBounds =>
         Event.InvalidPosition(s"Not in bounds of width: $x and height: $y")
       case InsertResult.AlreadyOpen =>
-        Event.InvalidPosition(s"This field is already revealed")
+        Event.InvalidPosition("This field is already revealed")
       case InsertResult.Flagged =>
         Event.InvalidPosition("This field has been flagged")
     notifyObservers(result)
