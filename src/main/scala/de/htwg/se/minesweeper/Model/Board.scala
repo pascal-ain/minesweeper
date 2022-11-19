@@ -3,7 +3,7 @@ import scala.util.Random
 
 // Data representation of the game board
 final case class Board(
-    openFields: Map[Position, Int | "¤"],
+    openFields: Map[Position, Int | 'B'],
     mines: Set[Position],
     flaggedFields: Set[Position]
 ):

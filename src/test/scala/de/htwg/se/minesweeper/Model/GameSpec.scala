@@ -7,9 +7,9 @@ import de.htwg.se.minesweeper.Util.*
 
 class GameSpec extends AnyWordSpec {
   val eol = sys.props("line.separator")
-  val notOpened = "[?]"
-  val mineSymbol = " ¤ "
-  val flagSymbol = " F "
+  val notOpened = "?"
+  val mineSymbol = "B"
+  val flagSymbol = "F"
   def calculateMines(width: Int, height: Int, percentage: Double) =
     (width * height * percentage).toInt
   val game1 = Game(2, 4, 0.15)
@@ -26,11 +26,11 @@ class GameSpec extends AnyWordSpec {
       )
     }
     "have a scalable height" in {
-      val regexClosed = """\[\?\]""".r
-      game1.toString should fullyMatch regex (s"($regexClosed$regexClosed$eol){4}")
-      game2.toString should fullyMatch regex (s"($regexClosed$regexClosed$regexClosed$regexClosed$eol){2}")
+      val escapedClose = s"\\$notOpened"
+      game1.toString should fullyMatch regex (s"($escapedClose$escapedClose$eol){4}")
+      game2.toString should fullyMatch regex (s"($escapedClose$escapedClose$escapedClose$escapedClose$eol){2}")
       game3
-        .toString() should fullyMatch regex (s"($regexClosed$regexClosed$regexClosed$regexClosed$eol){4}")
+        .toString() should fullyMatch regex (s"($escapedClose$escapedClose$escapedClose$escapedClose$eol){4}")
     }
     "have a scalable minecount" in {
       game1.board.mines.size shouldBe calculateMines(2, 4, 0.15)
@@ -66,13 +66,21 @@ class GameSpec extends AnyWordSpec {
       val open1 = safeFields1.next()
       game1
         .canOpen(open1)
-        .whichSymbol(open1) shouldBe s" ${game1.board.surroundingMines(open1, game1.bounds).toString} "
+        .whichSymbol(open1) shouldBe game1.board
+        .surroundingMines(open1, game1.bounds)
+        .toString
+
       val safeFields2 =
         Helper.getAllPositions(game2).filterNot(game2.board.mines.contains(_))
       val open2 = safeFields2.next
       game2
         .canOpen(open2)
-        .whichSymbol(open2) shouldBe s" ${game2.board.surroundingMines(open2, game2.bounds)} "
+        .whichSymbol(open2) shouldBe game2.board
+        .surroundingMines(
+          open2,
+          game2.bounds
+        )
+        .toString()
     }
     s"be a '$flagSymbol' when it got flagged" in {
       val flagField = Position(1, 1)
@@ -105,7 +113,7 @@ class GameSpec extends AnyWordSpec {
       bigGame.canOpen(safeField).board.openFields.size should be >= 3
     }
   }
-  "Flagging fields" should {
+  "flagging fields" should {
     "handle error and success" in {
       game1.flagField(Position(1, 1)) shouldBe a[InsertResult.Success]
       game2.flagField(Position(142, 1337)) shouldBe InsertResult.NotInBounds

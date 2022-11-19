@@ -10,20 +10,24 @@ class REPL(controller: Controller) extends Observer:
   controller.add(this)
 
   val eol = sys.props("line.separator")
-  var onGoing = true
+  var state = () => runREPL()
 
   def run() =
-    print(controller.game.toString)
+    print(game())
     runREPL()
 
   override def update(e: Event): Unit =
     e match
       case Event.InvalidPosition(msg) => println(game() + eol + msg)
-      case Event.Won  => println(game() + eol + "You won!"); onGoing = false
-      case Event.Lost => println(game() + eol + "You lost!"); onGoing = false
+      case Event.Won        => state = () => println(game() + eol + "You won!")
+      case Event.Lost       => state = () => println(game() + eol + "You lost!")
       case Event.Success(_) => print(game())
 
-  def game() = controller.toString
+  def game() =
+    REPLSymbolsDecorator(controller, "💣", "🚩", "⬛", mineCount).toString()
+
+  def mineCount(mines: Int) =
+    s"${(0 until 9).map(num => s"${num.toString}\uFE0F\u20E3")(mines)} "
 
   def runREPL(): Unit =
     print(">> ")
@@ -32,10 +36,10 @@ class REPL(controller: Controller) extends Observer:
     parseInput(input) match
       case None =>
         println(
-          s"${game()}$eol Invalid command$eol availabe commands:$eol open <x,y>$eol flag <x,y>"
+          s"${game()}${eol}Invalid command${eol}availabe commands:${eol}open <x,y>${eol}flag <x,y>${eol}quit, q or exit to end the game"
         )
       case Some(operation, pos) => controller.handleTrigger(operation, pos)
-    if onGoing then runREPL()
+    state()
 
   def parseInput(input: String) =
     val userInput = input.toLowerCase().trim()
@@ -46,5 +50,4 @@ class REPL(controller: Controller) extends Observer:
       tokens(0) match
         case "open" => Some(controller.openField, pos)
         case "flag" => Some(controller.flagField, pos)
-        case _      => None
     else None

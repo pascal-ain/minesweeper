@@ -11,4 +11,4 @@ object Helper:
   def openFields(game: Game, toOpen: Iterator[Position]): Game =
     toOpen.foldLeft[Game](game)((iteration, pos) =>
       won(iteration.copy(board = iteration.updateOpenFields(pos)))
-    ) // TODO: need to use another method because canOpen somehow removes things from the input iterator
+    )

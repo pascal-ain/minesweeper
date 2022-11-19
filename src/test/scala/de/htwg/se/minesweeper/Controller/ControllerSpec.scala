@@ -71,7 +71,7 @@ class ControllerSpec extends AnyWordSpec {
         Helper
           .getAllPositions(game)
           .filterNot(game.board.mines.contains(_))
-          .toVector(0)
+          .next()
 
       controllerToOpen.handleTrigger(controllerToOpen.openField, notMine)
       testOpen.bing shouldBe a[Event.Success]

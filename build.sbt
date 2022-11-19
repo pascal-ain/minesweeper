@@ -1,4 +1,4 @@
-val scala3Version = "3.2.0"
+val scala3Version = "3.2.2-RC1"
 
 lazy val root = project
   .in(file("."))

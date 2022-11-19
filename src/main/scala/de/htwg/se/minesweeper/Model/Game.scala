@@ -34,14 +34,17 @@ final case class Game(bounds: Bounds, state: State, board: Board):
 
   def updateOpenFields(pos: Position) =
     board.copy(openFields =
-      board.openFields.updated(pos, board.surroundingMines(pos, bounds))
+      board.openFields.updated(
+        pos,
+        if board.mines.contains(pos) then 'B'
+        else board.surroundingMines(pos, bounds)
+      )
     )
 
   def revealAllMines: Board =
-    board.mines.iterator
-      .foldLeft(board)((iteration, pos) =>
-        iteration.copy(openFields = iteration.openFields.updated(pos, "¤"))
-      )
+    board.mines.iterator.foldLeft(board)((iteration, pos) =>
+      iteration.copy(openFields = iteration.openFields.updated(pos, 'B'))
+    )
 
   def flagField(pos: Position) =
     if !bounds.isInBounds(pos) then InsertResult.NotInBounds
@@ -59,7 +62,7 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       .flatMap(posy =>
         (0 until bounds.width).map(posx =>
           if posx == bounds.width - 1 then
-            whichSymbol(Position(posx, posy)) + sys.props("line.separator")
+            whichSymbol(Position(posx, posy)) + "\n"
           else whichSymbol(Position(posx, posy))
         )
       )
@@ -68,10 +71,10 @@ final case class Game(bounds: Bounds, state: State, board: Board):
   def whichSymbol(pos: Position) =
     board.openFields.get(pos) match
       case Some(value) =>
-        s" $value "
+        s"$value"
       case None =>
-        if board.flaggedFields.contains(pos) then " F "
-        else "[?]"
+        if board.flaggedFields.contains(pos) then "F"
+        else "?"
 
 object Game:
   def apply(width: Int = 9, height: Int = 9, minePercentage: Double = 0.15) =
