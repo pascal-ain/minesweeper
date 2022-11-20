@@ -76,9 +76,6 @@ class ControllerSpec extends AnyWordSpec {
       controllerToOpen.handleTrigger(controllerToOpen.openField, notMine)
       testOpen.bing shouldBe a[Event.Success]
 
-      controllerToOpen.handleTrigger(controllerToOpen.openField, notMine)
-      testOpen.bing shouldBe a[Event.InvalidPosition]
-
       val controllerToFlag = Controller(game)
       val testFlagging = TestObserver(controllerToFlag)
       testFlagging.bing shouldBe Event.Won
