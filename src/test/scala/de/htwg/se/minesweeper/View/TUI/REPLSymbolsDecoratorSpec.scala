@@ -20,6 +20,7 @@ class REPLSymbolsDecoratorSpec extends AnyWordSpec {
       val controller = new Controller(openStuff)
       val decorator =
         REPLSymbolsDecorator(controller, "l", "f", "K", (mines: Int) => "N")
+
       decorator.controller.toString
         .replaceAll("B", "l")
         .replaceAll("F", "f")

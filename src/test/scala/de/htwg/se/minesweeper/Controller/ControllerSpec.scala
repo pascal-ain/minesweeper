@@ -8,6 +8,10 @@ import de.htwg.se.minesweeper.Util.*
 
 class ControllerSpec extends AnyWordSpec {
   "The controller acts as a middleman between view and model and" should {
+    class TestObserver(c: Controller) extends Observer:
+      c.add(this)
+      var bing = Event.Won
+      def update(e: Event): Unit = bing = e
     "tell the view about success or possible errors" in {
       val game = Game(9, 9, 0.25)
       val controller = new Controller(game)
@@ -53,10 +57,6 @@ class ControllerSpec extends AnyWordSpec {
     "notify Observers" in {
       val game = Game(10, 10, 0.2)
       val controllerToOpen = new Controller(game)
-      class TestObserver(c: Controller) extends Observer:
-        c.add(this)
-        var bing = Event.Won
-        def update(e: Event): Unit = bing = e
 
       val testOpen = TestObserver(controllerToOpen)
       testOpen.bing should be(Event.Won)
@@ -94,6 +94,19 @@ class ControllerSpec extends AnyWordSpec {
 
       controllerToFlag.handleTrigger(controllerToFlag.openField, Position(1, 1))
       testFlagging.bing shouldBe a[Event.InvalidPosition]
+    }
+    "hold a vector of subscribers that can be added or removed" in {
+      val game = Game(9, 12, 0.3)
+      val controller = new Controller(game)
+      val test = new TestObserver(controller)
+      val initEvent = test.bing
+      controller.handleTrigger(controller.openField, Position(0, 0))
+      val afterOpen = test.bing
+      initEvent shouldNot be(afterOpen)
+
+      controller.remove(test)
+      controller.handleTrigger(controller.openField, Position(0, 0))
+      test.bing shouldBe afterOpen // unsubbed the observer so it shouldn't get new messages
     }
   }
 }

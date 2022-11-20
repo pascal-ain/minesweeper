@@ -9,25 +9,25 @@ final case class Game(bounds: Bounds, state: State, board: Board):
     else InsertResult.Success(canOpen(pos))
 
   def canOpen(pos: Position): Game =
-    val mines = board.surroundingMines(pos, bounds)
+    val mines = board.surroundingMines(pos)
     val newGame =
       if board.mines.contains(pos) then
         copy(board = revealAllMines, state = State.Lost)
       else if mines != 0 then copy(board = updateOpenFields(pos))
-      else recursiveOpen(this, board.getSurroundingPositions(pos, bounds))
+      else recursiveOpen(this, board.getSurroundingPositions(pos))
     won(newGame)
 
   def recursiveOpen(game: Game, toOpen: Iterator[Position]): Game =
     toOpen.nextOption() match
       case None => game
       case Some(pos) =>
-        val mines = game.board.surroundingMines(pos, game.bounds)
+        val mines = game.board.surroundingMines(pos)
         if mines != 0 then recursiveOpen(game.canOpen(pos), toOpen)
         else
           recursiveOpen(
             game.copy(board = game.updateOpenFields(pos)),
             toOpen
-              .concat(game.board.getSurroundingPositions(pos, game.bounds))
+              .concat(game.board.getSurroundingPositions(pos))
               .withFilter(!game.board.openFields.contains(_))
               .distinct
           )
@@ -37,7 +37,7 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       board.openFields.updated(
         pos,
         if board.mines.contains(pos) then 'B'
-        else board.surroundingMines(pos, bounds)
+        else board.surroundingMines(pos)
       )
     )
 
@@ -81,13 +81,7 @@ object Game:
     new Game(
       Bounds(width, height),
       State.OnGoing,
-      Board(
-        generateRandomPositions(
-          (width * height * minePercentage).toInt,
-          width,
-          height
-        )
-      )
+      Board((width * height * minePercentage).toInt, Bounds(width, height))
     )
 
 def won(game: Game) =

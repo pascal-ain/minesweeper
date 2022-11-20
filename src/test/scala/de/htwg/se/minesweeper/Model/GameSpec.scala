@@ -67,7 +67,7 @@ class GameSpec extends AnyWordSpec {
       game1
         .canOpen(open1)
         .whichSymbol(open1) shouldBe game1.board
-        .surroundingMines(open1, game1.bounds)
+        .surroundingMines(open1)
         .toString
 
       val safeFields2 =
@@ -76,10 +76,7 @@ class GameSpec extends AnyWordSpec {
       game2
         .canOpen(open2)
         .whichSymbol(open2) shouldBe game2.board
-        .surroundingMines(
-          open2,
-          game2.bounds
-        )
+        .surroundingMines(open2)
         .toString()
     }
     s"be a '$flagSymbol' when it got flagged" in {
@@ -108,7 +105,7 @@ class GameSpec extends AnyWordSpec {
       val bigGame = Game(20, 20, 0.1)
       val safeField = Helper
         .getAllPositions(bigGame)
-        .filter(bigGame.board.surroundingMines(_, bigGame.bounds) == 0)
+        .filter(bigGame.board.surroundingMines(_) == 0)
         .next()
       bigGame.canOpen(safeField).board.openFields.size should be >= 3
     }

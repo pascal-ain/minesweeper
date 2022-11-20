@@ -5,13 +5,11 @@ import scala.util.Random
 final case class Board(
     openFields: Map[Position, Int | 'B'],
     mines: Set[Position],
-    flaggedFields: Set[Position]
+    flaggedFields: Set[Position],
+    bounds: Bounds
 ):
 
-  def getSurroundingPositions(
-      pos: Position,
-      bounds: Bounds
-  ): Iterator[Position] =
+  def getSurroundingPositions(pos: Position): Iterator[Position] =
     val (x, y) = (pos.x, pos.y)
     val (width, height) = (bounds.width, bounds.height)
     /* from max(x - 1, 1) - 1 to min(x + 1, width - 1)
@@ -29,14 +27,15 @@ final case class Board(
       .filterNot(_ == pos) // exclude input pos
       .iterator
 
-  def surroundingMines(pos: Position, bounds: Bounds) =
-    getSurroundingPositions(pos, bounds).count(mines.contains(_))
+  def surroundingMines(pos: Position) =
+    getSurroundingPositions(pos).count(mines.contains(_))
 
 object Board:
-  def apply(mines: Set[Position]) =
-    new Board(Map.empty, mines, Set.empty)
+  def apply(mines: Int, bounds: Bounds) =
+    generateRandomPositions(mines, bounds)
 
-def generateRandomPositions(howMany: Int, width: Int, height: Int) =
+def generateRandomPositions(howMany: Int, bounds: Bounds) =
+  val (width, height) = (bounds.width, bounds.height)
   require(width * height > howMany)
   def recur(iteration: Int, accum: Set[Position]): Set[Position] =
     iteration match
@@ -47,4 +46,4 @@ def generateRandomPositions(howMany: Int, width: Int, height: Int) =
         if accum.contains(Position(x, y)) then recur(iteration, accum)
         else recur(iteration - 1, accum.incl(Position(x, y)))
       }
-  recur(howMany, Set.empty)
+  new Board(Map.empty, recur(howMany, Set.empty), Set.empty, bounds)
