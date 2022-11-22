@@ -15,7 +15,9 @@ class Controller(var game: Game) extends Observable:
     val result = handlePosition(pos) match
       case InsertResult.Success(value) => game = value; state
       case InsertResult.NotInBounds =>
-        Event.InvalidPosition(s"Not in bounds of width: $x and height: $y")
+        Event.InvalidPosition(
+          s"Not in bounds of width: ${x - 1} and height: ${y - 1}"
+        )
       case InsertResult.AlreadyOpen =>
         Event.InvalidPosition("This field is already revealed")
       case InsertResult.Flagged =>

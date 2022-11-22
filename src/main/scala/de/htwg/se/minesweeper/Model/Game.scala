@@ -14,7 +14,7 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       if board.mines.contains(pos) then
         copy(board = revealAllMines, state = State.Lost)
       else if mines != 0 then copy(board = updateOpenFields(pos))
-      else recursiveOpen(this, board.getSurroundingPositions(pos))
+      else recursiveOpen(copy(board = updateOpenFields(pos)), board.getSurroundingPositions(pos))
     won(newGame)
 
   def recursiveOpen(game: Game, toOpen: Iterator[Position]): Game =
@@ -82,6 +82,12 @@ object Game:
       Bounds(width, height),
       State.OnGoing,
       Board((width * height * minePercentage).toInt, Bounds(width, height))
+    )
+  def apply(width: Int, height: Int, mines: Int) =
+    new Game(
+      Bounds(width, height),
+      State.OnGoing,
+      Board(mines, Bounds(width, height))
     )
 
 def won(game: Game) =
