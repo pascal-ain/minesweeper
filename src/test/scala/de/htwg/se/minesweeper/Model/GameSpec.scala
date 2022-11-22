@@ -109,6 +109,22 @@ class GameSpec extends AnyWordSpec {
         .next()
       bigGame.canOpen(safeField).board.openFields.size should be >= 3
     }
+    "put a mine char or the number of surrounding mines at the position in the map" in {
+      val notMine =
+        game1.board.getAllPositions
+          .filterNot(game1.board.mines.contains(_))
+          .next()
+      game1.updateOpenFields(notMine).openFields should contain(
+        notMine -> game1.board.surroundingMines(notMine)
+      )
+
+      val mine = game1.board.getAllPositions
+        .filter(game1.board.mines.contains(_))
+        .next()
+      game1.updateOpenFields(mine).openFields should contain(
+        mine -> 'B'
+      )
+    }
   }
   "flagging fields" should {
     "handle error and success" in {
