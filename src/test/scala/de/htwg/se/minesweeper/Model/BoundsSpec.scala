@@ -17,6 +17,8 @@ class BoundsSpec extends AnyWordSpec {
       game1.bounds.isInBounds(Position(0, 0)) shouldBe true
       game1.bounds.isInBounds(Position(420, 1337)) shouldBe false
       game2.bounds.isInBounds(Position(12, 1)) shouldBe true
+      game1.bounds.isInBounds(Position(-1, 0)) shouldBe false
+      game1.bounds.isInBounds(Position(0, -20)) shouldBe false
     }
   }
 }
