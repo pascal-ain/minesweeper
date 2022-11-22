@@ -48,7 +48,12 @@ class BoardSpec extends AnyWordSpec {
     game1.board.surroundingMines(noMines) shouldBe 0
   }
   "have a method that gets all positions of the board" in {
-    game1.board.getAllPositions.length shouldBe 9 * 10
+    val game1Pos = game1.board.getAllPositions
+    game1Pos.length shouldBe 9 * 10
     game2.board.getAllPositions.length shouldBe 1 * 2
+
+    game1Pos.contains(Position(0, 0)) shouldBe true
+    game1Pos.contains(Position(1, 0)) shouldBe true
+    game1Pos.contains(Position(8, 9)) shouldBe true
   }
 }
