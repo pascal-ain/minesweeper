@@ -7,7 +7,7 @@ import de.htwg.se.minesweeper.Model.Game
 
 class GameStringDecoratorSpec extends AnyWordSpec {
   "The decorator interface has as default toString the value as the given controller" in {
-    class TestDecorator(override val controller: Controller)
+    class TestDecorator(controller: Controller)
         extends GameStringDecorator(controller)
 
     val controller = new Controller(Game(9, 12, 0.3))

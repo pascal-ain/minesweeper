@@ -6,17 +6,18 @@ import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 
-final case class REPLSymbolsDecorator(
-    override val controller: Controller,
+case class REPLSymbolsDecorator(
+    controller: Controller,
     mine: String,
     flag: String,
     closed: String,
     mineCount: Int => String
 ) extends GameStringDecorator(controller):
   override def toString(): String =
-    val eolArr = sys.props("line.separator").toCharArray()
-    controller
-      .toString()
+    overrideString(super.toString())
+
+  def overrideString(str: String) =
+    str
       .map[String](char =>
         char match
           case 'F'  => flag
