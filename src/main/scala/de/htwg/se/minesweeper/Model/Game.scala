@@ -14,7 +14,11 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       if board.mines.contains(pos) then
         copy(board = revealAllMines, state = State.Lost)
       else if mines != 0 then copy(board = updateOpenFields(pos))
-      else recursiveOpen(copy(board = updateOpenFields(pos)), board.getSurroundingPositions(pos))
+      else
+        recursiveOpen(
+          copy(board = updateOpenFields(pos)),
+          board.getSurroundingPositions(pos)
+        )
     won(newGame)
 
   def recursiveOpen(game: Game, toOpen: Iterator[Position]): Game =
@@ -58,13 +62,10 @@ final case class Game(bounds: Bounds, state: State, board: Board):
     board.copy(flaggedFields = flags)
 
   override def toString() =
-    (0 until bounds.height)
-      .flatMap(posy =>
-        (0 until bounds.width).map(posx =>
-          if posx == bounds.width - 1 then
-            whichSymbol(Position(posx, posy)) + "\n"
-          else whichSymbol(Position(posx, posy))
-        )
+    board.getAllPositions
+      .map(pos =>
+        if pos.x == bounds.width - 1 then whichSymbol(pos) + "\n"
+        else whichSymbol(pos)
       )
       .mkString
 
