@@ -1,11 +1,12 @@
 package de.htwg.se.minesweeper
 
-import de.htwg.se.minesweeper.Model.Game
-import de.htwg.se.minesweeper.View.TUI.*
+import scala.util.{Success, Failure}
+import de.htwg.se.minesweeper.View.ViewDirector
 
 // $COVERAGE-OFF$
-
 @main def run: Unit =
-  new REPL(Game()).run()
+  ViewDirector.constructDefaultTUI.build match
+    case Failure(exception) => println(exception)
+    case Success(value)     => value.run()
 
 // $COVERAGE-ON$

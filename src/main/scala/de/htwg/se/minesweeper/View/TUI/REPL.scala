@@ -1,33 +1,48 @@
 package de.htwg.se.minesweeper.View.TUI
+
 import de.htwg.se.minesweeper.Model.*
 import de.htwg.se.minesweeper.Controller.*
 import scala.io.StdIn.readLine
-import de.htwg.se.minesweeper.Util.{Observer, Event}
+import de.htwg.se.minesweeper.Util.{Observer, Event, MyApp}
 
-class REPL(controller: Controller) extends Observer:
-  def this(game: Game) = this(new Controller(game))
-
+class REPL(
+    controller: Controller,
+    mineSymbol: String,
+    flagSymbol: String,
+    closedFieldSymbol: String,
+    scoreSymbols: Int => String
+) extends MyApp(
+      controller,
+      flagSymbol,
+      mineSymbol,
+      closedFieldSymbol,
+      scoreSymbols
+    ):
   controller.add(this)
 
   val eol = sys.props("line.separator")
   var state = () => runREPL()
 
-  def run() =
-    print(game())
+  override def run() =
+    print(gameString())
     runREPL()
 
   override def update(e: Event): Unit =
     e match
-      case Event.InvalidPosition(msg) => println(game() + eol + msg)
-      case Event.Won        => state = () => println(game() + eol + "You won!")
-      case Event.Lost       => state = () => println(game() + eol + "You lost!")
-      case Event.Success(_) => print(game())
+      case Event.InvalidPosition(msg) => println(gameString() + eol + msg)
+      case Event.Won  => state = () => println(gameString() + eol + "You won!")
+      case Event.Lost => state = () => println(gameString() + eol + "You lost!")
+      case Event.Success(_) => print(gameString())
 
-  def game() =
-    REPLSymbolsDecorator(controller, "💣", "🚩", "⬛", mineCount).toString()
-
-  def mineCount(mines: Int) =
-    s"${(0 until 9).map(num => s"${num.toString}\uFE0F\u20E3")(mines)} "
+  def gameString() =
+    REPLSymbolsDecorator(
+      controller,
+      mineSymbol,
+      flagSymbol,
+      closedFieldSymbol,
+      scoreSymbols
+    )
+      .toString()
 
   def runREPL(): Unit =
     print(">> ")
@@ -36,7 +51,7 @@ class REPL(controller: Controller) extends Observer:
     parseInput(input) match
       case None =>
         println(
-          s"${game()}${eol}Invalid command${eol}availabe commands:${eol}open <x,y>${eol}flag <x,y>${eol}quit, q or exit to end the game"
+          s"${gameString()}${eol}Invalid command${eol}availabe commands:${eol}open <x,y>${eol}flag <x,y>${eol}quit, q or exit to end the gameString"
         )
       case Some(operation, pos) => controller.handleTrigger(operation, pos)
     state()
