@@ -47,4 +47,8 @@ class BoardSpec extends AnyWordSpec {
         .next()
     game1.board.surroundingMines(noMines) shouldBe 0
   }
+  "have a method that gets all positions of the board" in {
+    game1.board.getAllPositions.length shouldBe 9 * 10
+    game2.board.getAllPositions.length shouldBe 1 * 2
+  }
 }

@@ -30,6 +30,11 @@ final case class Board(
   def surroundingMines(pos: Position) =
     getSurroundingPositions(pos).count(mines.contains(_))
 
+  def getAllPositions =
+    (0 until bounds.height)
+      .flatMap(posy => (0 until bounds.width).map(posx => Position(posx, posy)))
+      .iterator
+
 object Board:
   def apply(mines: Int, bounds: Bounds) =
     generateRandomPositions(mines, bounds)
