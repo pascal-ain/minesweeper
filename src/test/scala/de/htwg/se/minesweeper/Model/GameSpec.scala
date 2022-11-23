@@ -183,4 +183,35 @@ class GameSpec extends AnyWordSpec {
       game1.canOpen(notMines.next()).state shouldBe State.OnGoing
     }
   }
+  "Closing fields" should {
+    "work the same way as opening does, only difference is it will remove positions from openFields" in {
+      val game = Game(12, 12, 0.2)
+      var opened = game.canOpen(Position(0, 0))
+      opened.board.openFields.contains(Position(0, 0)) shouldBe true
+
+      opened
+        .closeField(Position(0, 0))
+        .board
+        .openFields
+        .contains(Position(0, 0)) shouldBe false
+
+      val mine = game.board.mines.toVector(0)
+      game.board.mines.contains(mine) shouldBe true
+      val lost = game.canOpen(mine)
+      lost.state shouldBe State.Lost
+      lost.board.mines.size shouldBe lost.board.openFields.size
+
+      val closeMine = lost.closeField(mine)
+      closeMine.state shouldBe State.OnGoing
+      closeMine.board.openFields.contains(mine) shouldBe false
+      closeMine.board.openFields.size shouldBe 0
+
+      val zeroMines = game.board.getAllPositions
+        .filter(game.board.surroundingMines(_) == 0)
+        .next()
+      val recursiveOpened = game.canOpen(zeroMines)
+      recursiveOpened.board.openFields.size should be > 3
+      recursiveOpened.closeField(zeroMines).board.openFields.size shouldBe 0
+    }
+  }
 }

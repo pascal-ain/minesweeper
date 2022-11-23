@@ -22,7 +22,6 @@ class REPL(
 
   val eol = sys.props("line.separator")
   var state = () => runREPL()
-
   override def run() =
     print(gameString())
     runREPL()

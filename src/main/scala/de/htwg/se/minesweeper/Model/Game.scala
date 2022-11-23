@@ -61,6 +61,42 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       else board.flaggedFields.incl(pos)
     board.copy(flaggedFields = flags)
 
+  def updateClosedFields(pos: Position) =
+    board.copy(openFields = board.openFields.removed(pos))
+
+  def closeField(pos: Position) =
+    val mines = board.surroundingMines(pos)
+    val newGame =
+      if board.mines.contains(pos) then
+        copy(board = closeAllMines, state = State.OnGoing)
+      else if mines != 0 then copy(board = updateClosedFields(pos))
+      else
+        recursiveClose(
+          copy(board = updateClosedFields(pos)),
+          board.getSurroundingPositions(pos)
+        )
+    won(newGame)
+
+  def recursiveClose(game: Game, toClose: Iterator[Position]): Game =
+    toClose.nextOption() match
+      case None => game
+      case Some(pos) =>
+        val mines = game.board.surroundingMines(pos)
+        if mines != 0 then recursiveClose(game.closeField(pos), toClose)
+        else
+          recursiveClose(
+            game.copy(board = game.updateClosedFields(pos)),
+            toClose
+              .concat(game.board.getSurroundingPositions(pos))
+              .withFilter(game.board.openFields.contains(_))
+              .distinct
+          )
+
+  def closeAllMines: Board =
+    board.mines.iterator.foldLeft(board)((iteration, pos) =>
+      iteration.copy(openFields = iteration.openFields.removed(pos))
+    )
+
   override def toString() =
     board.getAllPositions
       .map(pos =>
