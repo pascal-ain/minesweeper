@@ -145,7 +145,40 @@ class ControllerSpec extends AnyWordSpec {
       observing.bing shouldBe a[Event.Success]
       controller.handleTrigger(controller.redo)
       observing.bing shouldBe a[Event.Success]
+    }
+    "change the state correctly on redo and undo" in {
+      var game = Game(9, 11, 0.2)
+      val controller = new Controller(game)
 
+      val mine = game.board.mines.iterator.next()
+      controller.handleTrigger(controller.openField, mine)
+      controller.state shouldBe Event.Lost
+
+      controller.handleTrigger(controller.undo)
+      controller.state shouldBe a[Event.Success]
+      controller.handleTrigger(controller.redo)
+      controller.state shouldBe Event.Lost
+
+      controller.handleTrigger(controller.undo)
+      val notMines =
+        game.board.getAllPositions
+          .filterNot(game.board.mines.contains(_))
+          .drop(1)
+      val almostWon = Helper.openFields(game, notMines)
+      val missingField = almostWon.board.getAllPositions
+        .filter(pos =>
+          !game.board.mines.contains(pos) && !game.board.openFields
+            .contains(pos)
+        )
+        .next()
+
+      val win = new Controller(almostWon)
+      win.handleTrigger(win.openField, missingField)
+      win.state shouldBe Event.Won
+      win.handleTrigger(win.undo)
+      win.state shouldBe a[Event.Success]
+      win.handleTrigger(win.redo)
+      win.state shouldBe Event.Won
     }
   }
 }

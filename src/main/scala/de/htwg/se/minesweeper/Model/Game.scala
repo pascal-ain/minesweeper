@@ -67,15 +67,14 @@ final case class Game(bounds: Bounds, state: State, board: Board):
   def closeField(pos: Position) =
     val mines = board.surroundingMines(pos)
     val newGame =
-      if board.mines.contains(pos) then
-        copy(board = closeAllMines, state = State.OnGoing)
+      if board.mines.contains(pos) then copy(board = closeAllMines)
       else if mines != 0 then copy(board = updateClosedFields(pos))
       else
         recursiveClose(
           copy(board = updateClosedFields(pos)),
           board.getSurroundingPositions(pos)
         )
-    won(newGame)
+    newGame.copy(state = State.OnGoing)
 
   def recursiveClose(game: Game, toClose: Iterator[Position]): Game =
     toClose.nextOption() match
