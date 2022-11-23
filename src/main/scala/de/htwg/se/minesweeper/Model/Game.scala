@@ -53,9 +53,9 @@ final case class Game(bounds: Bounds, state: State, board: Board):
   def flagField(pos: Position) =
     if !bounds.isInBounds(pos) then InsertResult.NotInBounds
     else if board.openFields.contains(pos) then InsertResult.AlreadyOpen
-    else InsertResult.Success(copy(board = toggle(pos)))
+    else InsertResult.Success(copy(board = toggleFlag(pos)))
 
-  def toggle(pos: Position) =
+  def toggleFlag(pos: Position) =
     val flags =
       if board.flaggedFields.contains(pos) then board.flaggedFields.excl(pos)
       else board.flaggedFields.incl(pos)
