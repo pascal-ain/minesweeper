@@ -82,10 +82,10 @@ class GameSpec extends AnyWordSpec {
     s"be a '$flagSymbol' when it got flagged" in {
       val flagField = Position(1, 1)
       game1
-        .copy(board = game1.toggleFlag(flagField))
+        .toggleFlag(flagField)
         .whichSymbol(flagField) shouldBe flagSymbol
       game2
-        .copy(board = game2.toggleFlag(flagField))
+        .toggleFlag(flagField)
         .whichSymbol(flagField) shouldBe flagSymbol
     }
   }
@@ -93,7 +93,7 @@ class GameSpec extends AnyWordSpec {
     "handle error and success" in {
       game1.openField(Position(1, 1)) shouldBe a[InsertResult.Success]
 
-      val flagged = game1.copy(board = game1.toggleFlag(Position(1, 1)))
+      val flagged = game1.toggleFlag(Position(1, 1))
       flagged.openField(Position(1, 1)) shouldBe InsertResult.Flagged
 
       game1.openField(Position(420, 1337)) shouldBe InsertResult.NotInBounds
@@ -135,14 +135,11 @@ class GameSpec extends AnyWordSpec {
         .flagField(Position(1, 1)) shouldBe InsertResult.AlreadyOpen
     }
     "has a toggling behaviour, flagged fields will get unflagged vice versa" in {
-      game1
-        .copy(board = game1.toggleFlag(Position(1, 1)))
-        .board
-        .flaggedFields
-        .size shouldBe 1
+      game1.toggleFlag(Position(1, 1)).board.flaggedFields.size shouldBe 1
       game2
-        .copy(board = game2.toggleFlag(Position(1, 2)))
         .toggleFlag(Position(1, 2))
+        .toggleFlag(Position(1, 2))
+        .board
         .flaggedFields
         .size shouldBe 0
     }

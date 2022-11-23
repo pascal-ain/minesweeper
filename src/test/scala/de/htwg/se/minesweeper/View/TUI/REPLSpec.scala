@@ -15,7 +15,7 @@ class REPLSpec extends AnyWordSpec {
       val closedSymbol = "O"
       def scoreSymbols(x: Int) = "N"
 
-      val flagged = game.copy(board = game.toggleFlag(Position(0, 0)))
+      val flagged = game.toggleFlag(Position(0, 0))
       val openStuff = Helper.openFields(
         flagged,
         flagged.board.getAllPositions

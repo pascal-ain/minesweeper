@@ -10,7 +10,7 @@ class REPLSymbolsDecoratorSpec extends AnyWordSpec {
   val game = Game(10, 12, 0.2)
   "The decorator" should {
     "help with replacing the model's symbols with the caller's wanted replacements" in {
-      val flagged = game.copy(board = game.toggleFlag(Position(0, 0)))
+      val flagged = game.toggleFlag(Position(0, 0))
       val openStuff = Helper.openFields(
         flagged,
         flagged.board.getAllPositions
