@@ -28,7 +28,7 @@ class REPL(
 
   override def update(e: Event): Unit =
     e match
-      case Event.InvalidPosition(msg) => println(gameString() + eol + msg)
+      case Event.Failure(msg) => println(gameString() + eol + msg)
       case Event.Won  => state = () => println(gameString() + eol + "You won!")
       case Event.Lost => state = () => println(gameString() + eol + "You lost!")
       case Event.Success(_) => print(gameString())

@@ -2,7 +2,7 @@ package de.htwg.se.minesweeper.Controller
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
-import scala.collection.immutable.HashSet
+
 import de.htwg.se.minesweeper.Model.*
 import de.htwg.se.minesweeper.Util.*
 
@@ -23,13 +23,14 @@ class ControllerSpec extends AnyWordSpec {
       controller
         .openField(Position(0, 1)) shouldBe a[InsertResult.Success]
 
-      controller.handleTrigger(controller.openField, Position(0, 1))
+      val notMine =
+        game.board.getAllPositions.filterNot(game.board.mines.contains(_)).next
+      controller.handleTrigger(controller.openField, notMine)
       controller.flagField(
-        Position(0, 1)
+        notMine
       ) shouldBe InsertResult.AlreadyOpen
 
-      val flagged = new Controller(game)
-      flagged.handleTrigger(flagged.flagField, Position(0, 0))
+      val flagged = game.toggleFlag(Position(0, 0))
       flagged.openField(Position(0, 0)) shouldBe InsertResult.Flagged
     }
     "tell the view about a state change in the game" in {
@@ -65,7 +66,7 @@ class ControllerSpec extends AnyWordSpec {
         controllerToOpen.openField,
         Position(11, 11)
       )
-      testOpen.bing shouldBe a[Event.InvalidPosition]
+      testOpen.bing shouldBe a[Event.Failure]
 
       val notMine =
         Helper
@@ -84,13 +85,13 @@ class ControllerSpec extends AnyWordSpec {
         controllerToFlag.flagField,
         Position(1337, 1)
       )
-      testFlagging.bing shouldBe a[Event.InvalidPosition]
+      testFlagging.bing shouldBe a[Event.Failure]
 
       controllerToFlag.handleTrigger(controllerToFlag.flagField, Position(1, 1))
       testFlagging.bing shouldBe a[Event.Success]
 
       controllerToFlag.handleTrigger(controllerToFlag.openField, Position(1, 1))
-      testFlagging.bing shouldBe a[Event.InvalidPosition]
+      testFlagging.bing shouldBe a[Event.Failure]
     }
     "hold a vector of subscribers that can be added or removed" in {
       val game = Game(9, 12, 0.3)
@@ -104,6 +105,47 @@ class ControllerSpec extends AnyWordSpec {
       controller.remove(test)
       controller.handleTrigger(controller.openField, Position(0, 0))
       test.bing shouldBe afterOpen // unsubbed the observer so it shouldn't get new messages
+    }
+    "undo or redo and report about possible errors" in {
+      var game = Game(9, 11, 0.2)
+      val controller = new Controller(game)
+
+      // nothing to redo or undo at the beginning
+      controller.undo shouldBe Left(Undo)
+      controller.redo shouldBe Left(Redo)
+
+      val notMine = game.board.getAllPositions
+        .filterNot(game.board.mines.contains(_))
+        .next()
+      val observing = new TestObserver(controller)
+      controller.handleTrigger(controller.openField, notMine)
+      observing.bing shouldBe a[Event.Success]
+
+      controller.handleTrigger(controller.redo)
+      observing.bing shouldBe a[Event.Failure]
+
+      controller.handleTrigger(controller.undo)
+      observing.bing shouldBe a[Event.Success]
+      controller.handleTrigger(controller.undo)
+      observing.bing shouldBe a[Event.Failure]
+
+      controller.handleTrigger(controller.redo)
+      observing.bing shouldBe a[Event.Success]
+
+      controller.handleTrigger(controller.undo)
+      observing.bing shouldBe a[Event.Success]
+
+      controller.handleTrigger(controller.flagField, Position(1, 1))
+      observing.bing shouldBe a[Event.Success]
+
+      controller.handleTrigger(controller.redo)
+      observing.bing shouldBe a[Event.Failure]
+
+      controller.handleTrigger(controller.undo)
+      observing.bing shouldBe a[Event.Success]
+      controller.handleTrigger(controller.redo)
+      observing.bing shouldBe a[Event.Success]
+
     }
   }
 }

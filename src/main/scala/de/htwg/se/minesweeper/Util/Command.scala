@@ -2,15 +2,20 @@ package de.htwg.se.minesweeper.Util
 
 import scala.collection.mutable.Stack
 import scala.util.Try
+import scala.util.{Either, Left => Err, Right => Ok}
 
 implicit class StackWithOption[T](val stack: Stack[T]):
   def popOption: Option[T] = Try(
     stack.pop()
   ).toOption // why is this not in the stdlib?
 
+// For the caller to pattern match
+abstract class Which
+object Redo extends Which
+object Undo extends Which
+
 trait Command[T]:
   def stepOn(t: T): T
-  // tell if something even happened
   def undoStep(t: T): T
   def redoStep(t: T): T
 
@@ -21,21 +26,21 @@ class UndoManager[T]:
 
   def doStep(model: T, command: Command[T]): T =
     toRedoStack =
-      Stack.empty // doing something makes previous undos in the redoStack invalid
+      Stack.empty // doing something makes values in the redoStack invalid
     toUndoStack.push(command) // save the history of steps
-    command.stepOn(model)
+    command.stepOn(model) // do the command and return the result
 
-  def undoStep(model: T): Option[T] =
+  def undoStep(model: T): Either[Which, T] =
     toUndoStack.popOption match
-      case None => None
+      case None => Err(Undo)
       case Some(command) => {
         toRedoStack.push(command)
-        Some(command.undoStep(model))
+        Ok(command.undoStep(model))
       }
-  def redoStep(model: T): Option[T] =
+  def redoStep(model: T): Either[Which, T] =
     toRedoStack.popOption match
-      case None => None
+      case None => Err(Redo)
       case Some(command) => {
         toUndoStack.push(command)
-        Some(command.redoStep(model))
+        Ok(command.redoStep(model))
       }
