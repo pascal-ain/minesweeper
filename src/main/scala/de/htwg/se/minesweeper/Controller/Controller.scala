@@ -22,7 +22,7 @@ class Controller(var game: Game) extends Observable:
 
   def handleTrigger(handlePosition: Position => InsertResult, pos: Position) =
     val result = handlePosition(pos) match
-      case InsertResult.Success(value) => game = value; state
+      case InsertResult.Success(success) => game = success; state
       case InsertResult.NotInBounds =>
         Event.Failure(
           s"Not in bounds of width: ${x - 1} and height: ${y - 1}."
@@ -33,8 +33,8 @@ class Controller(var game: Game) extends Observable:
         Event.Failure("This field has been flagged.")
     notifyObservers(result)
 
-  def handleTrigger(undoRedo: => Either[Which, Game]) =
-    val result = undoRedo match
+  def handleTrigger(undoRedo: () => Either[Which, Game]) =
+    val result = undoRedo() match
       case Ok(success) => game = success; state
       case Err(failure) =>
         failure match
@@ -43,28 +43,26 @@ class Controller(var game: Game) extends Observable:
     notifyObservers(result)
 
   def openField(pos: Position): InsertResult =
-    val result = game.openField(pos)
-    result match
-      case InsertResult.Success(_) =>
+    game.canOpen_?(pos) match
+      case true =>
         InsertResult.Success(
-          undoManager.doStep(this.game, ActionCommand(pos, Action.Open))
+          undoManager.doStep(game, ActionCommand(pos, Action.Open))
         )
-      case _ => result
+      case error: InsertResult => error
 
   def flagField(pos: Position): InsertResult =
-    val result = game.flagField(pos)
-    result match
-      case InsertResult.Success(_) =>
+    game.canFlag_?(pos) match
+      case true =>
         InsertResult.Success(
-          undoManager.doStep(this.game, ActionCommand(pos, Action.Flag))
+          undoManager.doStep(game, ActionCommand(pos, Action.Flag))
         )
-      case _ => result
+      case error: InsertResult => error
 
-  def undo: Either[Which, Game] = undoManager.undoStep(game)
-  def redo: Either[Which, Game] = undoManager.redoStep(game)
+  def undo(): Either[Which, Game] = undoManager.undoStep(game)
+  def redo(): Either[Which, Game] = undoManager.redoStep(game)
 
   def state: Event =
     game.state match
       case State.Won     => Event.Won
       case State.Lost    => Event.Lost
-      case State.OnGoing => Event.Success(game)
+      case State.OnGoing => Event.Success

@@ -2,13 +2,13 @@ package de.htwg.se.minesweeper.Model
 
 // The state of the game
 final case class Game(bounds: Bounds, state: State, board: Board):
-  def openField(pos: Position): InsertResult =
+  def canOpen_?(pos: Position): InsertResult | true =
     if !bounds.isInBounds(pos) then InsertResult.NotInBounds
     else if board.openFields.contains(pos) then InsertResult.AlreadyOpen
     else if board.flaggedFields.contains(pos) then InsertResult.Flagged
-    else InsertResult.Success(canOpen(pos))
+    else true
 
-  def canOpen(pos: Position): Game =
+  def openField(pos: Position): Game =
     val mines = board.surroundingMines(pos)
     val newGame =
       if board.mines.contains(pos) then
@@ -26,7 +26,7 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       case None => game
       case Some(pos) =>
         val mines = game.board.surroundingMines(pos)
-        if mines != 0 then recursiveOpen(game.canOpen(pos), toOpen)
+        if mines != 0 then recursiveOpen(game.openField(pos), toOpen)
         else
           recursiveOpen(
             game.copy(board = game.updateOpenFields(pos)),
@@ -50,51 +50,16 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       iteration.copy(openFields = iteration.openFields.updated(pos, 'B'))
     )
 
-  def flagField(pos: Position) =
+  def canFlag_?(pos: Position): InsertResult | true =
     if !bounds.isInBounds(pos) then InsertResult.NotInBounds
     else if board.openFields.contains(pos) then InsertResult.AlreadyOpen
-    else InsertResult.Success(toggleFlag(pos))
+    else true
 
-  def toggleFlag(pos: Position) =
+  def flagField(pos: Position) =
     val flags =
       if board.flaggedFields.contains(pos) then board.flaggedFields.excl(pos)
       else board.flaggedFields.incl(pos)
     copy(board = board.copy(flaggedFields = flags))
-
-  def updateClosedFields(pos: Position) =
-    board.copy(openFields = board.openFields.removed(pos))
-
-  def closeField(pos: Position) =
-    val mines = board.surroundingMines(pos)
-    val newGame =
-      if board.mines.contains(pos) then copy(board = closeAllMines)
-      else if mines != 0 then copy(board = updateClosedFields(pos))
-      else
-        recursiveClose(
-          copy(board = updateClosedFields(pos)),
-          board.getSurroundingPositions(pos)
-        )
-    newGame.copy(state = State.OnGoing)
-
-  def recursiveClose(game: Game, toClose: Iterator[Position]): Game =
-    toClose.nextOption() match
-      case None => game
-      case Some(pos) =>
-        val mines = game.board.surroundingMines(pos)
-        if mines != 0 then recursiveClose(game.closeField(pos), toClose)
-        else
-          recursiveClose(
-            game.copy(board = game.updateClosedFields(pos)),
-            toClose
-              .concat(game.board.getSurroundingPositions(pos))
-              .withFilter(game.board.openFields.contains(_))
-              .distinct
-          )
-
-  def closeAllMines: Board =
-    board.mines.iterator.foldLeft(board)((iteration, pos) =>
-      iteration.copy(openFields = iteration.openFields.removed(pos))
-    )
 
   override def toString() =
     board.getAllPositions

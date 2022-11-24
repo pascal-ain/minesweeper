@@ -30,8 +30,8 @@ class ControllerSpec extends AnyWordSpec {
         notMine
       ) shouldBe InsertResult.AlreadyOpen
 
-      val flagged = game.toggleFlag(Position(0, 0))
-      flagged.openField(Position(0, 0)) shouldBe InsertResult.Flagged
+      val flagged = game.flagField(Position(0, 0))
+      flagged.canOpen_?(Position(0, 0)) shouldBe InsertResult.Flagged
     }
     "tell the view about a state change in the game" in {
       val game = Game(10, 10, 0.2)
@@ -40,7 +40,7 @@ class ControllerSpec extends AnyWordSpec {
       val won_game = Helper.openFields(game, notMines)
       val controller = new Controller(won_game)
       val result = new Controller(game).state
-      result shouldBe a[Event.Success]
+      result shouldBe Event.Success
 
       controller.state shouldBe Event.Won
       controller.handleTrigger(
@@ -75,7 +75,7 @@ class ControllerSpec extends AnyWordSpec {
           .next()
 
       controllerToOpen.handleTrigger(controllerToOpen.openField, notMine)
-      testOpen.bing shouldBe a[Event.Success]
+      testOpen.bing shouldBe Event.Success
 
       val controllerToFlag = Controller(game)
       val testFlagging = TestObserver(controllerToFlag)
@@ -88,7 +88,7 @@ class ControllerSpec extends AnyWordSpec {
       testFlagging.bing shouldBe a[Event.Failure]
 
       controllerToFlag.handleTrigger(controllerToFlag.flagField, Position(1, 1))
-      testFlagging.bing shouldBe a[Event.Success]
+      testFlagging.bing shouldBe Event.Success
 
       controllerToFlag.handleTrigger(controllerToFlag.openField, Position(1, 1))
       testFlagging.bing shouldBe a[Event.Failure]
@@ -111,40 +111,57 @@ class ControllerSpec extends AnyWordSpec {
       val controller = new Controller(game)
 
       // nothing to redo or undo at the beginning
-      controller.undo shouldBe Left(Undo)
-      controller.redo shouldBe Left(Redo)
+      controller.undo() shouldBe Left(Undo)
+      controller.redo() shouldBe Left(Redo)
 
       val notMine = game.board.getAllPositions
         .filterNot(game.board.mines.contains(_))
         .next()
       val observing = new TestObserver(controller)
       controller.handleTrigger(controller.openField, notMine)
-      observing.bing shouldBe a[Event.Success]
+      observing.bing shouldBe Event.Success
 
       controller.handleTrigger(controller.redo)
       observing.bing shouldBe a[Event.Failure]
 
       controller.handleTrigger(controller.undo)
-      observing.bing shouldBe a[Event.Success]
+      observing.bing shouldBe Event.Success
       controller.handleTrigger(controller.undo)
       observing.bing shouldBe a[Event.Failure]
 
       controller.handleTrigger(controller.redo)
-      observing.bing shouldBe a[Event.Success]
+      observing.bing shouldBe Event.Success
 
       controller.handleTrigger(controller.undo)
-      observing.bing shouldBe a[Event.Success]
+      observing.bing shouldBe Event.Success
 
       controller.handleTrigger(controller.flagField, Position(1, 1))
-      observing.bing shouldBe a[Event.Success]
+      observing.bing shouldBe Event.Success
 
       controller.handleTrigger(controller.redo)
       observing.bing shouldBe a[Event.Failure]
 
       controller.handleTrigger(controller.undo)
-      observing.bing shouldBe a[Event.Success]
+      observing.bing shouldBe Event.Success
       controller.handleTrigger(controller.redo)
-      observing.bing shouldBe a[Event.Success]
+      observing.bing shouldBe Event.Success
+    }
+    "only undo the previous opened fields" in {
+      val game = Game(20, 20, 0.2)
+      val modified =
+        game.copy(board =
+          game.board.copy(mines = Set(Position(0, 0), Position(4, 4)))
+        )
+      val controller = new Controller(modified)
+      val notMine = Position(1, 1)
+      val zeroField = Position(9, 9)
+      controller.handleTrigger(controller.openField, notMine)
+      controller.game.board.openFields.contains(notMine) shouldBe true
+
+      controller.handleTrigger(controller.openField, zeroField)
+      controller.handleTrigger(controller.undo)
+      controller.game.board.openFields.contains(notMine) shouldBe true
+      controller.game.board.openFields.contains(zeroField) shouldBe false
     }
     "change the state correctly on redo and undo" in {
       var game = Game(9, 11, 0.2)
@@ -155,28 +172,28 @@ class ControllerSpec extends AnyWordSpec {
       controller.state shouldBe Event.Lost
 
       controller.handleTrigger(controller.undo)
-      controller.state shouldBe a[Event.Success]
+      controller.state shouldBe Event.Success
       controller.handleTrigger(controller.redo)
       controller.state shouldBe Event.Lost
 
       controller.handleTrigger(controller.undo)
-      val notMines =
-        game.board.getAllPositions
-          .filterNot(game.board.mines.contains(_))
-          .drop(1)
-      val almostWon = Helper.openFields(game, notMines)
-      val missingField = almostWon.board.getAllPositions
-        .filter(pos =>
-          !game.board.mines.contains(pos) && !game.board.openFields
-            .contains(pos)
+
+      val modified = game.copy(board =
+        game.board.copy(mines = Set(Position(0, 0), Position(1, 1)))
+      )
+      val missingField = Position(0, 1)
+      val almostWon = Helper.openFields(
+        modified,
+        modified.board.getAllPositions.filter(pos =>
+          !modified.board.mines.contains(pos) && pos != missingField
         )
-        .next()
+      )
 
       val win = new Controller(almostWon)
       win.handleTrigger(win.openField, missingField)
       win.state shouldBe Event.Won
       win.handleTrigger(win.undo)
-      win.state shouldBe a[Event.Success]
+      win.state shouldBe Event.Success
       win.handleTrigger(win.redo)
       win.state shouldBe Event.Won
     }

@@ -9,4 +9,4 @@ object Helper:
       .iterator
 
   def openFields(game: Game, toOpen: Iterator[Position]): Game =
-    toOpen.foldLeft[Game](game)((iteration, pos) => iteration.canOpen(pos))
+    toOpen.foldLeft[Game](game)((iteration, pos) => iteration.openField(pos))

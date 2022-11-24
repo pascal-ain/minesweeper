@@ -56,16 +56,16 @@ class GameSpec extends AnyWordSpec {
     }
     s"be a '$mineSymbol' when the opened field was a mine" in {
       val mine1 = game1.board.mines.toVector(0)
-      game1.canOpen(mine1).whichSymbol(mine1) shouldBe mineSymbol
+      game1.openField(mine1).whichSymbol(mine1) shouldBe mineSymbol
       val mine2 = game2.board.mines.toVector(0)
-      game2.canOpen(mine2).whichSymbol(mine2) shouldBe mineSymbol
+      game2.openField(mine2).whichSymbol(mine2) shouldBe mineSymbol
     }
     "be the number of surrounding mines when it is revealed" in {
       val safeFields1 =
         Helper.getAllPositions(game1).filterNot(game1.board.mines.contains(_))
       val open1 = safeFields1.next()
       game1
-        .canOpen(open1)
+        .openField(open1)
         .whichSymbol(open1) shouldBe game1.board
         .surroundingMines(open1)
         .toString
@@ -74,7 +74,7 @@ class GameSpec extends AnyWordSpec {
         Helper.getAllPositions(game2).filterNot(game2.board.mines.contains(_))
       val open2 = safeFields2.next
       game2
-        .canOpen(open2)
+        .openField(open2)
         .whichSymbol(open2) shouldBe game2.board
         .surroundingMines(open2)
         .toString()
@@ -82,24 +82,24 @@ class GameSpec extends AnyWordSpec {
     s"be a '$flagSymbol' when it got flagged" in {
       val flagField = Position(1, 1)
       game1
-        .toggleFlag(flagField)
+        .flagField(flagField)
         .whichSymbol(flagField) shouldBe flagSymbol
       game2
-        .toggleFlag(flagField)
+        .flagField(flagField)
         .whichSymbol(flagField) shouldBe flagSymbol
     }
   }
   "Opening fields" should {
     "handle error and success" in {
-      game1.openField(Position(1, 1)) shouldBe a[InsertResult.Success]
+      game1.canOpen_?(Position(1, 1)) shouldBe true
 
-      val flagged = game1.toggleFlag(Position(1, 1))
-      flagged.openField(Position(1, 1)) shouldBe InsertResult.Flagged
+      val flagged = game1.flagField(Position(1, 1))
+      flagged.canOpen_?(Position(1, 1)) shouldBe InsertResult.Flagged
 
-      game1.openField(Position(420, 1337)) shouldBe InsertResult.NotInBounds
+      game1.canOpen_?(Position(420, 1337)) shouldBe InsertResult.NotInBounds
       game1
-        .canOpen(Position(0, 0))
-        .openField(Position(0, 0)) shouldBe InsertResult.AlreadyOpen
+        .openField(Position(0, 0))
+        .canOpen_?(Position(0, 0)) shouldBe InsertResult.AlreadyOpen
     }
     "with 0 surrounding mines open its neighbors" in {
       val bigGame = Game(20, 20, 0.1)
@@ -107,7 +107,7 @@ class GameSpec extends AnyWordSpec {
         .getAllPositions(bigGame)
         .filter(bigGame.board.surroundingMines(_) == 0)
         .next()
-      bigGame.canOpen(safeField).board.openFields.size should be >= 3
+      bigGame.openField(safeField).board.openFields.size should be >= 3
     }
     "put a mine char or the number of surrounding mines at the position in the map" in {
       val notMine =
@@ -128,17 +128,17 @@ class GameSpec extends AnyWordSpec {
   }
   "flagging fields" should {
     "handle error and success" in {
-      game1.flagField(Position(1, 1)) shouldBe a[InsertResult.Success]
-      game2.flagField(Position(142, 1337)) shouldBe InsertResult.NotInBounds
+      game1.canFlag_?(Position(1, 1)) shouldBe true
+      game2.canFlag_?(Position(142, 1337)) shouldBe InsertResult.NotInBounds
       game3
-        .canOpen(Position(1, 1))
-        .flagField(Position(1, 1)) shouldBe InsertResult.AlreadyOpen
+        .openField(Position(1, 1))
+        .canFlag_?(Position(1, 1)) shouldBe InsertResult.AlreadyOpen
     }
     "has a toggling behaviour, flagged fields will get unflagged vice versa" in {
-      game1.toggleFlag(Position(1, 1)).board.flaggedFields.size shouldBe 1
+      game1.flagField(Position(1, 1)).board.flaggedFields.size shouldBe 1
       game2
-        .toggleFlag(Position(1, 2))
-        .toggleFlag(Position(1, 2))
+        .flagField(Position(1, 2))
+        .flagField(Position(1, 2))
         .board
         .flaggedFields
         .size shouldBe 0
@@ -154,7 +154,7 @@ class GameSpec extends AnyWordSpec {
     val notMines =
       Helper.getAllPositions(game1).filterNot(game1.board.mines.contains(_))
     val lostGame = game2
-      .canOpen(game2.board.mines.toVector(0))
+      .openField(game2.board.mines.toVector(0))
     "be no fields to open when won" in {
       Helper
         .getAllPositions(wonGame)
@@ -177,38 +177,7 @@ class GameSpec extends AnyWordSpec {
     "be neither lost or won when no mines are opened and there are still fields to open" in {
       val notMines =
         Helper.getAllPositions(game1).filterNot(game1.board.mines.contains(_))
-      game1.canOpen(notMines.next()).state shouldBe State.OnGoing
-    }
-  }
-  "Closing fields" should {
-    "work the same way as opening does, only difference is it will remove positions from openFields" in {
-      val game = Game(12, 12, 0.2)
-      var opened = game.canOpen(Position(0, 0))
-      opened.board.openFields.contains(Position(0, 0)) shouldBe true
-
-      opened
-        .closeField(Position(0, 0))
-        .board
-        .openFields
-        .contains(Position(0, 0)) shouldBe false
-
-      val mine = game.board.mines.toVector(0)
-      game.board.mines.contains(mine) shouldBe true
-      val lost = game.canOpen(mine)
-      lost.state shouldBe State.Lost
-      lost.board.mines.size shouldBe lost.board.openFields.size
-
-      val closeMine = lost.closeField(mine)
-      closeMine.state shouldBe State.OnGoing
-      closeMine.board.openFields.contains(mine) shouldBe false
-      closeMine.board.openFields.size shouldBe 0
-
-      val zeroMines = game.board.getAllPositions
-        .filter(game.board.surroundingMines(_) == 0)
-        .next()
-      val recursiveOpened = game.canOpen(zeroMines)
-      recursiveOpened.board.openFields.size should be > 3
-      recursiveOpened.closeField(zeroMines).board.openFields.size shouldBe 0
+      game1.openField(notMines.next()).state shouldBe State.OnGoing
     }
   }
 }

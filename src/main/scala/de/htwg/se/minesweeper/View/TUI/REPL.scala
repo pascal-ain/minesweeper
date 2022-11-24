@@ -1,12 +1,15 @@
 package de.htwg.se.minesweeper.View.TUI
 
 import de.htwg.se.minesweeper.Model.*
+import scala.util.{Either, Left => Err, Right => Ok}
 import de.htwg.se.minesweeper.Controller.*
 import scala.io.StdIn.readLine
 import de.htwg.se.minesweeper.Util.{Observer, Event, MyApp}
+import de.htwg.se.minesweeper.Util.Which
+import ParseInput.*
 
 class REPL(
-    controller: Controller,
+    val controller: Controller,
     mineSymbol: String,
     flagSymbol: String,
     closedFieldSymbol: String,
@@ -26,12 +29,36 @@ class REPL(
     print(gameString())
     runREPL()
 
+  var parseStrategy: ParseStrategy = OnGoingStrategy(controller)
+
   override def update(e: Event): Unit =
     e match
-      case Event.Failure(msg) => println(gameString() + eol + msg)
-      case Event.Won  => state = () => println(gameString() + eol + "You won!")
-      case Event.Lost => state = () => println(gameString() + eol + "You lost!")
-      case Event.Success(_) => print(gameString())
+      case Event.Failure(msg) =>
+        state = () => {
+          println(gameString() + eol + msg)
+          runREPL()
+        }
+      case Event.Won => {
+        parseStrategy = LostOrWonStrategy(controller)
+        state = () => {
+          println(gameString() + eol + "You won!")
+          runREPL()
+        }
+      }
+      case Event.Lost => {
+        parseStrategy = LostOrWonStrategy(controller)
+        state = () => {
+          println(gameString() + eol + "You lost!")
+          runREPL()
+        }
+      }
+      case Event.Success => {
+        parseStrategy = OnGoingStrategy(controller)
+        state = () => {
+          print(gameString())
+          runREPL()
+        }
+      }
 
   def gameString() =
     REPLSymbolsDecorator(
@@ -46,22 +73,16 @@ class REPL(
   def runREPL(): Unit =
     print(">> ")
     val input = readLine()
-    if input.matches("q|quit|exit") then return
-    parseInput(input) match
-      case None =>
-        println(
-          s"${gameString()}${eol}Invalid command${eol}availabe commands:${eol}open <x,y>${eol}flag <x,y>${eol}quit, q or exit to end the gameString"
-        )
-      case Some(operation, pos) => controller.handleTrigger(operation, pos)
+    parseStrategy.handleInput(input) match
+      case Ok(operation: Operation) =>
+        operation match
+          case Operation.OpenOrFlag(function, pos) =>
+            controller.handleTrigger(function, pos)
+          case Operation.UndoRedoOrExit(function) =>
+            controller.handleTrigger(function)
+      case Err(msg: String) =>
+        state = () => {
+          println(gameString() + eol + msg)
+          runREPL()
+        }
     state()
-
-  def parseInput(input: String) =
-    val userInput = input.toLowerCase().trim()
-    if userInput.matches("((open|flag)\\s+\\d+,\\d+)") then
-      val tokens = userInput.split("\\s+")
-      val coords = tokens(1).split(",").map(_.toInt)
-      val pos = Position(coords(0), coords(1))
-      tokens(0) match
-        case "open" => Some(controller.openField, pos)
-        case "flag" => Some(controller.flagField, pos)
-    else None
