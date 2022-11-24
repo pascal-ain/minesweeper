@@ -11,7 +11,7 @@ case class OnGoingStrategy(controller: Controller)
   val helpMessage =
     s"Invalid command${eol}availabe commands:${eol}open <x,y>${eol}flag <x,y>${eol}undo or redo${eol}quit, q or exit to end the game."
   override def handleSpecial(input: String) =
-    if input.matches(raw"(open|flag)\s+\d\s*,\s*\d") then
+    if input.matches(raw"(open|flag)\s+\d+\s*,\s*\d+") then
       val operation = input.split(raw"\s+")
       val coords = input.split(raw"open|flag")(1)
       operation(0) match
