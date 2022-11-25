@@ -5,13 +5,13 @@ import de.htwg.se.minesweeper.Controller.Controller
 import de.htwg.se.minesweeper.Model.Game
 
 class GUI(
-    controller: Controller,
+    game: Game,
     flagSymbol: String,
     mineSymbol: String,
     closedFieldSymbol: String,
     scoreSymbols: Int => String
 ) extends MyApp(
-      controller,
+      game,
       flagSymbol,
       mineSymbol,
       closedFieldSymbol,

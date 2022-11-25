@@ -2,62 +2,73 @@ package de.htwg.se.minesweeper.View
 
 import de.htwg.se.minesweeper.Util.{MyApp, AppBuilder, ViewType}
 import scala.util.{Try, Failure, Success}
-import de.htwg.se.minesweeper.Controller.Controller
+import scala.util.{Either, Right => Ok, Left => Err}
 import de.htwg.se.minesweeper.Model.Game
 import de.htwg.se.minesweeper.View.TUI.REPL
 import de.htwg.se.minesweeper.View.GUI.GUI
 
+object ViewBuilder:
+  def apply() = new ViewBuilder(
+    Err("interface type"),
+    Err("width"),
+    Err("height"),
+    Err("mine percentage"),
+    Err("flag symbol"),
+    Err("mine symbol"),
+    Err("closed field symbol"),
+    Err("score symbols")
+  )
+
 case class ViewBuilder(
-    interface: Option[ViewType],
-    width: Option[Int],
-    height: Option[Int],
-    mines: Option[Double],
-    flagSymbol: Option[String],
-    mineSymbol: Option[String],
-    closedFieldSymbol: Option[String],
-    scoreSymbols: Option[Int => String]
+    interface: Either[String, ViewType],
+    width: Either[String, Int],
+    height: Either[String, Int],
+    mines: Either[String, Double],
+    flagSymbol: Either[String, String],
+    mineSymbol: Either[String, String],
+    closedFieldSymbol: Either[String, String],
+    scoreSymbols: Either[String, Int => String]
 ) extends AppBuilder:
-  override def viewType(kind: ViewType) = copy(interface = Some(kind))
-  override def width(x: Int) = copy(width = Some(x + 1))
-  override def height(y: Int) = copy(height = Some(y + 1))
+  override def viewType(kind: ViewType) = copy(interface = Ok(kind))
+  override def width(x: Int) = copy(width = Ok(x + 1))
+  override def height(y: Int) = copy(height = Ok(y + 1))
   override def mines(num: Double) =
     require(num < 1)
-    copy(mines = Some(num))
+    copy(mines = Ok(num))
 
-  override def flagSymbol(flag: String) = copy(flagSymbol = Some(flag))
-  override def mineSymbol(mine: String) = copy(mineSymbol = Some(mine))
+  override def flagSymbol(flag: String) = copy(flagSymbol = Ok(flag))
+  override def mineSymbol(mine: String) = copy(mineSymbol = Ok(mine))
   override def closedFieldSymbol(closed: String) =
-    copy(closedFieldSymbol = Some(closed))
+    copy(closedFieldSymbol = Ok(closed))
   override def scoreSymbols(conv: Int => String) =
-    copy(scoreSymbols = Some(conv))
+    copy(scoreSymbols = Ok(conv))
   override def build: Try[MyApp] =
-    (
+    val properties = (
       interface,
       width,
       height,
       mines,
-      flagSymbol,
       mineSymbol,
+      flagSymbol,
       closedFieldSymbol,
       scoreSymbols
-    ) match
+    )
+    properties match
       case (
-            Some(view),
-            Some(width),
-            Some(height),
-            Some(mines),
-            Some(flagSymbol),
-            Some(mineSymbol),
-            Some(closedFieldSymbol),
-            Some(scoreSymbols)
+            Ok(interface),
+            Ok(width),
+            Ok(height),
+            Ok(mines),
+            Ok(mineSymbol),
+            Ok(flagSymbol),
+            Ok(closedFieldSymbol),
+            Ok(scoreSymbols)
           ) =>
-        view match
+        interface match
           case ViewType.TUI =>
             Success(
               new REPL(
-                new Controller(
-                  Game(width, height, (width * height * mines).toInt)
-                ),
+                Game(width, height, mines),
                 mineSymbol,
                 flagSymbol,
                 closedFieldSymbol,
@@ -67,16 +78,22 @@ case class ViewBuilder(
           case ViewType.GUI =>
             Success(
               new GUI(
-                new Controller(
-                  Game(width, height, (width * height * mines).toInt)
-                ),
+                Game(width, height, mines),
                 mineSymbol,
                 flagSymbol,
                 closedFieldSymbol,
                 scoreSymbols
               )
             )
-      case _ => Failure(IllegalStateException("All fields need to be filled!"))
+      case _ => reportError(properties.toIArray)
 
-object ViewBuilder:
-  def apply() = new ViewBuilder(None, None, None, None, None, None, None, None)
+  def reportError(fields: Iterable[Any]): Try[MyApp] =
+    Failure(
+      IllegalArgumentException(
+        fields
+          .asInstanceOf[Iterable[Either[String, _]]]
+          .filter(_.isLeft)
+          .map(_.left.toOption.get)
+          .mkString(", ") + " missing!"
+      )
+    )
