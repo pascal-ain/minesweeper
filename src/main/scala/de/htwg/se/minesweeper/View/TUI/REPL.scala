@@ -9,19 +9,18 @@ import de.htwg.se.minesweeper.Util.Which
 import ParseInput.*
 
 class REPL(
-    val game: Game,
+    controller: Controller,
     mineSymbol: String,
     flagSymbol: String,
     closedFieldSymbol: String,
     scoreSymbols: Int => String
 ) extends MyApp(
-      game,
+      controller,
       flagSymbol,
       mineSymbol,
       closedFieldSymbol,
       scoreSymbols
     ):
-  val controller = Controller(game)
   controller.add(this)
 
   val eol = sys.props("line.separator")
@@ -30,7 +29,7 @@ class REPL(
     print(gameString())
     runREPL()
 
-  var parseStrategy: ParseStrategy = OnGoingStrategy(controller)
+  var parseStrategy: ParseState = OnGoingStrategy(controller)
 
   override def update(e: Event): Unit =
     e match

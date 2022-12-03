@@ -1,9 +1,10 @@
 package de.htwg.se.minesweeper.Util
 
 import de.htwg.se.minesweeper.Model.Game
+import de.htwg.se.minesweeper.Controller.Controller
 
 trait MyApp(
-    game: Game,
+    controller: Controller,
     mineSymbol: String,
     flagSymbol: String,
     closedFieldSymbol: String,

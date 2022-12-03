@@ -3,7 +3,6 @@ package de.htwg.se.minesweeper.View
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 
-import de.htwg.se.minesweeper.Util.ViewType
 import de.htwg.se.minesweeper.View.ViewDirector
 import de.htwg.se.minesweeper.View.TUI.REPL
 import de.htwg.se.minesweeper.View.GUI.GUI

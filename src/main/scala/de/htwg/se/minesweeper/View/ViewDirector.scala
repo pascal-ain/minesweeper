@@ -1,12 +1,10 @@
 package de.htwg.se.minesweeper.View
 
 import de.htwg.se.minesweeper.View.ViewBuilder
-import de.htwg.se.minesweeper.Util.ViewType
 
 object ViewDirector:
   def constructDefaultTUI =
     ViewBuilder()
-      .viewType(ViewType.TUI)
       .width(9)
       .height(9)
       .mines(0.2)
@@ -16,7 +14,6 @@ object ViewDirector:
       .scoreSymbols(defaultNumbers)
   def constructDefaultGUI =
     ViewBuilder()
-      .viewType(ViewType.GUI)
       .width(9)
       .height(9)
       .mines(0.2)

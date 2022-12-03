@@ -11,7 +11,7 @@ enum Operation:
   case UndoRedoOrExit(function: () => Either[Which, Game])
 
 val eol = sys.props("line.separator")
-abstract class ParseStrategy(controller: Controller):
+abstract class ParseState(controller: Controller):
   val helpMessage: String
   def handleInput(
       userInput: String

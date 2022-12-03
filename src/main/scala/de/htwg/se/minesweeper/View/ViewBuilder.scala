@@ -1,15 +1,15 @@
 package de.htwg.se.minesweeper.View
 
-import de.htwg.se.minesweeper.Util.{MyApp, AppBuilder, ViewType}
+import de.htwg.se.minesweeper.Util.{MyApp, AppBuilder}
 import scala.util.{Try, Failure, Success}
 import scala.util.{Either, Right => Ok, Left => Err}
 import de.htwg.se.minesweeper.Model.Game
 import de.htwg.se.minesweeper.View.TUI.REPL
 import de.htwg.se.minesweeper.View.GUI.GUI
+import de.htwg.se.minesweeper.Controller.Controller
 
 object ViewBuilder:
   def apply() = new ViewBuilder(
-    Err("interface type"),
     Err("width"),
     Err("height"),
     Err("mine percentage"),
@@ -20,7 +20,6 @@ object ViewBuilder:
   )
 
 case class ViewBuilder(
-    interface: Either[String, ViewType],
     width: Either[String, Int],
     height: Either[String, Int],
     mines: Either[String, Double],
@@ -29,7 +28,6 @@ case class ViewBuilder(
     closedFieldSymbol: Either[String, String],
     scoreSymbols: Either[String, Int => String]
 ) extends AppBuilder:
-  override def viewType(kind: ViewType) = copy(interface = Ok(kind))
   override def width(x: Int) = copy(width = Ok(x + 1))
   override def height(y: Int) = copy(height = Ok(y + 1))
   override def mines(num: Double) =
@@ -42,9 +40,8 @@ case class ViewBuilder(
     copy(closedFieldSymbol = Ok(closed))
   override def scoreSymbols(conv: Int => String) =
     copy(scoreSymbols = Ok(conv))
-  override def build: Try[MyApp] =
+  override def build: Try[Controller] =
     val properties = (
-      interface,
       width,
       height,
       mines,
@@ -55,7 +52,6 @@ case class ViewBuilder(
     )
     properties match
       case (
-            Ok(interface),
             Ok(width),
             Ok(height),
             Ok(mines),
@@ -63,31 +59,10 @@ case class ViewBuilder(
             Ok(flagSymbol),
             Ok(closedFieldSymbol),
             Ok(scoreSymbols)
-          ) =>
-        interface match
-          case ViewType.TUI =>
-            Success(
-              new REPL(
-                Game(width, height, mines),
-                mineSymbol,
-                flagSymbol,
-                closedFieldSymbol,
-                scoreSymbols
-              )
-            )
-          case ViewType.GUI =>
-            Success(
-              new GUI(
-                Game(width, height, mines),
-                mineSymbol,
-                flagSymbol,
-                closedFieldSymbol,
-                scoreSymbols
-              )
-            )
+          ) => Success(new Controller(Game(width, height, mines)))
       case _ => reportError(properties.toIArray)
 
-  def reportError(fields: Iterable[Any]): Try[MyApp] =
+  def reportError(fields: Iterable[Any]): Try[Controller] =
     Failure(
       IllegalArgumentException(
         fields
