@@ -69,4 +69,3 @@ class Controller(var game: Game) extends Observable:
 
   def symbolAt(pos: Position): String =
     game.whichSymbol(pos)
-    

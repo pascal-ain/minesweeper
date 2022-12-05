@@ -10,8 +10,8 @@ import ParseInput.*
 
 class REPL(
     controller: Controller,
-    mineSymbol: String,
     flagSymbol: String,
+    mineSymbol: String,
     closedFieldSymbol: String,
     scoreSymbols: Int => String
 ) extends MyApp(
@@ -29,7 +29,7 @@ class REPL(
     print(gameString())
     runREPL()
 
-  var parseStrategy: ParseState = OnGoingStrategy(controller)
+  var parseState: ParseState = OnGoingStrategy(controller)
 
   override def update(e: Event): Unit =
     e match
@@ -39,21 +39,21 @@ class REPL(
           runREPL()
         }
       case Event.Won => {
-        parseStrategy = LostOrWonStrategy(controller)
+        parseState = LostOrWonStrategy(controller)
         state = () => {
           println(gameString() + eol + "You won!")
           runREPL()
         }
       }
       case Event.Lost => {
-        parseStrategy = LostOrWonStrategy(controller)
+        parseState = LostOrWonStrategy(controller)
         state = () => {
           println(gameString() + eol + "You lost!")
           runREPL()
         }
       }
       case Event.Success => {
-        parseStrategy = OnGoingStrategy(controller)
+        parseState = OnGoingStrategy(controller)
         state = () => {
           print(gameString())
           runREPL()
@@ -73,7 +73,7 @@ class REPL(
   def runREPL(): Unit =
     print(">> ")
     val input = readLine()
-    parseStrategy.handleInput(input) match
+    parseState.handleInput(input) match
       case Ok(operation: Operation) =>
         operation match
           case Operation.OpenOrFlag(function, pos) =>
