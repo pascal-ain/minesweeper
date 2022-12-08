@@ -10,7 +10,6 @@ import de.htwg.se.minesweeper.Util.{
   Redo,
   Event
 }
-
 import scala.util.{Either, Left => Err, Right => Ok}
 
 class Controller(var game: Game) extends Observable:
