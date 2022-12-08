@@ -51,14 +51,14 @@ class GameSpec extends AnyWordSpec {
   "A symbol on the field" should {
     val notRevealed = Position(1, 1)
     s"be '$notOpened' when unopened" in {
-      game1.whichSymbol(notRevealed) shouldBe notOpened
-      game2.whichSymbol(notRevealed) shouldBe notOpened
+      game1.whichSymbol(notRevealed) shouldBe Closed
+      game2.whichSymbol(notRevealed) shouldBe Closed
     }
     s"be a '$mineSymbol' when the opened field was a mine" in {
       val mine1 = game1.board.mines.toVector(0)
-      game1.openField(mine1).whichSymbol(mine1) shouldBe mineSymbol
+      game1.openField(mine1).whichSymbol(mine1) shouldBe Mine
       val mine2 = game2.board.mines.toVector(0)
-      game2.openField(mine2).whichSymbol(mine2) shouldBe mineSymbol
+      game2.openField(mine2).whichSymbol(mine2) shouldBe Mine
     }
     "be the number of surrounding mines when it is revealed" in {
       val safeFields1 =
@@ -66,27 +66,29 @@ class GameSpec extends AnyWordSpec {
       val open1 = safeFields1.next()
       game1
         .openField(open1)
-        .whichSymbol(open1) shouldBe game1.board
-        .surroundingMines(open1)
-        .toString
+        .whichSymbol(open1) shouldBe Score(
+        game1.board
+          .surroundingMines(open1)
+      )
 
       val safeFields2 =
         Helper.getAllPositions(game2).filterNot(game2.board.mines.contains(_))
       val open2 = safeFields2.next
       game2
         .openField(open2)
-        .whichSymbol(open2) shouldBe game2.board
-        .surroundingMines(open2)
-        .toString()
+        .whichSymbol(open2) shouldBe Score(
+        game2.board
+          .surroundingMines(open2)
+      )
     }
     s"be a '$flagSymbol' when it got flagged" in {
       val flagField = Position(1, 1)
       game1
         .flagField(flagField)
-        .whichSymbol(flagField) shouldBe flagSymbol
+        .whichSymbol(flagField) shouldBe Flag
       game2
         .flagField(flagField)
-        .whichSymbol(flagField) shouldBe flagSymbol
+        .whichSymbol(flagField) shouldBe Flag
     }
   }
   "Opening fields" should {
