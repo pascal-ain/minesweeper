@@ -2,7 +2,6 @@ package de.htwg.se.minesweeper.Model
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
-import scala.collection.immutable.HashSet
 import de.htwg.se.minesweeper.Util.*
 
 class GameSpec extends AnyWordSpec {
@@ -124,7 +123,7 @@ class GameSpec extends AnyWordSpec {
         .filter(game1.board.mines.contains(_))
         .next()
       game1.updateOpenFields(mine).openFields should contain(
-        mine -> 'B'
+        mine -> Mine
       )
     }
   }

@@ -2,7 +2,6 @@ package de.htwg.se.minesweeper.Model
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
-import scala.collection.immutable.HashSet
 import de.htwg.se.minesweeper.Util.*
 
 class BoundsSpec extends AnyWordSpec {

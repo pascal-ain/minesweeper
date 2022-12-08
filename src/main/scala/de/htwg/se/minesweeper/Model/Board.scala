@@ -1,12 +1,6 @@
 package de.htwg.se.minesweeper.Model
 import scala.util.Random
 
-trait Symbols
-object Mine extends Symbols
-object Flag extends Symbols
-object Closed extends Symbols
-case class Score(num: Int) extends Symbols
-
 // Data representation of the game board
 final case class Board(
     openFields: Map[Position, Int | Mine.type],

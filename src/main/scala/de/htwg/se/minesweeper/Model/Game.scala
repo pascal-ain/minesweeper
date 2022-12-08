@@ -77,20 +77,13 @@ final case class Game(bounds: Bounds, state: State, board: Board):
   override def toString =
     board.getAllPositions
       .map(pos =>
-        symbolToString(pos) + (pos match
+        whichSymbol(pos).toString() + (pos match
           case Position(width, _) =>
             if width == bounds.width - 1 then sys.props("line.separator")
             else ""
         )
       )
       .mkString
-
-  def symbolToString(pos: Position) =
-    whichSymbol(pos) match
-      case _: Mine.type   => "B"
-      case _: Flag.type   => "F"
-      case _: Closed.type => "?"
-      case Score(num)     => num.toString
 
 object Game:
   def apply(width: Int = 9, height: Int = 9, minePercentage: Double = 0.15) =

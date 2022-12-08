@@ -10,10 +10,10 @@ class REPLSpec extends AnyWordSpec {
   "The REPL is the TUI and" should {
     val game = Game(9, 10, 0.2)
     "print the things configured from the decorator" in {
-      val mineSymbol = "M"
-      val flagSymbol = "F"
-      val closedSymbol = "O"
-      def scoreSymbols(x: Int) = "N"
+      val mineSymbol = "[*]"
+      val flagSymbol = "[F]"
+      val closedSymbol = "[ ]"
+      def scoreSymbols(x: Int) = "[!]"
 
       val flagged = game.flagField(Position(0, 0))
       val openStuff = Helper.openFields(

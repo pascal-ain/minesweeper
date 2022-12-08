@@ -10,8 +10,8 @@ import ParseInput.*
 
 class REPL(
     controller: Controller,
-    flagSymbol: String,
     mineSymbol: String,
+    flagSymbol: String,
     closedFieldSymbol: String,
     scoreSymbols: Int => String
 ) extends Observer
