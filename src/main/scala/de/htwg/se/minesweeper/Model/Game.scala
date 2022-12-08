@@ -26,7 +26,10 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       case None => game
       case Some(pos) =>
         val mines = game.board.surroundingMines(pos)
-        if mines != 0 then recursiveOpen(game.openField(pos), toOpen)
+        // ignore flagged fields
+        if board.flaggedFields.contains(pos) then recursiveOpen(game, toOpen)
+        // field is not save to open
+        else if mines != 0 then recursiveOpen(game.openField(pos), toOpen)
         else
           recursiveOpen(
             game.copy(board = game.updateOpenFields(pos)),
@@ -40,14 +43,14 @@ final case class Game(bounds: Bounds, state: State, board: Board):
     board.copy(openFields =
       board.openFields.updated(
         pos,
-        if board.mines.contains(pos) then 'B'
+        if board.mines.contains(pos) then Mine
         else board.surroundingMines(pos)
       )
     )
 
   def revealAllMines: Board =
     board.mines.iterator.foldLeft(board)((iteration, pos) =>
-      iteration.copy(openFields = iteration.openFields.updated(pos, 'B'))
+      iteration.copy(openFields = iteration.openFields.updated(pos, Mine))
     )
 
   def canFlag_?(pos: Position): InsertResult | true =
@@ -61,21 +64,15 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       else board.flaggedFields.incl(pos)
     copy(board = board.copy(flaggedFields = flags))
 
-  override def toString() =
-    board.getAllPositions
-      .map(pos =>
-        if pos.x == bounds.width - 1 then whichSymbol(pos) + "\n"
-        else whichSymbol(pos)
-      )
-      .mkString
-
   def whichSymbol(pos: Position) =
     board.openFields.get(pos) match
       case Some(value) =>
-        s"$value"
+        value match
+          case _: Mine.type => Mine
+          case x: Int       => Score(x)
       case None =>
-        if board.flaggedFields.contains(pos) then "F"
-        else "?"
+        if board.flaggedFields.contains(pos) then Flag
+        else Closed
 
 object Game:
   def apply(width: Int = 9, height: Int = 9, minePercentage: Double = 0.15) =

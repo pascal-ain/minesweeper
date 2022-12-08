@@ -66,5 +66,7 @@ class Controller(var game: Game) extends Observable:
       case State.Lost    => Event.Lost
       case State.OnGoing => Event.Success
 
-  def symbolAt(pos: Position): String =
+  def symbolAt(pos: Position): Symbols =
     game.whichSymbol(pos)
+  def getAllPositions() =
+    game.board.getAllPositions

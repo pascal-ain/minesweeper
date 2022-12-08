@@ -88,51 +88,24 @@ class GUI(controller: Controller) extends Frame with Observer with App:
     var buttonIcon: ImageIcon = null
 
     symbol match
-      case "?" =>
+      case _: Closed.type =>
         buttonIcon = new ImageIcon(
           projectPath + "/src/main/pictures/closedField.png"
         )
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "B" =>
+      case _: Mine.type =>
         buttonIcon = new ImageIcon(
           projectPath + "/src/main/pictures/mine.png"
         )
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "F" =>
+      case _: Flag.type =>
         buttonIcon = new ImageIcon(
           projectPath + "/src/main/pictures/flag.png"
         )
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "0" =>
+      case Score(num) =>
         buttonIcon = new ImageIcon(
-          projectPath + "/src/main/pictures/0.png"
+          s"${projectPath}/src/main/pictures/${num}.png"
         )
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "1" =>
-        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/1.png")
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "2" =>
-        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/2.png")
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "3" =>
-        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/3.png")
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "4" =>
-        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/4.png")
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "5" =>
-        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/5.png")
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "6" =>
-        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/6.png")
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "7" =>
-        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/7.png")
-        this.peer.setIcon(resizeImage(buttonIcon))
-      case "8" =>
-        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/8.png")
-        this.peer.setIcon(resizeImage(buttonIcon))
 
+    this.peer.setIcon(resizeImage(buttonIcon))
     preferredSize = new Dimension {
       width = 60
       height = 60

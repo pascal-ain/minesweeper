@@ -5,6 +5,7 @@ import de.htwg.se.minesweeper.Controller.Controller
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
+import de.htwg.se.minesweeper.Model.{Mine, Flag, Closed, Score, Position}
 
 case class REPLSymbolsDecorator(
     controller: Controller,
@@ -13,17 +14,21 @@ case class REPLSymbolsDecorator(
     closed: String,
     mineCount: Int => String
 ) extends GameStringDecorator(controller):
-  override def toString(): String =
-    overrideString(super.toString())
+  override def decoratedSymbol(pos: Position) =
+    super.symbolAt(pos) match
+      case _: Mine.type   => mine
+      case Score(num)     => mineCount(num)
+      case _: Flag.type   => flag
+      case _: Closed.type => closed
 
-  def overrideString(str: String) =
-    str
-      .map[String](char =>
-        char match
-          case 'F'  => flag
-          case 'B'  => mine
-          case '?'  => closed
-          case '\n' => sys.props("line.separator")
-          case _    => mineCount(char.asDigit)
+  override def toString =
+    val width = controller.x
+    val height = controller.y
+    controller
+      .getAllPositions()
+      .map(pos =>
+        decoratedSymbol(pos) + (if pos.x == width - 1 then
+                                  sys.props("line.separator")
+                                else "")
       )
       .mkString

@@ -19,9 +19,9 @@ class REPL(
   controller.add(this)
 
   val eol = sys.props("line.separator")
-  var state = () => runREPL()
+
   def run() =
-    print(gameString())
+    println(gameString())
     runREPL()
 
   var parseState: ParseState = OnGoingState(controller)
@@ -39,7 +39,7 @@ class REPL(
       }
       case Event.Success => {
         parseState = OnGoingState(controller)
-        print(gameString())
+        println(gameString())
       }
 
   def gameString() =
@@ -49,8 +49,7 @@ class REPL(
       flagSymbol,
       closedFieldSymbol,
       scoreSymbols
-    )
-      .toString()
+    ).toString()
 
   def runREPL(): Unit =
     val input = readLine()
