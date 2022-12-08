@@ -11,7 +11,7 @@ trait GameBuilder:
   def width(x: Int): GameBuilder
   def height(y: Int): GameBuilder
   def mines(percentage: Double): GameBuilder
-  def build: Try[Controller]
+  def build(): Try[Controller]
 
 object ControllerBuilder:
   def apply() =
@@ -24,19 +24,19 @@ object ControllerBuilder:
 case class ControllerBuilder(
     height: Either[String, Int],
     width: Either[String, Int],
-    mines: Either[String, Double]
+    mineCount: Either[String, Double]
 ) extends GameBuilder:
   override def width(x: Int) = copy(width = Ok(x + 1))
   override def height(y: Int) = copy(height = Ok(y + 1))
   override def mines(num: Double) =
     require(num < 1)
-    copy(mines = Ok(num))
+    copy(mineCount = Ok(num))
 
-  override def build: Try[Controller] =
+  override def build(): Try[Controller] =
     val properties = (
       width,
       height,
-      mines
+      mineCount
     )
     properties match
       case (

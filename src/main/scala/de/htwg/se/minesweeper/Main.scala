@@ -9,7 +9,8 @@ import de.htwg.se.minesweeper.View.TUI.REPL
 
 // $COVERAGE-OFF$
 @main def run: Unit =
-  val controller = ControllerDirector.default
+  val controller = ControllerDirector.defaultController().build().get
+
   new GUI(controller)
   new REPL(
     controller,
