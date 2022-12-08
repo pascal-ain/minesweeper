@@ -4,7 +4,7 @@ import de.htwg.se.minesweeper.Model.*
 import scala.util.{Either, Left => Err, Right => Ok}
 import de.htwg.se.minesweeper.Controller.*
 import scala.io.StdIn.readLine
-import de.htwg.se.minesweeper.Util.{Observer, Event, MyApp}
+import de.htwg.se.minesweeper.Util.{Observer, Event}
 import de.htwg.se.minesweeper.Util.Which
 import ParseInput.*
 
@@ -14,50 +14,32 @@ class REPL(
     mineSymbol: String,
     closedFieldSymbol: String,
     scoreSymbols: Int => String
-) extends MyApp(
-      controller,
-      flagSymbol,
-      mineSymbol,
-      closedFieldSymbol,
-      scoreSymbols
-    ):
+) extends Observer
+    with App:
   controller.add(this)
 
   val eol = sys.props("line.separator")
   var state = () => runREPL()
-  override def run() =
+  def run() =
     print(gameString())
     runREPL()
 
-  var parseState: ParseState = OnGoingStrategy(controller)
+  var parseState: ParseState = OnGoingState(controller)
 
   override def update(e: Event): Unit =
     e match
-      case Event.Failure(msg) =>
-        state = () => {
-          println(gameString() + eol + msg)
-          runREPL()
-        }
+      case Event.Failure(msg) => println(gameString() + eol + msg)
       case Event.Won => {
-        parseState = LostOrWonStrategy(controller)
-        state = () => {
-          println(gameString() + eol + "You won!")
-          runREPL()
-        }
+        parseState = LostOrWonState(controller)
+        println(gameString() + eol + "You won!")
       }
       case Event.Lost => {
-        parseState = LostOrWonStrategy(controller)
-        state = () => {
-          println(gameString() + eol + "You lost!")
-          runREPL()
-        }
+        parseState = LostOrWonState(controller)
+        println(gameString() + eol + "You lost!")
       }
       case Event.Success => {
-        parseState = OnGoingStrategy(controller)
-        state = () => {
-          print(gameString())
-          runREPL()
-        }
+        parseState = OnGoingState(controller)
+        print(gameString())
       }
 
   def gameString() =
@@ -80,9 +62,5 @@ class REPL(
             controller.handleTrigger(function, pos)
           case Operation.UndoRedoOrExit(function) =>
             controller.handleTrigger(function)
-      case Err(msg: String) =>
-        state = () => {
-          println(gameString() + eol + msg)
-          runREPL()
-        }
-    state()
+      case Err(msg: String) => println(gameString() + eol + msg)
+    runREPL()

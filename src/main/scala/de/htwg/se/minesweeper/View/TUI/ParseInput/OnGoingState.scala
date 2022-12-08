@@ -6,8 +6,7 @@ import de.htwg.se.minesweeper.Util.Which
 import de.htwg.se.minesweeper.Model.Game
 import de.htwg.se.minesweeper.Controller.Controller
 
-case class OnGoingStrategy(controller: Controller)
-    extends ParseState(controller):
+case class OnGoingState(controller: Controller) extends ParseState(controller):
   val helpMessage =
     s"Invalid command${eol}availabe commands:${eol}open <x,y>${eol}flag <x,y>${eol}undo or redo${eol}quit, q or exit to end the game."
   override def handleSpecial(input: String) =

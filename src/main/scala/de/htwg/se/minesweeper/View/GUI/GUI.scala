@@ -1,6 +1,6 @@
 package de.htwg.se.minesweeper.View.GUI
 
-import de.htwg.se.minesweeper.Util.{MyApp, Event}
+import de.htwg.se.minesweeper.Util.Event
 import de.htwg.se.minesweeper.Controller.Controller
 import de.htwg.se.minesweeper.Model.*
 
@@ -20,21 +20,9 @@ import javax.swing.JPanel
 import javax.swing.plaf.OptionPaneUI
 import javax.swing.JOptionPane
 import scala.swing.Swing.EmptyIcon
+import de.htwg.se.minesweeper.Util.Observer
 
-class GUI(
-    controller: Controller,
-    flagSymbol: String,
-    mineSymbol: String,
-    closedFieldSymbol: String,
-    scoreSymbols: Int => String
-) extends Frame
-    with MyApp(
-      controller,
-      flagSymbol,
-      mineSymbol,
-      closedFieldSymbol,
-      scoreSymbols
-    ):
+class GUI(controller: Controller) extends Frame with Observer with App:
 
   controller.add(this)
 
@@ -43,9 +31,6 @@ class GUI(
 
   menuBar = new MenuBar {
     contents += new Menu("File") {
-      contents += new MenuItem(Action("New Game") {
-        // controller.setGame()
-      })
       contents += new MenuItem(Action("Undo") {
         controller.handleTrigger(controller.undo)
       })
@@ -66,30 +51,13 @@ class GUI(
   pack()
   centerOnScreen()
   open()
-  readLine()
-
-  override def run() =
-    print("run")
 
   def showDialog(lost: Boolean) =
-    if lost then
-      Dialog.showConfirmation(
-        contents.head,
-        "New Game",
-        optionType = Dialog.Options.YesNo,
-        title = "Game Lost"
-      )
-    else
-      Dialog.showConfirmation(
-        contents.head,
-        "New Game",
-        optionType = Dialog.Options.YesNo,
-        title = "Game Won"
-      )
-
+    val msg = if lost then "You lost!" else "You won!"
+    Dialog.showMessage(message = msg, title = "Game Status")
   override def update(e: Event): Unit =
     e match
-      case Event.Failure(msg) => print(msg)
+      case Event.Failure(msg) => println(msg)
       case Event.Success      => contents = new GameBoardNormal(game.bounds)
       case Event.Won =>
         contents = new GameBoardLostWon(game.bounds)
@@ -122,47 +90,47 @@ class GUI(
     symbol match
       case "?" =>
         buttonIcon = new ImageIcon(
-          projectPath + "\\src\\main\\pictures\\closedField.png"
+          projectPath + "/src/main/pictures/closedField.png"
         )
         this.peer.setIcon(resizeImage(buttonIcon))
       case "B" =>
         buttonIcon = new ImageIcon(
-          projectPath + "\\src\\main\\pictures\\mine.png"
+          projectPath + "/src/main/pictures/mine.png"
         )
         this.peer.setIcon(resizeImage(buttonIcon))
       case "F" =>
         buttonIcon = new ImageIcon(
-          projectPath + "\\src\\main\\pictures\\flag.png"
+          projectPath + "/src/main/pictures/flag.png"
         )
         this.peer.setIcon(resizeImage(buttonIcon))
       case "0" =>
         buttonIcon = new ImageIcon(
-          projectPath + "\\src\\main\\pictures\\0.png"
+          projectPath + "/src/main/pictures/0.png"
         )
         this.peer.setIcon(resizeImage(buttonIcon))
       case "1" =>
-        buttonIcon = new ImageIcon(projectPath + "\\src\\main\\pictures\\1.png")
+        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/1.png")
         this.peer.setIcon(resizeImage(buttonIcon))
       case "2" =>
-        buttonIcon = new ImageIcon(projectPath + "\\src\\main\\pictures\\2.png")
+        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/2.png")
         this.peer.setIcon(resizeImage(buttonIcon))
       case "3" =>
-        buttonIcon = new ImageIcon(projectPath + "\\src\\main\\pictures\\3.png")
+        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/3.png")
         this.peer.setIcon(resizeImage(buttonIcon))
       case "4" =>
-        buttonIcon = new ImageIcon(projectPath + "\\src\\main\\pictures\\4.png")
+        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/4.png")
         this.peer.setIcon(resizeImage(buttonIcon))
       case "5" =>
-        buttonIcon = new ImageIcon(projectPath + "\\src\\main\\pictures\\5.png")
+        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/5.png")
         this.peer.setIcon(resizeImage(buttonIcon))
       case "6" =>
-        buttonIcon = new ImageIcon(projectPath + "\\src\\main\\pictures\\6.png")
+        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/6.png")
         this.peer.setIcon(resizeImage(buttonIcon))
       case "7" =>
-        buttonIcon = new ImageIcon(projectPath + "\\src\\main\\pictures\\7.png")
+        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/7.png")
         this.peer.setIcon(resizeImage(buttonIcon))
       case "8" =>
-        buttonIcon = new ImageIcon(projectPath + "\\src\\main\\pictures\\8.png")
+        buttonIcon = new ImageIcon(projectPath + "/src/main/pictures/8.png")
         this.peer.setIcon(resizeImage(buttonIcon))
 
     preferredSize = new Dimension {

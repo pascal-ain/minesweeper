@@ -9,7 +9,7 @@ import scala.util.{Either, Left => Err, Right => Ok}
 class LostOrWonStrategySpec extends AnyWordSpec {
   val game = Game(10, 10, 0)
   val controller = Controller(game)
-  val parseInput = LostOrWonStrategy(controller)
+  val parseInput = LostOrWonState(controller)
   "When the game is lost or won it" should {
     "only accept undo, exit or redo" in {
       parseInput.handleInput("open 1,1") shouldBe a[Left[_, _]]
