@@ -1,29 +1,14 @@
 package de.htwg.se.minesweeper.View.GUI
 
-import de.htwg.se.minesweeper.Util.Event
+import de.htwg.se.minesweeper.Util.{Event, Observer}
 import de.htwg.se.minesweeper.Controller.Controller
 import de.htwg.se.minesweeper.Model.*
 
 import scala.swing._
-import javax.swing.JButton
-import java.awt.Rectangle
-import java.awt.image.BufferedImage
-import javax.swing.JComponent
-import scala.swing.event._
-import javax.imageio.ImageIO
-import java.io.File
 import javax.swing.ImageIcon
-import scala.io.StdIn.readLine
-import javax.swing.WindowConstants
-import javax.swing.JDialog
-import javax.swing.JPanel
-import javax.swing.plaf.OptionPaneUI
-import javax.swing.JOptionPane
-import scala.swing.Swing.EmptyIcon
-import de.htwg.se.minesweeper.Util.Observer
+import scala.swing.event.MouseClicked
 
 class GUI(controller: Controller) extends Frame with Observer with App:
-
   controller.add(this)
 
   title = "Minesweeper"
