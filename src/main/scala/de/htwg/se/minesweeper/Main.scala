@@ -15,7 +15,7 @@ import de.htwg.se.minesweeper.View.TUI.REPL
     controller,
     flagSymbol = "[F]",
     mineSymbol = "[*]",
-    closedFieldSymbol = "[]",
+    closedFieldSymbol = "[?]",
     (x: Int) => s"${(0 until 9).map(num => s"[${num.toString}]")(x)}"
   ).run()
 

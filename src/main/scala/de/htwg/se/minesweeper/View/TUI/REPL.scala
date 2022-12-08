@@ -53,7 +53,6 @@ class REPL(
       .toString()
 
   def runREPL(): Unit =
-    print(">> ")
     val input = readLine()
     parseState.handleInput(input) match
       case Ok(operation: Operation) =>
