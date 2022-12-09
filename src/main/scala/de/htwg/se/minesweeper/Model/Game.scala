@@ -2,11 +2,11 @@ package de.htwg.se.minesweeper.Model
 
 // The state of the game
 final case class Game(bounds: Bounds, state: State, board: Board):
-  def canOpen_?(pos: Position): InsertResult | true =
+  def canOpen_?(pos: Position): InsertResult =
     if !bounds.isInBounds(pos) then InsertResult.NotInBounds
     else if board.openFields.contains(pos) then InsertResult.AlreadyOpen
     else if board.flaggedFields.contains(pos) then InsertResult.Flagged
-    else true
+    else InsertResult.Ok
 
   def openField(pos: Position): Game =
     val mines = board.surroundingMines(pos)
@@ -53,10 +53,10 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       iteration.copy(openFields = iteration.openFields.updated(pos, Mine))
     )
 
-  def canFlag_?(pos: Position): InsertResult | true =
+  def canFlag_?(pos: Position): InsertResult =
     if !bounds.isInBounds(pos) then InsertResult.NotInBounds
     else if board.openFields.contains(pos) then InsertResult.AlreadyOpen
-    else true
+    else InsertResult.Ok
 
   def flagField(pos: Position) =
     val flags =

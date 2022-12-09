@@ -7,7 +7,7 @@ import de.htwg.se.minesweeper.Model.Game
 import de.htwg.se.minesweeper.Controller.Controller
 
 enum Operation:
-  case OpenOrFlag(function: Position => InsertResult, pos: Position)
+  case OpenOrFlag(function: Position => Either[String, Game], pos: Position)
   case UndoRedoOrExit(function: () => Either[Which, Game])
 
 val eol = sys.props("line.separator")

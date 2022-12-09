@@ -18,20 +18,26 @@ class ControllerSpec extends AnyWordSpec {
       controller
         .openField(
           Position(0, 420)
-        ) shouldBe InsertResult.NotInBounds
+        )
+        .isLeft shouldBe true
 
       controller
-        .openField(Position(0, 1)) shouldBe a[InsertResult.Success]
-
+        .openField(Position(0, 1))
+        .isRight shouldBe true
       val notMine =
         game.board.getAllPositions.filterNot(game.board.mines.contains(_)).next
       controller.handleTrigger(controller.openField, notMine)
-      controller.flagField(
-        notMine
-      ) shouldBe InsertResult.AlreadyOpen
+      controller
+        .flagField(
+          notMine
+        )
+        .isLeft shouldBe true
 
       val flagged = game.flagField(Position(0, 0))
       flagged.canOpen_?(Position(0, 0)) shouldBe InsertResult.Flagged
+
+      // this should never happen
+      controller.handleError(InsertResult.Ok).isLeft shouldBe true
     }
     "tell the view about a state change in the game" in {
       val game = Game(10, 10, 0.2)

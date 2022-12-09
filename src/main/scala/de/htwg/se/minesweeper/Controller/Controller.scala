@@ -19,43 +19,47 @@ class Controller(var game: Game) extends Observable:
   val y = game.bounds.height
   val undoManager = new UndoManager[Game]
 
-  def handleTrigger(handlePosition: Position => InsertResult, pos: Position) =
+  def handleTrigger(
+      handlePosition: Position => Either[String, Game],
+      pos: Position
+  ) =
     val result = handlePosition(pos) match
-      case InsertResult.Success(success) => game = success; state
-      case InsertResult.NotInBounds =>
-        Event.Failure(
-          s"Not in bounds of width: ${x - 1} and height: ${y - 1}."
-        )
-      case InsertResult.AlreadyOpen =>
-        Event.Failure("This field is already revealed.")
-      case InsertResult.Flagged =>
-        Event.Failure("This field has been flagged.")
+      case Err(msg)    => Event.Failure(msg)
+      case Ok(newGame) => game = newGame; state
     notifyObservers(result)
 
   def handleTrigger(undoRedo: () => Either[Which, Game]) =
     val result = undoRedo() match
-      case Ok(success) => game = success; state
+      case Ok(newGame) => game = newGame; state
       case Err(failure) =>
         failure match
           case Undo => Event.Failure("Nothing to undo.")
           case Redo => Event.Failure("Nothing to redo.")
     notifyObservers(result)
 
-  def openField(pos: Position): InsertResult =
+  def openField(pos: Position): Either[String, Game] =
     game.canOpen_?(pos) match
-      case true =>
-        InsertResult.Success(
-          undoManager.doStep(game, ActionCommand(pos, Action.Open))
-        )
-      case error: InsertResult => error
+      case InsertResult.Ok =>
+        Ok(undoManager.doStep(game, ActionCommand(pos, Action.Open)))
+      case error => handleError(error)
 
-  def flagField(pos: Position): InsertResult =
+  def flagField(pos: Position) =
     game.canFlag_?(pos) match
-      case true =>
-        InsertResult.Success(
-          undoManager.doStep(game, ActionCommand(pos, Action.Flag))
+      case InsertResult.Ok =>
+        Ok(undoManager.doStep(game, ActionCommand(pos, Action.Flag)))
+      case error => handleError(error)
+
+  def handleError(err: InsertResult) =
+    err match
+      case InsertResult.NotInBounds =>
+        Err(
+          s"Not in bounds of width: ${x - 1} and height: ${y - 1}."
         )
-      case error: InsertResult => error
+      case InsertResult.AlreadyOpen =>
+        Err("This field is already revealed.")
+      case InsertResult.Flagged =>
+        Err("This field has been flagged.")
+      case InsertResult.Ok => Err("Unknown error occured")
 
   def undo(): Either[Which, Game] = undoManager.undoStep(game)
   def redo(): Either[Which, Game] = undoManager.redoStep(game)

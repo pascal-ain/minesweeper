@@ -92,7 +92,7 @@ class GameSpec extends AnyWordSpec {
   }
   "Opening fields" should {
     "handle error and success" in {
-      game1.canOpen_?(Position(1, 1)) shouldBe true
+      game1.canOpen_?(Position(1, 1)) shouldBe InsertResult.Ok
 
       val flagged = game1.flagField(Position(1, 1))
       flagged.canOpen_?(Position(1, 1)) shouldBe InsertResult.Flagged
@@ -129,7 +129,7 @@ class GameSpec extends AnyWordSpec {
   }
   "flagging fields" should {
     "handle error and success" in {
-      game1.canFlag_?(Position(1, 1)) shouldBe true
+      game1.canFlag_?(Position(1, 1)) shouldBe InsertResult.Ok
       game2.canFlag_?(Position(142, 1337)) shouldBe InsertResult.NotInBounds
       game3
         .openField(Position(1, 1))
