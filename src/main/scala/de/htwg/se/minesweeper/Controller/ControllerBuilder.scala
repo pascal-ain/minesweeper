@@ -2,7 +2,7 @@ package de.htwg.se.minesweeper.Controller
 
 import scala.util.{Try, Failure, Success}
 import scala.util.{Either, Right => Ok, Left => Err}
-import de.htwg.se.minesweeper.Model.Game
+import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.Game
 import de.htwg.se.minesweeper.View.TUI.REPL
 import de.htwg.se.minesweeper.View.GUI.GUI
 import de.htwg.se.minesweeper.Controller.Controller

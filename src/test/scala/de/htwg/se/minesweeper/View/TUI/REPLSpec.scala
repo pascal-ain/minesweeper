@@ -2,7 +2,8 @@ package de.htwg.se.minesweeper.View.TUI
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
-import de.htwg.se.minesweeper.Model.{Game, Position}
+import de.htwg.se.minesweeper.Model.Position
+import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.*
 import de.htwg.se.minesweeper.Controller.Controller
 import de.htwg.se.minesweeper.Util.Helper
 

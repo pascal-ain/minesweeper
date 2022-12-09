@@ -3,7 +3,6 @@ package de.htwg.se.minesweeper.View.TUI.ParseInput
 import scala.util.{Either, Left => Err, Right => Ok}
 import de.htwg.se.minesweeper.Model.{InsertResult, Position}
 import de.htwg.se.minesweeper.Util.Which
-import de.htwg.se.minesweeper.Model.Game
 import de.htwg.se.minesweeper.Controller.Controller
 
 case class OnGoingState(controller: Controller) extends ParseState(controller):

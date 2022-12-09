@@ -1,4 +1,6 @@
-package de.htwg.se.minesweeper.Model
+package de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation
+
+import de.htwg.se.minesweeper.Model.Position
 
 case class Bounds(width: Int, height: Int):
   def isInBounds(pos: Position) =

@@ -1,8 +1,9 @@
-package de.htwg.se.minesweeper.Model
+package de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import de.htwg.se.minesweeper.Util.*
+import de.htwg.se.minesweeper.Model.*
 
 class GameSpec extends AnyWordSpec {
   val eol = sys.props("line.separator")
@@ -160,14 +161,14 @@ class GameSpec extends AnyWordSpec {
       Helper
         .getAllPositions(wonGame)
         .filter(pos =>
-          !wonGame.board.mines.contains(pos)
-            && !wonGame.board.openFields.contains(pos)
+          !wonGame.getSnapShot.mines.contains(pos)
+            && !wonGame.getSnapShot.openFields.contains(pos)
         )
         .toVector
         .size shouldBe 0
     }
     "be won when no fields are left to open" in {
-      won(wonGame).state shouldBe State.Won
+      won_?(wonGame).state shouldBe State.Won
     }
     "change to lost when a mine was opened" in {
       lostGame.state shouldBe State.Lost

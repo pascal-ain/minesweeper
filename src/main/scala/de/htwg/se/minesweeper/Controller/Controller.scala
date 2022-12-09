@@ -12,15 +12,15 @@ import de.htwg.se.minesweeper.Util.{
 }
 import scala.util.{Either, Left => Err, Right => Ok}
 
-class Controller(var game: Game) extends Observable:
+class Controller(var game: GameInterface) extends Observable:
   override def toString(): String = game.toString()
 
-  val x = game.bounds.width
-  val y = game.bounds.height
-  val undoManager = new UndoManager[Game]
+  val x = game.getWidth
+  val y = game.getHeight
+  val undoManager = new UndoManager[GameInterface]
 
   def handleTrigger(
-      handlePosition: Position => Either[String, Game],
+      handlePosition: Position => Either[String, GameInterface],
       pos: Position
   ) =
     val result = handlePosition(pos) match
@@ -28,16 +28,17 @@ class Controller(var game: Game) extends Observable:
       case Ok(newGame) => game = newGame; state
     notifyObservers(result)
 
-  def handleTrigger(undoRedo: () => Either[Which, Game]) =
+  def handleTrigger(undoRedo: () => Either[Which, GameInterface]) =
     val result = undoRedo() match
-      case Ok(newGame) => game = newGame; state
+      case Ok(newGame) =>
+        game = newGame; state
       case Err(failure) =>
         failure match
           case Undo => Event.Failure("Nothing to undo.")
           case Redo => Event.Failure("Nothing to redo.")
     notifyObservers(result)
 
-  def openField(pos: Position): Either[String, Game] =
+  def openField(pos: Position): Either[String, GameInterface] =
     game.canOpen_?(pos) match
       case InsertResult.Ok =>
         Ok(undoManager.doStep(game, ActionCommand(pos, Action.Open)))
@@ -61,16 +62,17 @@ class Controller(var game: Game) extends Observable:
         Err("This field has been flagged.")
       case InsertResult.Ok => Err("Unknown error occured")
 
-  def undo(): Either[Which, Game] = undoManager.undoStep(game)
-  def redo(): Either[Which, Game] = undoManager.redoStep(game)
+  def undo(): Either[Which, GameInterface] = undoManager.undoStep(game)
+  def redo(): Either[Which, GameInterface] = undoManager.redoStep(game)
 
   def state: Event =
-    game.state match
+    game.getSnapShot.state match
       case State.Won     => Event.Won
       case State.Lost    => Event.Lost
       case State.OnGoing => Event.Success
 
   def symbolAt(pos: Position): Symbols =
     game.whichSymbol(pos)
+
   def getAllPositions() =
-    game.board.getAllPositions
+    game.getAllPositions

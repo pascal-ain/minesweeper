@@ -3,8 +3,9 @@ package de.htwg.se.minesweeper.Controller
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 
-import de.htwg.se.minesweeper.Model.*
+import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.*
 import de.htwg.se.minesweeper.Util.*
+import de.htwg.se.minesweeper.Model.*
 
 class ControllerSpec extends AnyWordSpec {
   "The controller acts as a middleman between view and model and" should {
@@ -51,7 +52,7 @@ class ControllerSpec extends AnyWordSpec {
       controller.state shouldBe Event.Won
       controller.handleTrigger(
         controller.openField,
-        controller.game.board.mines.toVector(0)
+        controller.game.getSnapShot.mines.toVector(0)
       )
 
       controller.state shouldBe Event.Lost
@@ -162,12 +163,12 @@ class ControllerSpec extends AnyWordSpec {
       val notMine = Position(1, 1)
       val zeroField = Position(9, 9)
       controller.handleTrigger(controller.openField, notMine)
-      controller.game.board.openFields.contains(notMine) shouldBe true
+      controller.game.getSnapShot.openFields.contains(notMine) shouldBe true
 
       controller.handleTrigger(controller.openField, zeroField)
       controller.handleTrigger(controller.undo)
-      controller.game.board.openFields.contains(notMine) shouldBe true
-      controller.game.board.openFields.contains(zeroField) shouldBe false
+      controller.game.getSnapShot.openFields.contains(notMine) shouldBe true
+      controller.game.getSnapShot.openFields.contains(zeroField) shouldBe false
     }
     "change the state correctly on redo and undo" in {
       var game = Game(9, 11, 0.2)

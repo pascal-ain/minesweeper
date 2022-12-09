@@ -1,7 +1,6 @@
 package de.htwg.se.minesweeper.Controller
 
 import de.htwg.se.minesweeper.Controller.Controller
-import de.htwg.se.minesweeper.Model.Game
 
 object ControllerDirector:
   def defaultController(): GameBuilder =

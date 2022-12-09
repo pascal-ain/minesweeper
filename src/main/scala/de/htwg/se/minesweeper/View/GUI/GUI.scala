@@ -27,10 +27,12 @@ class GUI(controller: Controller) extends Frame with Observer with App:
       })
     }
   }
-  val gameBounds = Bounds(controller.x, controller.y)
+  val gameWidth = controller.x
+  val gameHeight = controller.y
+
   contents = new BorderPanel {
     add(
-      new GameBoardNormal(gameBounds),
+      new GameBoardNormal(gameWidth, gameHeight),
       BorderPanel.Position.Center
     )
   }
@@ -45,26 +47,27 @@ class GUI(controller: Controller) extends Frame with Observer with App:
   override def update(e: Event): Unit =
     e match
       case Event.Failure(msg) => println(msg)
-      case Event.Success      => contents = new GameBoardNormal(gameBounds)
+      case Event.Success =>
+        contents = new GameBoardNormal(gameWidth, gameHeight)
       case Event.Won =>
-        contents = new GameBoardLostWon(gameBounds)
+        contents = new GameBoardLostWon(gameWidth, gameHeight)
         showDialog(false)
       case Event.Lost =>
-        contents = new GameBoardLostWon(gameBounds)
+        contents = new GameBoardLostWon(gameWidth, gameHeight)
         showDialog(true)
 
   override def closeOperation(): Unit =
     sys.exit(0)
 
-  class GameBoardNormal(bounds: Bounds)
-      extends GridPanel(bounds.width, bounds.height):
+  class GameBoardNormal(width: Int, height: Int)
+      extends GridPanel(width, height):
     val positions =
       controller.getAllPositions().foreach(p => contents += new NormalField(p))
     hGap = 0
     vGap = 0
 
-  class GameBoardLostWon(bounds: Bounds)
-      extends GridPanel(bounds.width, bounds.height):
+  class GameBoardLostWon(width: Int, height: Int)
+      extends GridPanel(width, height):
     val positions =
       controller.getAllPositions().foreach(p => contents += new LostWonField(p))
 

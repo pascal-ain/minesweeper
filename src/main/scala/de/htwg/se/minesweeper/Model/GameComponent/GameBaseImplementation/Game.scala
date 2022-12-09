@@ -1,14 +1,27 @@
-package de.htwg.se.minesweeper.Model
+package de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation
+
+import de.htwg.se.minesweeper.Model.{
+  Position,
+  GameInterface,
+  InsertResult,
+  Mine,
+  Flag,
+  Closed,
+  Score,
+  SnapShot,
+  State
+}
 
 // The state of the game
-final case class Game(bounds: Bounds, state: State, board: Board):
-  def canOpen_?(pos: Position): InsertResult =
+final case class Game(bounds: Bounds, state: State, board: Board)
+    extends GameInterface:
+  override def canOpen_?(pos: Position): InsertResult =
     if !bounds.isInBounds(pos) then InsertResult.NotInBounds
     else if board.openFields.contains(pos) then InsertResult.AlreadyOpen
     else if board.flaggedFields.contains(pos) then InsertResult.Flagged
     else InsertResult.Ok
 
-  def openField(pos: Position): Game =
+  override def openField(pos: Position): Game =
     val mines = board.surroundingMines(pos)
     val newGame =
       if board.mines.contains(pos) then
@@ -19,7 +32,7 @@ final case class Game(bounds: Bounds, state: State, board: Board):
           copy(board = updateOpenFields(pos)),
           board.getSurroundingPositions(pos)
         )
-    won(newGame)
+    won_?(newGame)
 
   def recursiveOpen(game: Game, toOpen: Iterator[Position]): Game =
     toOpen.nextOption() match
@@ -53,18 +66,18 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       iteration.copy(openFields = iteration.openFields.updated(pos, Mine))
     )
 
-  def canFlag_?(pos: Position): InsertResult =
+  override def canFlag_?(pos: Position): InsertResult =
     if !bounds.isInBounds(pos) then InsertResult.NotInBounds
     else if board.openFields.contains(pos) then InsertResult.AlreadyOpen
     else InsertResult.Ok
 
-  def flagField(pos: Position) =
+  override def flagField(pos: Position): Game =
     val flags =
       if board.flaggedFields.contains(pos) then board.flaggedFields.excl(pos)
       else board.flaggedFields.incl(pos)
     copy(board = board.copy(flaggedFields = flags))
 
-  def whichSymbol(pos: Position) =
+  override def whichSymbol(pos: Position) =
     board.openFields.get(pos) match
       case Some(value) =>
         value match
@@ -85,6 +98,22 @@ final case class Game(bounds: Bounds, state: State, board: Board):
       )
       .mkString
 
+  override def getWidth = bounds.width
+  override def getHeight = bounds.height
+
+  override def getSnapShot =
+    SnapShot(board.openFields, board.flaggedFields, board.mines, state)
+  override def restore(snapshot: SnapShot): Game =
+    copy(
+      board = board.copy(
+        openFields = snapshot.openFields,
+        mines = snapshot.mines,
+        flaggedFields = snapshot.flaggedFields
+      ),
+      state = snapshot.state
+    )
+  override def getAllPositions: Iterator[Position] = board.getAllPositions
+
 object Game:
   def apply(width: Int = 9, height: Int = 9, minePercentage: Double = 0.15) =
     new Game(
@@ -99,7 +128,8 @@ object Game:
       Board(mines, Bounds(width, height))
     )
 
-def won(game: Game) =
-  if game.board.openFields.size == game.bounds.size - game.board.mines.size
-  then game.copy(state = State.Won)
+def won_?(game: Game): Game =
+  val snapshot = game.getSnapShot
+  if snapshot.openFields.size == (game.getWidth * game.getHeight) - snapshot.mines.size
+  then game.restore(snapshot.copy(state = State.Won))
   else game

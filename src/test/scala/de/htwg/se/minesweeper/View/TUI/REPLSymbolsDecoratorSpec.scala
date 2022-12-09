@@ -5,6 +5,7 @@ import org.scalatest.matchers.should.Matchers._
 import de.htwg.se.minesweeper.Util.*
 import de.htwg.se.minesweeper.Model.*
 import de.htwg.se.minesweeper.Controller.Controller
+import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.*
 
 class REPLSymbolsDecoratorSpec extends AnyWordSpec {
   val game = Game(10, 12, 0.2)
