@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.Controller
+package de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImplementation
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._

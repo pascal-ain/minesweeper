@@ -1,17 +1,17 @@
-package de.htwg.se.minesweeper.Controller
+package de.htwg.se.minesweeper.Controller.ControllerComponent
 
 import scala.util.{Try, Failure, Success}
 import scala.util.{Either, Right => Ok, Left => Err}
 import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.Game
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImplementation.*
 import de.htwg.se.minesweeper.View.TUI.REPL
 import de.htwg.se.minesweeper.View.GUI.GUI
-import de.htwg.se.minesweeper.Controller.Controller
 
 trait GameBuilder:
   def width(x: Int): GameBuilder
   def height(y: Int): GameBuilder
   def mines(percentage: Double): GameBuilder
-  def build(): Try[Controller]
+  def build(): Try[ControllerInterface]
 
 object ControllerBuilder:
   def apply() =
@@ -32,7 +32,7 @@ case class ControllerBuilder(
     require(num < 1)
     copy(mineCount = Ok(num))
 
-  override def build(): Try[Controller] =
+  override def build(): Try[ControllerInterface] =
     val properties = (
       width,
       height,
@@ -47,7 +47,7 @@ case class ControllerBuilder(
         Success(new Controller(Game(width, height, mines)))
       case _ => reportError(properties.toIArray)
 
-  def reportError(fields: Iterable[Any]): Try[Controller] =
+  def reportError(fields: Iterable[Any]): Try[ControllerInterface] =
     Failure(
       IllegalArgumentException(
         fields

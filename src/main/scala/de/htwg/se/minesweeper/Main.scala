@@ -4,7 +4,7 @@ import scala.util.{Success, Failure}
 
 import de.htwg.se.minesweeper.View.GUI.GUI
 import javax.swing.SwingUtilities
-import de.htwg.se.minesweeper.Controller.ControllerDirector
+import de.htwg.se.minesweeper.Controller.ControllerComponent.*
 import de.htwg.se.minesweeper.View.TUI.REPL
 
 // $COVERAGE-OFF$

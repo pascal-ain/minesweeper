@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.Controller
+package de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImplementation
 
 import de.htwg.se.minesweeper.Util.Command
 import de.htwg.se.minesweeper.Model.{State, GameInterface, SnapShot, Position}

@@ -1,14 +1,14 @@
 package de.htwg.se.minesweeper.View.TUI
 
 import de.htwg.se.minesweeper.Util.GameStringDecorator
-import de.htwg.se.minesweeper.Controller.Controller
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 import de.htwg.se.minesweeper.Model.{Mine, Flag, Closed, Score, Position}
 
 case class REPLSymbolsDecorator(
-    controller: Controller,
+    controller: ControllerInterface,
     mine: String,
     flag: String,
     closed: String,

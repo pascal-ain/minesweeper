@@ -3,7 +3,7 @@ package de.htwg.se.minesweeper.View.TUI.ParseInput
 import scala.util.{Either, Left => Err, Right => Ok}
 import de.htwg.se.minesweeper.Model.{InsertResult, Position}
 import de.htwg.se.minesweeper.Util.Which
-import de.htwg.se.minesweeper.Controller.Controller
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 import de.htwg.se.minesweeper.Model.GameInterface
 
 enum Operation:
@@ -14,7 +14,7 @@ enum Operation:
   case UndoRedoOrExit(function: () => Either[Which, GameInterface])
 
 val eol = sys.props("line.separator")
-abstract class ParseState(controller: Controller):
+abstract class ParseState(controller: ControllerInterface):
   val helpMessage: String
   def handleInput(
       userInput: String

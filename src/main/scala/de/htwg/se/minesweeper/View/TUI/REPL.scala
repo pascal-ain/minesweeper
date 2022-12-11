@@ -2,14 +2,14 @@ package de.htwg.se.minesweeper.View.TUI
 
 import de.htwg.se.minesweeper.Model.*
 import scala.util.{Either, Left => Err, Right => Ok}
-import de.htwg.se.minesweeper.Controller.*
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 import scala.io.StdIn.readLine
 import de.htwg.se.minesweeper.Util.{Observer, Event}
 import de.htwg.se.minesweeper.Util.Which
 import ParseInput.*
 
 class REPL(
-    controller: Controller,
+    controller: ControllerInterface,
     mineSymbol: String,
     flagSymbol: String,
     closedFieldSymbol: String,
