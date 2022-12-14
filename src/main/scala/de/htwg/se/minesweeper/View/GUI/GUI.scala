@@ -6,39 +6,41 @@ import de.htwg.se.minesweeper.Model.*
 import scala.swing._
 import javax.swing.ImageIcon
 import scala.swing.event.MouseClicked
+import de.htwg.se.minesweeper.View.ViewInterface
 
-class GUI(controller: ControllerInterface) extends Frame with Observer:
+class GUI(controller: ControllerInterface)
+    extends Frame
+    with Observer
+    with ViewInterface:
   controller.add(this)
-
-  title = "Minesweeper"
-  resizable = false
-
-  menuBar = new MenuBar {
-    contents += new Menu("File") {
-      contents += new MenuItem(Action("Undo") {
-        controller.handleTrigger(controller.undo)
-      })
-      contents += new MenuItem(Action("Redo") {
-        controller.handleTrigger(controller.redo)
-      })
-      contents += new MenuItem(Action("Exit") {
-        sys.exit(0)
-      })
-    }
-  }
   val gameWidth = controller.x
   val gameHeight = controller.y
 
-  contents = new BorderPanel {
-    add(
-      new GameBoardNormal(gameWidth, gameHeight),
-      BorderPanel.Position.Center
-    )
-  }
-
-  pack()
-  centerOnScreen()
-  open()
+  override def run =
+    title = "Minesweeper"
+    resizable = false
+    menuBar = new MenuBar {
+      contents += new Menu("File") {
+        contents += new MenuItem(Action("Undo") {
+          controller.handleTrigger(controller.undo)
+        })
+        contents += new MenuItem(Action("Redo") {
+          controller.handleTrigger(controller.redo)
+        })
+        contents += new MenuItem(Action("Exit") {
+          sys.exit(0)
+        })
+      }
+    }
+    contents = new BorderPanel {
+      add(
+        new GameBoardNormal(gameWidth, gameHeight),
+        BorderPanel.Position.Center
+      )
+    }
+    pack()
+    centerOnScreen()
+    open()
 
   def showDialog(lost: Boolean) =
     val msg = if lost then "You lost!" else "You won!"

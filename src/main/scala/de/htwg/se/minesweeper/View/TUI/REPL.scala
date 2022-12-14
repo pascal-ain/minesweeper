@@ -7,6 +7,7 @@ import scala.io.StdIn.readLine
 import de.htwg.se.minesweeper.Util.{Observer, Event}
 import de.htwg.se.minesweeper.Util.Which
 import ParseInput.*
+import de.htwg.se.minesweeper.View.ViewInterface
 
 class REPL(
     controller: ControllerInterface,
@@ -15,12 +16,12 @@ class REPL(
     closedFieldSymbol: String,
     scoreSymbols: Int => String
 ) extends Observer
-    with App:
+    with ViewInterface:
   controller.add(this)
 
   val eol = sys.props("line.separator")
 
-  def run() =
+  override def run =
     println(gameString())
     runREPL()
 
