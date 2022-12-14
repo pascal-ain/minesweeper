@@ -18,6 +18,7 @@ class Controller(var game: GameInterface)
     with Observable:
   override def toString(): String = game.toString()
 
+  var first_? = true
   override val x = game.getWidth
   override val y = game.getHeight
   val undoManager = new UndoManager[GameInterface]
@@ -41,10 +42,26 @@ class Controller(var game: GameInterface)
           case Redo => Event.Failure("Nothing to redo.")
     notifyObservers(result)
 
+  def removeMine(pos: Position) =
+    first_? = false // do not call this function again
+    val snapShot = game.getSnapShot
+    game.restore(
+      SnapShot(
+        snapShot.openFields,
+        snapShot.flaggedFields,
+        snapShot.mines.excl(pos), // remove the mine at this position
+        snapShot.state
+      )
+    )
   override def openField(pos: Position): Either[String, GameInterface] =
     game.canOpen_?(pos) match
       case InsertResult.Ok =>
-        Ok(undoManager.doStep(game, ActionCommand(pos, Action.Open)))
+        Ok(
+          undoManager.doStep(
+            if first_? then removeMine(pos) else game,
+            ActionCommand(pos, Action.Open)
+          )
+        )
       case error => handleError(error)
 
   override def flagField(pos: Position) =

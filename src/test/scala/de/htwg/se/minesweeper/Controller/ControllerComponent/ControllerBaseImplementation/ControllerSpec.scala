@@ -6,6 +6,7 @@ import org.scalatest.matchers.should.Matchers._
 import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.*
 import de.htwg.se.minesweeper.Util.*
 import de.htwg.se.minesweeper.Model.*
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerDirector
 
 class ControllerSpec extends AnyWordSpec {
   "The controller acts as a middleman between view and model and" should {
@@ -40,16 +41,34 @@ class ControllerSpec extends AnyWordSpec {
       // this should never happen
       controller.handleError(InsertResult.Ok).isLeft shouldBe true
     }
+    "never let the first open field be a mine (this will only work on the actual first opened field, removing all mines with undoing will not work)" in {
+      val game = Game(9, 9, 0.2)
+      val controller = new Controller(game)
+      val observing = new TestObserver(controller)
+      controller.handleTrigger(
+        controller.openField,
+        game.board.mines.iterator.next()
+      )
+      observing.bing shouldNot be(Event.Lost)
+    }
     "tell the view about a state change in the game" in {
       val game = Game(10, 10, 0.2)
       val notMines =
         Helper.getAllPositions(game).filterNot(game.board.mines.contains(_))
       val won_game = Helper.openFields(game, notMines)
-      val controller = new Controller(won_game)
       val result = new Controller(game).state
       result shouldBe Event.Success
+      val won_controller = new Controller(won_game)
+      won_controller.state shouldBe Event.Won
 
-      controller.state shouldBe Event.Won
+      val controller = new Controller(Game(9, 9, 0.2))
+      controller.handleTrigger(
+        controller.openField,
+        controller
+          .getAllPositions()
+          .filterNot(game.board.mines.contains)
+          .next()
+      ) // first open will never be a loss
       controller.handleTrigger(
         controller.openField,
         controller.game.getSnapShot.mines.toVector(0)
@@ -173,6 +192,11 @@ class ControllerSpec extends AnyWordSpec {
     "change the state correctly on redo and undo" in {
       var game = Game(9, 11, 0.2)
       val controller = new Controller(game)
+
+      val notMine =
+        game.board.getAllPositions.filterNot(game.board.mines.contains).next()
+      controller.handleTrigger(controller.openField, notMine)
+      controller.state shouldBe Event.Success
 
       val mine = game.board.mines.iterator.next()
       controller.handleTrigger(controller.openField, mine)
