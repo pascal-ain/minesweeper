@@ -79,15 +79,15 @@ class GUI(controller: ControllerInterface)
     var buttonIcon: ImageIcon = null
 
     symbol match
-      case _: Closed.type =>
+      case Closed =>
         buttonIcon = new ImageIcon(
           projectPath + "/src/main/pictures/closedField.png"
         )
-      case _: Mine.type =>
+      case Mine =>
         buttonIcon = new ImageIcon(
           projectPath + "/src/main/pictures/mine.png"
         )
-      case _: Flag.type =>
+      case Flag =>
         buttonIcon = new ImageIcon(
           projectPath + "/src/main/pictures/flag.png"
         )
