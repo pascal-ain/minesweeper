@@ -12,11 +12,12 @@ import de.htwg.se.minesweeper.Util.{
   Event
 }
 import scala.util.{Either, Left => Err, Right => Ok}
+import com.google.inject.{Guice, Inject}
 
-class Controller(var game: GameInterface)
-    extends ControllerInterface
-    with Observable {
+class Controller() extends ControllerInterface with Observable {
   override def toString(): String = game.toString()
+  val injector = Guice.createInjector(new ModuleConfig)
+  var game = injector.getInstance(classOf[Game])
 
   var first_? = true
   override val x = game.getWidth
@@ -63,7 +64,7 @@ class Controller(var game: GameInterface)
       case InsertResult.Ok =>
         Ok(
           undoManager.doStep(
-            if first_? then removeMine(pos) else game,
+            if (first_?) then removeMine(pos) else game,
             ActionCommand(pos, Action.Open)
           )
         )
