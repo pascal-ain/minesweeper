@@ -1,14 +1,19 @@
 package de.htwg.se.minesweeper
 
-import scala.util.{Success, Failure}
+import com.google.inject.Guice
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
+import de.htwg.se.minesweeper.View.GUI.GUI
+import de.htwg.se.minesweeper.View.{InterfaceType, ViewFactory}
 
-import de.htwg.se.minesweeper.View.{ViewFactory, InterfaceType}
-import de.htwg.se.minesweeper.Controller.ControllerComponent.*
-
-object main {
+object Minesweeper {
 // $COVERAGE-OFF$
   @main def main: Unit = {
-    println("Hi")
+    val controller = Guice
+      .createInjector(new ModuleConfig)
+      .getInstance(classOf[ControllerInterface])
+
+    ViewFactory(InterfaceType.GUI, controller).run
+    ViewFactory(InterfaceType.TUI, controller).run
   }
 }
 

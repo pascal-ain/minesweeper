@@ -3,10 +3,11 @@ package de.htwg.se.minesweeper.Util
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 
-class IncrementCommand extends Command[Int]:
+class IncrementCommand extends Command[Int] {
   override def redoStep(state: Int) = state + 1
   override def stepOn(state: Int) = state + 1
   override def undoStep(state: Int) = state - 1
+}
 
 class CommandSpec extends AnyWordSpec {
   val command = new IncrementCommand

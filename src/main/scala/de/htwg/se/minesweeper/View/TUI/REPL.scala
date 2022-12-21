@@ -8,15 +8,18 @@ import de.htwg.se.minesweeper.Util.{Observer, Event}
 import de.htwg.se.minesweeper.Util.Which
 import ParseInput.*
 import de.htwg.se.minesweeper.View.ViewInterface
+import com.google.inject.Guice
+import de.htwg.se.minesweeper.ModuleConfig
 
 class REPL(
-    controller: ControllerInterface,
+    var controller: ControllerInterface,
     mineSymbol: String,
     flagSymbol: String,
     closedFieldSymbol: String,
     scoreSymbols: Int => String
 ) extends Observer
     with ViewInterface {
+
   controller.add(this)
 
   val eol = sys.props("line.separator")

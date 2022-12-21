@@ -7,11 +7,14 @@ import scala.swing._
 import javax.swing.ImageIcon
 import scala.swing.event.MouseClicked
 import de.htwg.se.minesweeper.View.ViewInterface
+import com.google.inject.Guice
+import de.htwg.se.minesweeper.ModuleConfig
 
-class GUI(controller: ControllerInterface)
+class GUI(var controller: ControllerInterface)
     extends Frame
     with Observer
     with ViewInterface {
+
   controller.add(this)
   val gameWidth = controller.x
   val gameHeight = controller.y

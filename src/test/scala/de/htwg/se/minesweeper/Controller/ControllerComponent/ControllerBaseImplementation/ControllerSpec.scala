@@ -6,14 +6,14 @@ import org.scalatest.matchers.should.Matchers._
 import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.*
 import de.htwg.se.minesweeper.Util.*
 import de.htwg.se.minesweeper.Model.*
-import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerDirector
 
 class ControllerSpec extends AnyWordSpec {
   "The controller acts as a middleman between view and model and" should {
-    class TestObserver(c: Controller) extends Observer:
+    class TestObserver(c: Controller) extends Observer {
       c.add(this)
       var bing = Event.Won
       def update(e: Event): Unit = bing = e
+    }
     "tell the view about success or possible errors" in {
       val game = Game(9, 9, 0.25)
       val controller = new Controller(game)

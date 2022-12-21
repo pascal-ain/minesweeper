@@ -12,17 +12,13 @@ enum InterfaceType {
   case GUI, TUI
 }
 
-def ViewFactory(kind: InterfaceType): ControllerInterface => ViewInterface =
+def ViewFactory(
+    kind: InterfaceType,
+    controller: ControllerInterface
+): ViewInterface =
   kind match {
     case InterfaceType.GUI =>
-      (controller: ControllerInterface) => new GUI(controller)
+      new GUI(controller)
     case InterfaceType.TUI =>
-      (controller: ControllerInterface) =>
-        new REPL(
-          controller,
-          flagSymbol = "[F]",
-          mineSymbol = "[*]",
-          closedFieldSymbol = "[?]",
-          (x: Int) => s"${(0 until 9).map(num => s"[${num.toString}]")(x)}"
-        )
+      new REPL(controller, "[*]", "[F]", "[ ]", (x: Int) => s"[$x]")
   }

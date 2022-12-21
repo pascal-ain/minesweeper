@@ -13,11 +13,21 @@ import de.htwg.se.minesweeper.Util.{
 }
 import scala.util.{Either, Left => Err, Right => Ok}
 import com.google.inject.{Guice, Inject}
+import de.htwg.se.minesweeper.ModuleConfig
+import com.google.inject.name.Names
 
-class Controller() extends ControllerInterface with Observable {
+class Controller(var game: GameInterface)
+    extends ControllerInterface
+    with Observable {
+
+  def this() = {
+    this(
+      Guice
+        .createInjector(new ModuleConfig())
+        .getInstance(classOf[GameInterface])
+    )
+  }
   override def toString(): String = game.toString()
-  val injector = Guice.createInjector(new ModuleConfig)
-  var game = injector.getInstance(classOf[Game])
 
   var first_? = true
   override val x = game.getWidth
