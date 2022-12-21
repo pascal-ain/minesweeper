@@ -60,7 +60,8 @@ class ControllerSpec extends AnyWordSpec {
       val won_game = Helper.openFields(using game, notMines)
       val result = new Controller(using game).state
       result shouldBe Event.Success
-      val won_controller = new Controller(using game)
+
+      val won_controller = new Controller(using won_game)
       won_controller.state shouldBe Event.Won
 
       val game2 = Game(9, 9, 0.2)
