@@ -2,7 +2,7 @@ package de.htwg.se.minesweeper.View.GUI
 
 import de.htwg.se.minesweeper.Controller.ControllerInterface
 import de.htwg.se.minesweeper.Util.{Event, Observer}
-import de.htwg.se.minesweeper.Model.*
+import de.htwg.se.minesweeper.Model.GameComponent.*
 import scala.swing._
 import javax.swing.ImageIcon
 import scala.swing.event.MouseClicked

@@ -1,7 +1,7 @@
 package de.htwg.se.minesweeper.Util
 
 import de.htwg.se.minesweeper.Controller.ControllerInterface
-import de.htwg.se.minesweeper.Model.Position
+import de.htwg.se.minesweeper.Model.GameComponent.Position
 
 trait GameStringDecorator(controller: ControllerInterface):
   def symbolAt(pos: Position) = controller.symbolAt(pos)

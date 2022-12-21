@@ -1,6 +1,10 @@
 package de.htwg.se.minesweeper.Controller
 
-import de.htwg.se.minesweeper.Model.{GameInterface, Symbols, Position}
+import de.htwg.se.minesweeper.Model.GameComponent.{
+  GameInterface,
+  Symbols,
+  Position
+}
 import de.htwg.se.minesweeper.Util.{Which, Observable}
 
 trait ControllerInterface extends Observable:

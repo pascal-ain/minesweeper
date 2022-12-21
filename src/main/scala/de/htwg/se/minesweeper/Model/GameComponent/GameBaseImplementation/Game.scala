@@ -1,6 +1,6 @@
 package de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation
 
-import de.htwg.se.minesweeper.Model.{
+import de.htwg.se.minesweeper.Model.GameComponent.{
   Position,
   GameInterface,
   InsertResult,

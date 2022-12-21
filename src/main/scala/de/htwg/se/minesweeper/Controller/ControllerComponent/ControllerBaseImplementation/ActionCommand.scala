@@ -1,7 +1,12 @@
 package de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImplementation
 
 import de.htwg.se.minesweeper.Util.Command
-import de.htwg.se.minesweeper.Model.{State, GameInterface, SnapShot, Position}
+import de.htwg.se.minesweeper.Model.GameComponent.{
+  State,
+  GameInterface,
+  SnapShot,
+  Position
+}
 
 enum Action:
   case Open, Flag

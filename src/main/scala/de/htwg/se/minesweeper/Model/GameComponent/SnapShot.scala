@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.Model
+package de.htwg.se.minesweeper.Model.GameComponent
 
 final case class SnapShot(
     openFields: Map[Position, Int | Mine.type],

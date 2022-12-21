@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.Model
+package de.htwg.se.minesweeper.Model.GameComponent
 
 trait GameInterface:
   def canOpen_?(pos: Position): InsertResult
