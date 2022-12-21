@@ -8,7 +8,7 @@ class ModuleConfig extends AbstractModule {
     val game = Model.GameComponent.GameBaseImplementation.Game(10, 10, 0.2)
     bind(classOf[ControllerComponent.ControllerInterface])
       .to(classOf[ControllerComponent.ControllerBaseImplementation.Controller])
-    bind(classOf[Model.GameInterface])
+    bind(classOf[Model.GameComponent.GameInterface])
       .toInstance(game)
   }
 }

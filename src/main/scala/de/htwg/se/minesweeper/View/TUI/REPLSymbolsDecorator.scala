@@ -5,7 +5,13 @@ import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
-import de.htwg.se.minesweeper.Model.{Mine, Flag, Closed, Score, Position}
+import de.htwg.se.minesweeper.Model.GameComponent.{
+  Mine,
+  Flag,
+  Closed,
+  Score,
+  Position
+}
 
 case class REPLSymbolsDecorator(
     controller: ControllerInterface,

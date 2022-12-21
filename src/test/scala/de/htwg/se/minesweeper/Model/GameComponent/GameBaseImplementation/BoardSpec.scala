@@ -4,7 +4,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import scala.collection.immutable.HashSet
 import de.htwg.se.minesweeper.Util.Helper
-import de.htwg.se.minesweeper.Model.Position
+import de.htwg.se.minesweeper.Model.GameComponent.Position
 
 class BoardSpec extends AnyWordSpec {
   val game1 = Game(9, 10, 0.15)
@@ -36,8 +36,8 @@ class BoardSpec extends AnyWordSpec {
     val mine =
       Helper.getAllPositions(game1).filter(game1.board.mines.contains(_)).next()
     val nextToMine = {
-      val (x, y) = (mine.x, mine.y)
-      if (x + 1) > game1.bounds.width then Position(x - 1, y)
+      val (x: Int, y: Int) = (mine.x, mine.y)
+      if ((x + 1) > game1.bounds.width) then Position(x - 1, y)
       else Position(x + 1, y)
     }
     game1.board.surroundingMines(nextToMine) should be >= 1

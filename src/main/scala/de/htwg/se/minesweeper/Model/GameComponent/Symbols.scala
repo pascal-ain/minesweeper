@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.Model
+package de.htwg.se.minesweeper.Model.GameComponent
 
 trait Symbols
 object Mine extends Symbols {

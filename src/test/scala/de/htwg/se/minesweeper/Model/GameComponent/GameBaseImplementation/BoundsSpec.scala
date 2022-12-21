@@ -3,7 +3,7 @@ package de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import de.htwg.se.minesweeper.Util.*
-import de.htwg.se.minesweeper.Model.Position
+import de.htwg.se.minesweeper.Model.GameComponent.Position
 
 class BoundsSpec extends AnyWordSpec {
   "Bounds has two helper functions that" should {

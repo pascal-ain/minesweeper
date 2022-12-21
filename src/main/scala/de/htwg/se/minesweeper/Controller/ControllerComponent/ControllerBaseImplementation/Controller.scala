@@ -1,7 +1,7 @@
 package de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImplementation
 
 import de.htwg.se.minesweeper.Controller.ControllerComponent.*
-import de.htwg.se.minesweeper.Model.*
+import de.htwg.se.minesweeper.Model.GameComponent.*
 import de.htwg.se.minesweeper.Util.{
   UndoManager,
   Observable,

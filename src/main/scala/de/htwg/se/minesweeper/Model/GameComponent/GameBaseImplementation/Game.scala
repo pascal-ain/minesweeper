@@ -1,6 +1,6 @@
 package de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation
 
-import de.htwg.se.minesweeper.Model.{
+import de.htwg.se.minesweeper.Model.GameComponent.{
   Position,
   GameInterface,
   InsertResult,
@@ -99,8 +99,7 @@ final case class Game(bounds: Bounds, state: State, board: Board)
           case Position(width, _) =>
             if width == bounds.width - 1 then sys.props("line.separator")
             else ""
-        }
-        )
+        })
       )
       .mkString
 

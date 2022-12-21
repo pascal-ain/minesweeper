@@ -3,7 +3,7 @@ package de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import de.htwg.se.minesweeper.Util.*
-import de.htwg.se.minesweeper.Model.*
+import de.htwg.se.minesweeper.Model.GameComponent.*
 
 class GameSpec extends AnyWordSpec {
   val eol = sys.props("line.separator")
