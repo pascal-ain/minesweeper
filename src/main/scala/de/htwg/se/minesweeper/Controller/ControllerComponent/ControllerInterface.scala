@@ -3,7 +3,7 @@ package de.htwg.se.minesweeper.Controller.ControllerComponent
 import de.htwg.se.minesweeper.Model.{GameInterface, Symbols, Position}
 import de.htwg.se.minesweeper.Util.{Which, Observable}
 
-trait ControllerInterface extends Observable:
+trait ControllerInterface extends Observable {
   def handleTrigger(
       handlePosition: Position => Either[String, GameInterface],
       pos: Position
@@ -17,3 +17,4 @@ trait ControllerInterface extends Observable:
   def getAllPositions(): Iterator[Position]
   def x: Int
   def y: Int
+}

@@ -9,9 +9,9 @@ final case class Board(
     mines: Set[Position],
     flaggedFields: Set[Position],
     bounds: Bounds
-):
+) {
 
-  def getSurroundingPositions(pos: Position): Iterator[Position] =
+  def getSurroundingPositions(pos: Position): Iterator[Position] = {
     val (x, y) = (pos.x, pos.y)
     val (width, height) = (bounds.width, bounds.height)
     /* from max(x - 1, 1) - 1 to min(x + 1, width - 1)
@@ -28,6 +28,7 @@ final case class Board(
       )
       .filterNot(_ == pos) // exclude input pos
       .iterator
+  }
 
   def surroundingMines(pos: Position) =
     getSurroundingPositions(pos).count(mines.contains(_))
@@ -36,16 +37,18 @@ final case class Board(
     (0 until bounds.height)
       .flatMap(posy => (0 until bounds.width).map(posx => Position(posx, posy)))
       .iterator
+}
 
-object Board:
+object Board {
   def apply(mines: Int, bounds: Bounds) =
     generateRandomPositions(mines, bounds)
+}
 
-def generateRandomPositions(howMany: Int, bounds: Bounds) =
+def generateRandomPositions(howMany: Int, bounds: Bounds) = {
   val (width, height) = (bounds.width, bounds.height)
   require(width * height > howMany)
   def recur(iteration: Int, accum: Set[Position]): Set[Position] =
-    iteration match
+    iteration match {
       case 0 => accum
       case _ => {
         val x = Random.between(0, width)
@@ -53,4 +56,6 @@ def generateRandomPositions(howMany: Int, bounds: Bounds) =
         if accum.contains(Position(x, y)) then recur(iteration, accum)
         else recur(iteration - 1, accum.incl(Position(x, y)))
       }
+    }
   new Board(Map.empty, recur(howMany, Set.empty), Set.empty, bounds)
+}

@@ -1,6 +1,6 @@
 package de.htwg.se.minesweeper.Model
 
-trait GameInterface:
+trait GameInterface {
   def canOpen_?(pos: Position): InsertResult
   def openField(pos: Position): GameInterface
   def canFlag_?(pos: Position): InsertResult
@@ -11,3 +11,4 @@ trait GameInterface:
   def getWidth: Int
   def getHeight: Int
   def getAllPositions: Iterator[Position]
+}

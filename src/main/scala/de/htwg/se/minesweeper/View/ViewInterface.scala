@@ -4,14 +4,16 @@ import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 import de.htwg.se.minesweeper.View.GUI.GUI
 import de.htwg.se.minesweeper.View.TUI.REPL
 
-trait ViewInterface:
+trait ViewInterface {
   def run: Unit
+}
 
-enum InterfaceType:
+enum InterfaceType {
   case GUI, TUI
+}
 
 def ViewFactory(kind: InterfaceType): ControllerInterface => ViewInterface =
-  kind match
+  kind match {
     case InterfaceType.GUI =>
       (controller: ControllerInterface) => new GUI(controller)
     case InterfaceType.TUI =>
@@ -23,3 +25,4 @@ def ViewFactory(kind: InterfaceType): ControllerInterface => ViewInterface =
           closedFieldSymbol = "[?]",
           (x: Int) => s"${(0 until 9).map(num => s"[${num.toString}]")(x)}"
         )
+  }

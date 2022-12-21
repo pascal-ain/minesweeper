@@ -1,4 +1,5 @@
 package de.htwg.se.minesweeper.Model
 
-enum InsertResult:
+enum InsertResult {
   case NotInBounds, AlreadyOpen, Flagged, Ok
+}

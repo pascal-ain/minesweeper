@@ -1,4 +1,5 @@
 package de.htwg.se.minesweeper.Util
 
-trait Observer:
+trait Observer {
   def update(e: Event): Unit
+}

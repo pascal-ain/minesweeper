@@ -16,19 +16,20 @@ class REPL(
     closedFieldSymbol: String,
     scoreSymbols: Int => String
 ) extends Observer
-    with ViewInterface:
+    with ViewInterface {
   controller.add(this)
 
   val eol = sys.props("line.separator")
 
-  override def run =
+  override def run = {
     println(gameString())
     runREPL()
+  }
 
   var parseState: ParseState = OnGoingState(controller)
 
   override def update(e: Event): Unit =
-    e match
+    e match {
       case Event.Failure(msg) => println(gameString() + eol + msg)
       case Event.Won => {
         parseState = LostOrWonState(controller)
@@ -42,6 +43,7 @@ class REPL(
         parseState = OnGoingState(controller)
         println(gameString())
       }
+    }
 
   def gameString() =
     REPLSymbolsDecorator(
@@ -52,14 +54,18 @@ class REPL(
       scoreSymbols
     ).toString()
 
-  def runREPL(): Unit =
+  def runREPL(): Unit = {
     val input = readLine()
-    parseState.handleInput(input) match
+    parseState.handleInput(input) match {
       case Ok(operation: Operation) =>
-        operation match
+        operation match {
           case Operation.OpenOrFlag(function, pos) =>
             controller.handleTrigger(function, pos)
           case Operation.UndoRedoOrExit(function) =>
             controller.handleTrigger(function)
+        }
       case Err(msg: String) => println(gameString() + eol + msg)
+    }
     runREPL()
+  }
+}

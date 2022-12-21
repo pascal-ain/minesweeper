@@ -1,4 +1,5 @@
 package de.htwg.se.minesweeper.Model
 
-enum State:
+enum State {
   case Won, Lost, OnGoing
+}

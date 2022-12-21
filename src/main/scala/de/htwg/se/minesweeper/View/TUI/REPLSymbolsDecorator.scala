@@ -13,15 +13,16 @@ case class REPLSymbolsDecorator(
     flag: String,
     closed: String,
     mineCount: Int => String
-) extends GameStringDecorator(controller):
+) extends GameStringDecorator(controller) {
   override def decoratedSymbol(pos: Position) =
-    super.symbolAt(pos) match
+    super.symbolAt(pos) match {
       case _: Mine.type   => mine
       case Score(num)     => mineCount(num)
       case _: Flag.type   => flag
       case _: Closed.type => closed
+    }
 
-  override def toString =
+  override def toString = {
     val width = controller.x
     val height = controller.y
     controller
@@ -32,3 +33,5 @@ case class REPLSymbolsDecorator(
                                 else "")
       )
       .mkString
+  }
+}
