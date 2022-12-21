@@ -6,17 +6,17 @@ import org.scalatest.matchers.should.Matchers._
 import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.*
 import de.htwg.se.minesweeper.Util.*
 import de.htwg.se.minesweeper.Model.*
-import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerDirector
+import de.htwg.se.minesweeper.Config.{given}
 
 class ControllerSpec extends AnyWordSpec {
   "The controller acts as a middleman between view and model and" should {
-    class TestObserver(c: Controller) extends Observer:
+    class TestObserver(using c: Controller) extends Observer:
       c.add(this)
       var bing = Event.Won
       def update(e: Event): Unit = bing = e
     "tell the view about success or possible errors" in {
       val game = Game(9, 9, 0.25)
-      val controller = new Controller(game)
+      val controller = new Controller(using game)
       controller
         .openField(
           Position(0, 420)
@@ -43,8 +43,8 @@ class ControllerSpec extends AnyWordSpec {
     }
     "never let the first open field be a mine (this will only work on the actual first opened field, removing all mines with undoing will not work)" in {
       val game = Game(9, 9, 0.2)
-      val controller = new Controller(game)
-      val observing = new TestObserver(controller)
+      val controller = new Controller(using game)
+      val observing = new TestObserver(using controller)
       controller.handleTrigger(
         controller.openField,
         game.board.mines.iterator.next()
@@ -54,14 +54,17 @@ class ControllerSpec extends AnyWordSpec {
     "tell the view about a state change in the game" in {
       val game = Game(10, 10, 0.2)
       val notMines =
-        Helper.getAllPositions(game).filterNot(game.board.mines.contains(_))
-      val won_game = Helper.openFields(game, notMines)
-      val result = new Controller(game).state
+        Helper
+          .getAllPositions(using game)
+          .filterNot(game.board.mines.contains(_))
+      val won_game = Helper.openFields(using game, notMines)
+      val result = new Controller(using game).state
       result shouldBe Event.Success
-      val won_controller = new Controller(won_game)
+      val won_controller = new Controller(using game)
       won_controller.state shouldBe Event.Won
 
-      val controller = new Controller(Game(9, 9, 0.2))
+      val game2 = Game(9, 9, 0.2)
+      val controller = new Controller(using game2)
       controller.handleTrigger(
         controller.openField,
         controller
@@ -78,14 +81,14 @@ class ControllerSpec extends AnyWordSpec {
     }
     "have the same string representation as the model" in {
       val game = Game(10, 10, 0.2)
-      val controller = new Controller(game)
+      val controller = new Controller(using game)
       game.toString should equal(controller.toString)
     }
     "notify Observers" in {
       val game = Game(10, 10, 0.2)
-      val controllerToOpen = new Controller(game)
+      val controllerToOpen = new Controller(using game)
 
-      val testOpen = TestObserver(controllerToOpen)
+      val testOpen = TestObserver(using controllerToOpen)
       testOpen.bing should be(Event.Won)
 
       controllerToOpen.handleTrigger(
@@ -96,15 +99,15 @@ class ControllerSpec extends AnyWordSpec {
 
       val notMine =
         Helper
-          .getAllPositions(game)
+          .getAllPositions(using game)
           .filterNot(game.board.mines.contains(_))
           .next()
 
       controllerToOpen.handleTrigger(controllerToOpen.openField, notMine)
       testOpen.bing shouldBe Event.Success
 
-      val controllerToFlag = Controller(game)
-      val testFlagging = TestObserver(controllerToFlag)
+      val controllerToFlag = Controller(using game)
+      val testFlagging = TestObserver(using controllerToFlag)
       testFlagging.bing shouldBe Event.Won
 
       controllerToFlag.handleTrigger(
@@ -121,8 +124,8 @@ class ControllerSpec extends AnyWordSpec {
     }
     "hold a vector of subscribers that can be added or removed" in {
       val game = Game(9, 12, 0.3)
-      val controller = new Controller(game)
-      val test = new TestObserver(controller)
+      val controller = new Controller(using game)
+      val test = new TestObserver(using controller)
       val initEvent = test.bing
       controller.handleTrigger(controller.openField, Position(0, 0))
       val afterOpen = test.bing
@@ -134,7 +137,7 @@ class ControllerSpec extends AnyWordSpec {
     }
     "undo or redo and report about possible errors" in {
       var game = Game(9, 11, 0.2)
-      val controller = new Controller(game)
+      val controller = new Controller(using game)
 
       // nothing to redo or undo at the beginning
       controller.undo() shouldBe Left(Undo)
@@ -143,7 +146,7 @@ class ControllerSpec extends AnyWordSpec {
       val notMine = game.board.getAllPositions
         .filterNot(game.board.mines.contains(_))
         .next()
-      val observing = new TestObserver(controller)
+      val observing = new TestObserver(using controller)
       controller.handleTrigger(controller.openField, notMine)
       observing.bing shouldBe Event.Success
 
@@ -178,7 +181,7 @@ class ControllerSpec extends AnyWordSpec {
         game.copy(board =
           game.board.copy(mines = Set(Position(0, 0), Position(4, 4)))
         )
-      val controller = new Controller(modified)
+      val controller = new Controller(using modified)
       val notMine = Position(1, 1)
       val zeroField = Position(9, 9)
       controller.handleTrigger(controller.openField, notMine)
@@ -191,7 +194,7 @@ class ControllerSpec extends AnyWordSpec {
     }
     "change the state correctly on redo and undo" in {
       var game = Game(9, 11, 0.2)
-      val controller = new Controller(game)
+      val controller = new Controller(using game)
 
       val notMine =
         game.board.getAllPositions.filterNot(game.board.mines.contains).next()
@@ -214,13 +217,14 @@ class ControllerSpec extends AnyWordSpec {
       )
       val missingField = Position(0, 1)
       val almostWon = Helper.openFields(
+        using
         modified,
         modified.board.getAllPositions.filter(pos =>
           !modified.board.mines.contains(pos) && pos != missingField
         )
       )
 
-      val win = new Controller(almostWon)
+      val win = new Controller(using almostWon)
       win.handleTrigger(win.openField, missingField)
       win.state shouldBe Event.Won
       win.handleTrigger(win.undo)

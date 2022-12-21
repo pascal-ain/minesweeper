@@ -1,6 +1,7 @@
 package de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImplementation
 
-import de.htwg.se.minesweeper.Controller.ControllerComponent.*
+import de.htwg.se.minesweeper.Config.{given}
+import de.htwg.se.minesweeper.Controller.ControllerInterface
 import de.htwg.se.minesweeper.Model.*
 import de.htwg.se.minesweeper.Util.{
   UndoManager,
@@ -13,7 +14,7 @@ import de.htwg.se.minesweeper.Util.{
 }
 import scala.util.{Either, Left => Err, Right => Ok}
 
-class Controller(var game: GameInterface)
+class Controller(using var game: GameInterface)
     extends ControllerInterface
     with Observable:
   override def toString(): String = game.toString()

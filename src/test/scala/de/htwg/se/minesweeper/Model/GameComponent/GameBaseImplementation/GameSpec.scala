@@ -4,6 +4,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import de.htwg.se.minesweeper.Util.*
 import de.htwg.se.minesweeper.Model.*
+import de.htwg.se.minesweeper.Config.{given}
 
 class GameSpec extends AnyWordSpec {
   val eol = sys.props("line.separator")
@@ -62,7 +63,9 @@ class GameSpec extends AnyWordSpec {
     }
     "be the number of surrounding mines when it is revealed" in {
       val safeFields1 =
-        Helper.getAllPositions(game1).filterNot(game1.board.mines.contains(_))
+        Helper
+          .getAllPositions(using game1)
+          .filterNot(game1.board.mines.contains(_))
       val open1 = safeFields1.next()
       game1
         .openField(open1)
@@ -72,7 +75,9 @@ class GameSpec extends AnyWordSpec {
       )
 
       val safeFields2 =
-        Helper.getAllPositions(game2).filterNot(game2.board.mines.contains(_))
+        Helper
+          .getAllPositions(using game2)
+          .filterNot(game2.board.mines.contains(_))
       val open2 = safeFields2.next
       game2
         .openField(open2)
@@ -106,7 +111,7 @@ class GameSpec extends AnyWordSpec {
     "with 0 surrounding mines open its neighbors" in {
       val bigGame = Game(20, 20, 0.1)
       val safeField = Helper
-        .getAllPositions(bigGame)
+        .getAllPositions(using bigGame)
         .filter(bigGame.board.surroundingMines(_) == 0)
         .next()
       bigGame.openField(safeField).board.openFields.size should be >= 3
@@ -149,17 +154,19 @@ class GameSpec extends AnyWordSpec {
   "The state of the game" should {
     val bigGame = Game(80, 20, 0.15)
     val noMines = Helper
-      .getAllPositions(bigGame)
+      .getAllPositions(using bigGame)
       .filterNot(bigGame.board.mines.contains(_))
-    val wonGame = Helper.openFields(bigGame, noMines)
+    val wonGame = Helper.openFields(using bigGame, noMines)
 
     val notMines =
-      Helper.getAllPositions(game1).filterNot(game1.board.mines.contains(_))
+      Helper
+        .getAllPositions(using game1)
+        .filterNot(game1.board.mines.contains(_))
     val lostGame = game2
       .openField(game2.board.mines.toVector(0))
     "be no fields to open when won" in {
       Helper
-        .getAllPositions(wonGame)
+        .getAllPositions(using wonGame)
         .filter(pos =>
           !wonGame.getSnapShot.mines.contains(pos)
             && !wonGame.getSnapShot.openFields.contains(pos)
@@ -178,7 +185,9 @@ class GameSpec extends AnyWordSpec {
     }
     "be neither lost or won when no mines are opened and there are still fields to open" in {
       val notMines =
-        Helper.getAllPositions(game1).filterNot(game1.board.mines.contains(_))
+        Helper
+          .getAllPositions(using game1)
+          .filterNot(game1.board.mines.contains(_))
       game1.openField(notMines.next()).state shouldBe State.OnGoing
     }
   }

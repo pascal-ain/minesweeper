@@ -1,15 +1,15 @@
 package de.htwg.se.minesweeper
 
 import scala.util.{Success, Failure}
-
-import de.htwg.se.minesweeper.View.{ViewFactory, InterfaceType}
-import de.htwg.se.minesweeper.Controller.ControllerComponent.*
+import de.htwg.se.minesweeper.Config.{given}
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImplementation
+import de.htwg.se.minesweeper.View.GUI.GUI
+import de.htwg.se.minesweeper.View.TUI.REPL
+import scala.io.StdIn.readLine
 
 // $COVERAGE-OFF$
 @main def run: Unit =
-  val controller = ControllerDirector.defaultController().build().get
-
-  ViewFactory(InterfaceType.GUI)(controller).run
-  ViewFactory(InterfaceType.TUI)(controller).run
+  new GUI().run
+  new REPL().run
 
 // $COVERAGE-ON$

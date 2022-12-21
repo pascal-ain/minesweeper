@@ -8,7 +8,7 @@ import scala.util.{Either, Left => Err, Right => Ok}
 
 class OnGoingStrategySpec extends AnyWordSpec {
   val game = Game(9, 9, 0)
-  val controller = new Controller(game)
+  val controller = new Controller(using game)
   val parseOnGoing = OnGoingState(controller)
   "When the game is ongoing it" should {
     "accept exitting, opening, flagging, undoing and redoing the game" in {

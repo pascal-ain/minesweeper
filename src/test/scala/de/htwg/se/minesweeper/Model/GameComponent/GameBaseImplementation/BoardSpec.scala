@@ -34,7 +34,10 @@ class BoardSpec extends AnyWordSpec {
   }
   "have a method that counts the surrounding mines" in {
     val mine =
-      Helper.getAllPositions(game1).filter(game1.board.mines.contains(_)).next()
+      Helper
+        .getAllPositions(using game1)
+        .filter(game1.board.mines.contains(_))
+        .next()
     val nextToMine = {
       val (x, y) = (mine.x, mine.y)
       if (x + 1) > game1.bounds.width then Position(x - 1, y)
@@ -43,7 +46,7 @@ class BoardSpec extends AnyWordSpec {
     game1.board.surroundingMines(nextToMine) should be >= 1
     val noMines =
       Helper
-        .getAllPositions(game1)
+        .getAllPositions(using game1)
         .filter(game1.board.surroundingMines(_) == 0)
         .next()
     game1.board.surroundingMines(noMines) shouldBe 0

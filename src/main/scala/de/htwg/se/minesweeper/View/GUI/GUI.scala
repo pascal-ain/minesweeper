@@ -1,22 +1,18 @@
 package de.htwg.se.minesweeper.View.GUI
 
-import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
+import de.htwg.se.minesweeper.Controller.ControllerInterface
 import de.htwg.se.minesweeper.Util.{Event, Observer}
 import de.htwg.se.minesweeper.Model.*
 import scala.swing._
 import javax.swing.ImageIcon
 import scala.swing.event.MouseClicked
-import de.htwg.se.minesweeper.View.ViewInterface
 
-class GUI(controller: ControllerInterface)
-    extends Frame
-    with Observer
-    with ViewInterface:
+class GUI(using controller: ControllerInterface) extends Frame with Observer:
   controller.add(this)
   val gameWidth = controller.x
   val gameHeight = controller.y
 
-  override def run =
+  def run =
     title = "Minesweeper"
     resizable = false
     menuBar = new MenuBar {

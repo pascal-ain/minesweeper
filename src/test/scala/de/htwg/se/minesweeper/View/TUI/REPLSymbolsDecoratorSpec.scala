@@ -23,7 +23,7 @@ class REPLSymbolsDecoratorSpec extends AnyWordSpec {
       val openStuff =
         game.flagField(flagPosition).openField(mine).openField(notMine)
 
-      val controller = new Controller(openStuff)
+      val controller = new Controller(using openStuff)
       val decorator =
         new REPLSymbolsDecorator(controller, "l", "f", "K", (mines: Int) => "N")
       decorator.controller.toString
