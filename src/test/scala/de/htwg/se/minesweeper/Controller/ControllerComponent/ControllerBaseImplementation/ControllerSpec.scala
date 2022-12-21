@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers._
 
 import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.*
 import de.htwg.se.minesweeper.Util.*
-import de.htwg.se.minesweeper.Model.*
+import de.htwg.se.minesweeper.Model.GameComponent.*
 import de.htwg.se.minesweeper.Config.{given}
 
 class ControllerSpec extends AnyWordSpec {

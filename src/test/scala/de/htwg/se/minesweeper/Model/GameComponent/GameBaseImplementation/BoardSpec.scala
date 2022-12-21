@@ -4,7 +4,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import scala.collection.immutable.HashSet
 import de.htwg.se.minesweeper.Util.Helper
-import de.htwg.se.minesweeper.Model.Position
+import de.htwg.se.minesweeper.Model.GameComponent.Position
 
 class BoardSpec extends AnyWordSpec {
   val game1 = Game(9, 10, 0.15)

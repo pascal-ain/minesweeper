@@ -1,7 +1,7 @@
 package de.htwg.se.minesweeper.Util
 
 import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.*
-import de.htwg.se.minesweeper.Model.*
+import de.htwg.se.minesweeper.Model.GameComponent.*
 
 object Helper:
   def getAllPositions(using game: GameInterface): Iterator[Position] =
