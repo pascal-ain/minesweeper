@@ -1,4 +1,4 @@
-val scala3Version = "3.2.2-RC1"
+val scala3Version = "3.2.2-RC2"
 
 lazy val root = project
   .in(file("."))
@@ -11,7 +11,7 @@ lazy val root = project
       "org.scalatest" %% "scalatest" % "3.2.14" % "test",
       ("org.scala-lang.modules" %% "scala-swing" % "3.0.0")
         .cross(CrossVersion.for3Use2_13),
-      "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
+      "org.scala-lang.modules" %% "scala-xml" % "2.1.0"
     )
   )
 scalacOptions ++= Seq("-deprecation", "-feature")
