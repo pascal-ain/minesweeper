@@ -6,6 +6,7 @@ import de.htwg.se.minesweeper.Model.GameComponent.*
 import scala.swing._
 import javax.swing.ImageIcon
 import scala.swing.event.MouseClicked
+import de.htwg.se.minesweeper.Config
 
 class GUI(using controller: ControllerInterface) extends Frame with Observer:
   controller.add(this)
@@ -69,30 +70,14 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
       controller.getAllPositions().foreach(p => contents += new LostWonField(p))
 
   abstract class GeneralField(pos: Position) extends Button:
-    val symbol = controller.symbolAt(pos)
-    // text = symbol
-    val projectPath = System.getProperty("user.dir")
-    var buttonIcon: ImageIcon = null
-
-    symbol match
-      case Closed =>
-        buttonIcon = new ImageIcon(
-          projectPath + "/src/main/pictures/closedField.png"
+    this.peer.setIcon(
+      resizeImage(
+        new ImageIcon(
+          Config.dataPath + "/pictures/"
+            + Config.imagePath(controller.symbolAt(pos))
         )
-      case Mine =>
-        buttonIcon = new ImageIcon(
-          projectPath + "/src/main/pictures/mine.png"
-        )
-      case Flag =>
-        buttonIcon = new ImageIcon(
-          projectPath + "/src/main/pictures/flag.png"
-        )
-      case Score(num) =>
-        buttonIcon = new ImageIcon(
-          s"${projectPath}/src/main/pictures/${num}.png"
-        )
-
-    this.peer.setIcon(resizeImage(buttonIcon))
+      )
+    )
     preferredSize = new Dimension {
       width = 60
       height = 60
