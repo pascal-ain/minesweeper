@@ -10,7 +10,8 @@ lazy val root = project
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.scalatest" %% "scalatest" % "3.2.14" % "test",
       ("org.scala-lang.modules" %% "scala-swing" % "3.0.0")
-        .cross(CrossVersion.for3Use2_13)
+        .cross(CrossVersion.for3Use2_13),
+      "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
     )
   )
 scalacOptions ++= Seq("-deprecation", "-feature")
