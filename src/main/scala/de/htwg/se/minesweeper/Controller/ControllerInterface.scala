@@ -6,6 +6,7 @@ import de.htwg.se.minesweeper.Model.GameComponent.{
   Position
 }
 import de.htwg.se.minesweeper.Util.{Which, Observable}
+import java.io.File
 
 trait ControllerInterface extends Observable:
   def handleTrigger(

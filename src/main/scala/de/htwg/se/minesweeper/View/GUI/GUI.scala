@@ -20,11 +20,14 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
     resizable = false
     menuBar = new MenuBar {
       contents ++= Seq(
+        new MenuItem(Action("Save") {
+          tooltip =
+            "Save the current state of the game to the /data/saves/ directory"
+
+        }),
         new MenuItem(Action("New Game") {
-          val newData = new GameSetter()
+          val newData = new GameSetter(controller)
           scaleFactor = newData.buttonSizes
-          controller
-            .newGame(newData.width, newData.height, newData.minePercentage)
         }),
         new MenuItem(Action("Undo") {
           controller.handleTrigger(controller.undo)

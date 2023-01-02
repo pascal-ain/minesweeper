@@ -3,23 +3,20 @@ package de.htwg.se.minesweeper.View.GUI
 import scala.swing.*
 import de.htwg.se.minesweeper.Config
 import scala.swing.event.*
+import de.htwg.se.minesweeper.Controller.ControllerInterface
 
-class GameSetter() extends Dialog {
-  var minePercentage = Config.minePercentage
-  var width = Config.defaultWidth
-  var height = Config.defaultHeight
+class GameSetter(var controller: ControllerInterface) extends Dialog {
   var buttonSizes = 60
 
   var percentage = new TextField() {
     tooltip = "Desired percentage of mines"
-    text = minePercentage.toString().stripPrefix("0.")
+    text = 2.toString
   }
   var percentageField = new GridPanel(1, 2) {
     contents ++= Seq(percentage, new Label("%"))
     tooltip = "Desired mine percentage"
   }
 
-  def result = (width, height, minePercentage)
   modal = true
 
   contents = new GridPanel(2, 1) {
@@ -37,8 +34,8 @@ class GameSetter() extends Dialog {
   centerOnScreen()
   open()
 
-  case class ButtonSetter(setWidth: Int, setHeight: Int) extends Button {
-    text = s"${setWidth}x${setHeight}"
+  case class ButtonSetter(width: Int, height: Int) extends Button {
+    text = s"${width}x${height}"
 
     listenTo(mouse.clicks)
     reactions += {
@@ -49,21 +46,19 @@ class GameSetter() extends Dialog {
           Dialog.showMessage(message = msg, title = "Error")
           Config.minePercentage
 
-        width = setWidth
-        height = setHeight
         buttonSizes = (width * height) match
           case result if result <= 100               => 60
           case result if result <= 256               => 55
           case result if result <= 480               => 45
           case result if result <= Integer.MAX_VALUE => 30
 
-        minePercentage = percentage.text.toIntOption match
+        percentage.text.toIntOption match
           case None =>
             err()
           case Some(value) => {
             if 0 < value && value < 100 then
               close()
-              s"0.$value".toDouble
+              controller.newGame(width, height, s"0.$value".toDouble)
             else err()
           }
       }

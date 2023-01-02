@@ -15,6 +15,7 @@ import de.htwg.se.minesweeper.Util.{
   Event
 }
 import scala.util.{Either, Left => Err, Right => Ok}
+import java.io.File
 
 class Controller(using var game: GameInterface)
     extends ControllerInterface
