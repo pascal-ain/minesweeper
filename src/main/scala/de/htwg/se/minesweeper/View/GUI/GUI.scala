@@ -7,6 +7,7 @@ import scala.swing.*
 import scala.swing.event.MouseClicked
 import de.htwg.se.minesweeper.Config
 import javax.swing.ImageIcon
+import java.io.File
 
 class GUI(using controller: ControllerInterface) extends Frame with Observer:
   controller.add(this)
@@ -23,7 +24,14 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
         new MenuItem(Action("Save") {
           tooltip =
             "Save the current state of the game to the /data/saves/ directory"
-
+          controller.save()
+        }),
+        new MenuItem(Action("Load") {
+          val fileChooser =
+            new FileChooser(new File(Config.dataPath + "/saves/"))
+          fileChooser.showOpenDialog(this)
+          val file = fileChooser.selectedFile
+          if file != null then controller.load(file)
         }),
         new MenuItem(Action("New Game") {
           val newData = new GameSetter(controller)

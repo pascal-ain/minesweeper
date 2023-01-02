@@ -1,5 +1,6 @@
 package de.htwg.se.minesweeper.View.TUI
 
+import de.htwg.se.minesweeper.Config.{given}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import de.htwg.se.minesweeper.Util.*

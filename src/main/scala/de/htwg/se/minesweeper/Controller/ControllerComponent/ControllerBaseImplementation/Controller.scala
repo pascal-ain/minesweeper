@@ -2,22 +2,14 @@ package de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImpl
 
 import de.htwg.se.minesweeper.Config.{given}
 import de.htwg.se.minesweeper.Config
+import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOInterface
 import de.htwg.se.minesweeper.Controller.ControllerInterface
 import de.htwg.se.minesweeper.Model.GameComponent.*
-
-import de.htwg.se.minesweeper.Util.{
-  UndoManager,
-  Observable,
-  Command,
-  Which,
-  Undo,
-  Redo,
-  Event
-}
+import de.htwg.se.minesweeper.Util.*
 import scala.util.{Either, Left => Err, Right => Ok}
 import java.io.File
 
-class Controller(using var game: GameInterface)
+class Controller(using var game: GameInterface)(using fileIO: FileIOInterface)
     extends ControllerInterface
     with Observable:
   override def toString(): String = game.toString()
@@ -40,6 +32,14 @@ class Controller(using var game: GameInterface)
       case Err(msg)    => Event.Failure(msg)
       case Ok(newGame) => game = newGame; state
     notifyObservers(result)
+
+  override def save() =
+    fileIO.save(this.game)
+
+  override def load(path: File) =
+    this.undoManager = new UndoManager[GameInterface]
+    this.game = fileIO.load(path)
+    notifyObservers(state)
 
   override def handleTrigger(undoRedo: () => Either[Which, GameInterface]) =
     val result = undoRedo() match

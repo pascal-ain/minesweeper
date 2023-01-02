@@ -23,3 +23,5 @@ trait ControllerInterface extends Observable:
   def x: Int
   def y: Int
   def newGame(width: Int, height: Int, mines: Double): Unit
+  def save(): Unit
+  def load(path: File): Unit
