@@ -3,31 +3,39 @@ package de.htwg.se.minesweeper.View.GUI
 import de.htwg.se.minesweeper.Controller.ControllerInterface
 import de.htwg.se.minesweeper.Util.{Event, Observer}
 import de.htwg.se.minesweeper.Model.GameComponent.*
-import scala.swing._
-import javax.swing.ImageIcon
+import scala.swing.*
 import scala.swing.event.MouseClicked
 import de.htwg.se.minesweeper.Config
+import javax.swing.ImageIcon
 
 class GUI(using controller: ControllerInterface) extends Frame with Observer:
   controller.add(this)
-  val gameWidth = controller.x
-  val gameHeight = controller.y
+  def gameWidth = controller.x
+  def gameHeight = controller.y
+
+  var scaleFactor = 60
 
   def run =
     title = "Minesweeper"
     resizable = false
     menuBar = new MenuBar {
-      contents += new Menu("File") {
-        contents += new MenuItem(Action("Undo") {
+      contents ++= Seq(
+        new MenuItem(Action("New Game") {
+          val newData = new GameSetter()
+          scaleFactor = newData.buttonSizes
+          controller
+            .newGame(newData.width, newData.height, newData.minePercentage)
+        }),
+        new MenuItem(Action("Undo") {
           controller.handleTrigger(controller.undo)
-        })
-        contents += new MenuItem(Action("Redo") {
+        }),
+        new MenuItem(Action("Redo") {
           controller.handleTrigger(controller.redo)
-        })
-        contents += new MenuItem(Action("Exit") {
+        }),
+        new MenuItem(Action("Exit") {
           sys.exit(0)
         })
-      }
+      )
     }
     contents = new BorderPanel {
       add(
@@ -42,6 +50,7 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
   def showDialog(lost: Boolean) =
     val msg = if lost then "You lost!" else "You won!"
     Dialog.showMessage(message = msg, title = "Game Status")
+
   override def update(e: Event): Unit =
     e match
       case Event.Failure(msg) => println(msg)
@@ -58,14 +67,14 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
     sys.exit(0)
 
   class GameBoardNormal(width: Int, height: Int)
-      extends GridPanel(width, height):
+      extends GridPanel(height, width):
     val positions =
       controller.getAllPositions().foreach(p => contents += new NormalField(p))
     hGap = 0
     vGap = 0
 
   class GameBoardLostWon(width: Int, height: Int)
-      extends GridPanel(width, height):
+      extends GridPanel(height, width):
     val positions =
       controller.getAllPositions().foreach(p => contents += new LostWonField(p))
 
@@ -79,8 +88,8 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
       )
     )
     preferredSize = new Dimension {
-      width = 60
-      height = 60
+      width = scaleFactor
+      height = scaleFactor
     }
 
   case class NormalField(pos: Position) extends GeneralField(pos: Position):
@@ -105,6 +114,10 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
     var resizeImage = image
     var imageTest = image.getImage()
     var imageNew =
-      imageTest.getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH)
+      imageTest.getScaledInstance(
+        scaleFactor,
+        scaleFactor,
+        java.awt.Image.SCALE_SMOOTH
+      )
     resizeImage = new ImageIcon(imageNew)
     resizeImage

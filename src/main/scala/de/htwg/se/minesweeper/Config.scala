@@ -15,7 +15,14 @@ object Config {
       case Mine            => "mine.png"
       case Score(num: Int) => s"$num.png"
 
-  var game = Game(10, 10, 0.2)
+  val minePercentage = 0.2
+  val defaultHeight = 10
+  val defaultWidth = 10
+  var game = Game(defaultWidth, defaultHeight, minePercentage)
+
+  def newGame(width: Int, height: Int, mines: Double) =
+    Game(width, height, mines)
+
   given GameInterface = game
   given ControllerInterface =
     ControllerBaseImplementation.Controller()

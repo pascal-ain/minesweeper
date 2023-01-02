@@ -1,8 +1,10 @@
 package de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImplementation
 
 import de.htwg.se.minesweeper.Config.{given}
+import de.htwg.se.minesweeper.Config
 import de.htwg.se.minesweeper.Controller.ControllerInterface
 import de.htwg.se.minesweeper.Model.GameComponent.*
+
 import de.htwg.se.minesweeper.Util.{
   UndoManager,
   Observable,
@@ -19,10 +21,15 @@ class Controller(using var game: GameInterface)
     with Observable:
   override def toString(): String = game.toString()
 
+  override def newGame(width: Int, height: Int, mines: Double) =
+    this.game = Config.newGame(width, height, mines)
+    undoManager = new UndoManager[GameInterface]
+    notifyObservers(Event.Success)
+
   var first_? = true
-  override val x = game.getWidth
-  override val y = game.getHeight
-  val undoManager = new UndoManager[GameInterface]
+  override def x = game.getWidth
+  override def y = game.getHeight
+  var undoManager = new UndoManager[GameInterface]
 
   override def handleTrigger(
       handlePosition: Position => Either[String, GameInterface],

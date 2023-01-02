@@ -21,3 +21,4 @@ trait ControllerInterface extends Observable:
   def getAllPositions(): Iterator[Position]
   def x: Int
   def y: Int
+  def newGame(width: Int, height: Int, mines: Double): Unit
