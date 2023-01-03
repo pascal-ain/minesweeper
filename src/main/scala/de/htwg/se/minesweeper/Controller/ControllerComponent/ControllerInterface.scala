@@ -1,4 +1,4 @@
-package de.htwg.se.minesweeper.Controller
+package de.htwg.se.minesweeper.Controller.ControllerComponent
 
 import de.htwg.se.minesweeper.Model.GameComponent.{
   GameInterface,

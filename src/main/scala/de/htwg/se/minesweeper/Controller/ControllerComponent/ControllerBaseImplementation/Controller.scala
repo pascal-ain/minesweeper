@@ -3,7 +3,7 @@ package de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImpl
 import de.htwg.se.minesweeper.Config.{given}
 import de.htwg.se.minesweeper.Config
 import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOInterface
-import de.htwg.se.minesweeper.Controller.ControllerInterface
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 import de.htwg.se.minesweeper.Model.GameComponent.*
 import de.htwg.se.minesweeper.Util.*
 import scala.util.{Either, Left => Err, Right => Ok}

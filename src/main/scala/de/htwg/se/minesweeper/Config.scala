@@ -2,12 +2,13 @@ package de.htwg.se.minesweeper
 
 import Model.GameComponent.GameInterface
 import Model.GameComponent.GameBaseImplementation.Game
-import Controller.ControllerInterface
+import Controller.ControllerComponent.ControllerInterface
 import Controller.ControllerComponent.ControllerBaseImplementation
 import Model.GameComponent.{Symbols, Score, Mine, Flag, Closed}
 import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOInterface
 import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOXMLImplementation
 import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOJSONImplementation
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 
 object Config {
   val dataPath = System.getProperty("user.dir") + "/data/"

@@ -1,6 +1,6 @@
 package de.htwg.se.minesweeper.View.GUI
 
-import de.htwg.se.minesweeper.Controller.ControllerInterface
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 import de.htwg.se.minesweeper.Util.{Event, Observer}
 import de.htwg.se.minesweeper.Model.GameComponent.*
 import scala.swing.*

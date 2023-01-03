@@ -3,7 +3,7 @@ package de.htwg.se.minesweeper.View.GUI
 import scala.swing.*
 import de.htwg.se.minesweeper.Config
 import scala.swing.event.*
-import de.htwg.se.minesweeper.Controller.ControllerInterface
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 
 class GameSetter(var controller: ControllerInterface) extends Dialog {
   var buttonSizes = 60

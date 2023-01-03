@@ -7,7 +7,7 @@ import de.htwg.se.minesweeper.Model.GameComponent.{
   GameInterface
 }
 import de.htwg.se.minesweeper.Util.Which
-import de.htwg.se.minesweeper.Controller.ControllerInterface
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 
 enum Operation:
   case OpenOrFlag(

@@ -1,7 +1,7 @@
 package de.htwg.se.minesweeper.View.TUI
 
 import de.htwg.se.minesweeper.Util.GameStringDecorator
-import de.htwg.se.minesweeper.Controller.ControllerInterface
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
