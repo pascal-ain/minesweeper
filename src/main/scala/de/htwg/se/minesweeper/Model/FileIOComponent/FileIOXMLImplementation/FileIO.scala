@@ -46,12 +46,7 @@ class FileIO extends FileIOInterface {
   def openFieldsToXML(fields: Map[Position, Int | Mine.type]) =
     fields
       .map((pos: Position, at: Int | Mine.type) =>
-        positionToXML(
-          pos,
-          at match
-            case Mine     => "*"
-            case num: Int => num.toString()
-        )
+        positionToXML(pos, at.toString())
       )
 
   override def load(path: File): GameInterface =

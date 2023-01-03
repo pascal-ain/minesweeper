@@ -7,6 +7,7 @@ import Controller.ControllerComponent.ControllerBaseImplementation
 import Model.GameComponent.{Symbols, Score, Mine, Flag, Closed}
 import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOInterface
 import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOXMLImplementation
+import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOJSONImplementation
 
 object Config {
   val dataPath = System.getProperty("user.dir") + "/data/"
@@ -25,7 +26,7 @@ object Config {
   def newGame(width: Int, height: Int, mines: Double) =
     Game(width, height, mines)
 
-  given FileIOInterface = FileIOXMLImplementation.FileIO()
+  given FileIOInterface = FileIOJSONImplementation.FileIO()
   given GameInterface = game
   given ControllerInterface =
     ControllerBaseImplementation.Controller()

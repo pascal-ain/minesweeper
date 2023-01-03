@@ -11,7 +11,9 @@ lazy val root = project
       "org.scalatest" %% "scalatest" % "3.2.14" % "test",
       ("org.scala-lang.modules" %% "scala-swing" % "3.0.0")
         .cross(CrossVersion.for3Use2_13),
-      "org.scala-lang.modules" %% "scala-xml" % "2.1.0"
+      "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
+      ("com.typesafe.play" %% "play-json" % "2.9.3")
+        .cross(CrossVersion.for3Use2_13)
     )
   )
 scalacOptions ++= Seq("-deprecation", "-feature")
