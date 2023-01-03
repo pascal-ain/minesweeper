@@ -12,8 +12,7 @@ import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOInterface
 import java.io.*
 import de.htwg.se.minesweeper.Config
 import scala.xml.*
-import scala.util.Using
-import java.util.IllegalFormatException
+import scala.util.{Using, Try}
 
 class FileIO extends FileIOInterface {
   override def save(game: GameInterface) =
@@ -49,39 +48,41 @@ class FileIO extends FileIOInterface {
         positionToXML(pos, at.toString())
       )
 
-  override def load(path: File): GameInterface =
-    val file = scala.xml.XML.loadFile(path)
-    def getPositionSeq(field: String) =
-      file \\ field \ "position"
-    val width = (file \\ "game" \@ "width").toInt
-    val height = (file \\ "game" \@ "height").toInt
-    val state = (file \\ "game" \@ "state") match
-      case "Won"     => State.Won
-      case "Lost"    => State.Lost
-      case "OnGoing" => State.OnGoing
-      case _ => throw new IOException("state attribute has an illegal value.")
+  override def load(path: File) =
+    Try {
+      val file = scala.xml.XML.loadFile(path)
+      def getPositionSeq(field: String) =
+        file \\ field \ "position"
+      val width = (file \\ "game" \@ "width").toInt
+      val height = (file \\ "game" \@ "height").toInt
+      val state = (file \\ "game" \@ "state") match
+        case "Won"     => State.Won
+        case "Lost"    => State.Lost
+        case "OnGoing" => State.OnGoing
+        case _ => throw new IOException("state attribute has an illegal value.")
 
-    val openFields = getPositionSeq("openFields")
-      .map(node =>
-        getNodePosition(node) -> (node.text.toIntOption match
-          case None      => Mine
-          case Some(num) => num
+      val openFields = getPositionSeq("openFields")
+        .map(node =>
+          getNodePosition(node) -> (node.text.toIntOption match
+            case None      => Mine
+            case Some(num) => num
+          )
         )
-      )
-      .collect {
-        case (pos, num: Int) => (pos, num)
-        case (pos, Mine)     => (pos, Mine)
-      }
-      .toMap[Position, Int | Mine.type]
-    val flaggedFields =
-      getPositionSeq("flaggedFields").map(node => getNodePosition(node))
-    val mines = getPositionSeq("mines").map(node => getNodePosition(node))
+        .collect {
+          case (pos, num: Int) => (pos, num)
+          case (pos, Mine)     => (pos, Mine)
+        }
+        .toMap[Position, Int | Mine.type]
+      val flaggedFields =
+        getPositionSeq("flaggedFields").map(node => getNodePosition(node))
+      val mines = getPositionSeq("mines").map(node => getNodePosition(node))
+      Config
+        .newGame(width, height, 0.2)
+        .restore(
+          new SnapShot(openFields, flaggedFields.toSet, mines.toSet, state)
+        )
+    }
 
-    Config
-      .newGame(width, height, 0.2)
-      .restore(
-        new SnapShot(openFields, flaggedFields.toSet, mines.toSet, state)
-      )
   def getNodePosition(node: Node) =
     Position((node \@ "x").toInt, (node \@ "y").toInt)
 

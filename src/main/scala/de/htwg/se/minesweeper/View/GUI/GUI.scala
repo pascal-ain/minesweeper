@@ -64,7 +64,8 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
 
   override def update(e: Event): Unit =
     e match
-      case Event.Failure(msg) => println(msg)
+      case Event.Failure(msg) =>
+        Dialog.showMessage(message = msg, title = "Error!")
       case Event.Success =>
         contents = new GameBoardNormal(gameWidth, gameHeight)
       case Event.Won =>

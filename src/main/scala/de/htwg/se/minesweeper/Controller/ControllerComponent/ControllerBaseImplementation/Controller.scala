@@ -8,6 +8,8 @@ import de.htwg.se.minesweeper.Model.GameComponent.*
 import de.htwg.se.minesweeper.Util.*
 import scala.util.{Either, Left => Err, Right => Ok}
 import java.io.File
+import scala.util.Success
+import scala.util.Failure
 
 class Controller(using var game: GameInterface)(using fileIO: FileIOInterface)
     extends ControllerInterface
@@ -38,8 +40,12 @@ class Controller(using var game: GameInterface)(using fileIO: FileIOInterface)
 
   override def load(path: File) =
     this.undoManager = new UndoManager[GameInterface]
-    this.game = fileIO.load(path)
-    notifyObservers(state)
+    fileIO.load(path) match
+      case Success(value) => {
+        this.game = value
+        notifyObservers(state)
+      }
+      case Failure(_) => notifyObservers(Event.Failure("Invalid file!"))
 
   override def handleTrigger(undoRedo: () => Either[Which, GameInterface]) =
     val result = undoRedo() match
