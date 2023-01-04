@@ -7,7 +7,9 @@ import de.htwg.se.minesweeper.Model.GameComponent.*
 import de.htwg.se.minesweeper.Config
 import scala.util.Failure
 
-class FileIOSpec(using val init: GameInterface) extends AnyWordSpec {
+class FileIOSpec extends AnyWordSpec {
+  class injector(using val init: GameInterface)
+  val init = new injector().init
   val fileIO = new FileIO
   val game = init.restore(
     SnapShot(
@@ -17,16 +19,16 @@ class FileIOSpec(using val init: GameInterface) extends AnyWordSpec {
       ),
       Set(Position(6, 6)),
       Set(Position(0, 1)),
-      State.OnGoing
+      State.Lost
     )
   )
   val gameBoard = game.getSnapShot
   val xml = fileIO.gameToXML(game)
   "A minesweeper game" should {
     "convert to XML" in {
-      (xml \ "game" \@ "width").toInt shouldBe game.getWidth
-      (xml \ "game" \@ "height").toInt shouldBe game.getHeight
-      (xml \ "game" \@ "state").toString shouldBe "OnGoing"
+      (xml \\ "game" \@ "width").toInt.toInt shouldBe game.getWidth
+      (xml \\ "game" \@ "height").toInt shouldBe game.getHeight
+      (xml \\ "game" \@ "state").toString shouldBe "Lost"
 
       fileIO.getOpenFields(
         (xml \\ "openFields" \ "position")
@@ -54,7 +56,7 @@ class FileIOSpec(using val init: GameInterface) extends AnyWordSpec {
       fromXML.getWidth shouldEqual game.getWidth
       fromXML.getHeight shouldEqual game.getHeight
     }
-    "will not be created on invalid XML" in {
+    "not be created on invalid XML" in {
       fileIO.XMLToGame(<invalid></invalid>) shouldBe a[Failure[_]]
     }
   }
