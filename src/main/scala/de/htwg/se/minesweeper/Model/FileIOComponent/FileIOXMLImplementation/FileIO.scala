@@ -64,18 +64,7 @@ class FileIO extends FileIOInterface {
         case "OnGoing" => State.OnGoing
         case _ => throw new IOException("state attribute has an illegal value.")
 
-      val openFields = getPositionSeq("openFields")
-        .map(node =>
-          getNodePosition(node) -> (node.text.toIntOption match
-            case None      => Mine
-            case Some(num) => num
-          )
-        )
-        .collect {
-          case (pos, num: Int) => (pos, num)
-          case (pos, Mine)     => (pos, Mine)
-        }
-        .toMap[Position, Int | Mine.type]
+      val openFields = (getOpenFields(getPositionSeq("openFields")))
       val flaggedFields =
         getPositionSeq("flaggedFields").map(node => getNodePosition(node))
       val mines = getPositionSeq("mines").map(node => getNodePosition(node))
@@ -85,6 +74,21 @@ class FileIO extends FileIOInterface {
           new SnapShot(openFields, flaggedFields.toSet, mines.toSet, state)
         )
     }
+
+  def getOpenFields(nodes: NodeSeq) =
+    nodes
+      .map(node =>
+        getNodePosition(node) -> {
+          node.text.toIntOption match
+            case None      => Mine
+            case Some(num) => num
+        }
+      )
+      .collect {
+        case (pos, num: Int) => (pos, num)
+        case (pos, Mine)     => (pos, Mine)
+      }
+      .toMap[Position, Int | Mine.type]
 
   def getNodePosition(node: Node) =
     Position((node \@ "x").toInt, (node \@ "y").toInt)
