@@ -6,10 +6,8 @@ import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOInterface
 import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 import de.htwg.se.minesweeper.Model.GameComponent.*
 import de.htwg.se.minesweeper.Util.*
-import scala.util.{Either, Left => Err, Right => Ok}
+import scala.util.{Either, Left => Err, Right => Ok, Failure, Success}
 import java.io.File
-import scala.util.Success
-import scala.util.Failure
 
 class Controller(using var game: GameInterface)(using fileIO: FileIOInterface)
     extends ControllerInterface
