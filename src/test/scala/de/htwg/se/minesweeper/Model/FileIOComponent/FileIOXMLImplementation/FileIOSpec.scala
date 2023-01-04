@@ -56,7 +56,7 @@ class FileIOSpec extends AnyWordSpec {
       fromXML.getWidth shouldEqual game.getWidth
       fromXML.getHeight shouldEqual game.getHeight
     }
-    "not be created on invalid XML" in {
+    "not be created from invalid XML" in {
       fileIO.XMLToGame(<invalid></invalid>) shouldBe a[Failure[_]]
     }
   }
