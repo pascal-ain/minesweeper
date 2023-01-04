@@ -16,11 +16,15 @@ import scala.util.{Using, Try}
 
 class FileIO extends FileIOInterface {
   override def save(game: GameInterface) =
+    Using(PrintWriter(File(Config.dataPath + "/saves/game.xml"))) { writer =>
+      writer.write(PrettyPrinter(100, 4).format(gameToXML(game)))
+    }
+
+  def gameToXML(game: GameInterface) =
     val snapShot = game.getSnapShot
-    var xml = {
-      <game width={game.getWidth.toString()} height={
-        game.getHeight.toString()
-      } state={snapShot.state.toString()}>
+    <game width={game.getWidth.toString()} height={
+      game.getHeight.toString()
+    } state={snapShot.state.toString()}>
       <openFields>
       {openFieldsToXML(snapShot.openFields)}
       </openFields>
@@ -31,10 +35,6 @@ class FileIO extends FileIOInterface {
       {positionsToXML(snapShot.mines)}
       </mines>
       </game>
-    }
-    Using(PrintWriter(File(Config.dataPath + "/saves/game.xml"))) { writer =>
-      writer.write(PrettyPrinter(100, 4).format(xml))
-    }
 
   def positionToXML(pos: Position, value: String) =
     <position x={pos.x.toString} y={pos.y.toString}>{value}</position>
@@ -85,5 +85,4 @@ class FileIO extends FileIOInterface {
 
   def getNodePosition(node: Node) =
     Position((node \@ "x").toInt, (node \@ "y").toInt)
-
 }
