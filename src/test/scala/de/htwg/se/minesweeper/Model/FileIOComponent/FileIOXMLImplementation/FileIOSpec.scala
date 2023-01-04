@@ -8,8 +8,8 @@ import de.htwg.se.minesweeper.Config
 import scala.util.Failure
 
 class FileIOSpec extends AnyWordSpec {
-  class injector(using val init: GameInterface)
-  val init = new injector().init
+  class Injector(using val init: GameInterface)
+  val init = new Injector().init
   val fileIO = new FileIO
   val game = init.restore(
     SnapShot(
