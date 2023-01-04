@@ -17,45 +17,54 @@ import scala.util.{Try, Using}
 class FileIO extends FileIOInterface {
 
   override def load(path: File) =
+    val file = Json.parse(Source.fromFile(path).getLines().mkString)
+    JSONtoGame(file)
+
+  def JSONtoGame(json: JsValue) =
     Try {
-      val file = Json.parse(Source.fromFile(path).getLines().mkString)
-      val width = (file \ "game" \ "width").get.as[Int]
-      val height = (file \ "game" \ "height").get.as[Int]
-      val state = (file \ "game" \ "state").get.as[String] match
+      val width = (json \ "game" \ "width").get.as[Int]
+      val height = (json \ "game" \ "height").get.as[Int]
+      val state = (json \ "game" \ "state").get.as[String] match
         case "Won"     => State.Won
         case "Lost"    => State.Lost
         case "OnGoing" => State.OnGoing
         case value =>
           throw new IOException(s"state: $value attribute is an illegal value.")
 
-      val openPositions = (file \ "openPositions").get
-        .as[JsArray]
-        .value
-        .map(value =>
-          val num: Int | Mine.type =
-            (value \ "value").get.as[String].toIntOption match
-              case None      => Mine
-              case Some(res) => res
-          (getPosition(value) -> num)
-        )
-        .toMap
+      val openPositions =
+        getOpenPositions((json \ "openPositions").get.as[JsArray].value)
       val flaggedFields =
-        (file \ "flaggedFields").get.as[JsArray].value.map(getPosition(_)).toSet
+        (json \ "flaggedFields").get.as[JsArray].value.map(getPosition(_)).toSet
       val mines =
-        (file \ "mines").get.as[JsArray].value.map(getPosition(_)).toSet
-
+        (json \ "mines").get.as[JsArray].value.map(getPosition(_)).toSet
       Config
         .newGame(width, height, 0)
         .restore(SnapShot(openPositions, flaggedFields, mines, state))
     }
+
+  def getOpenPositions(values: Iterable[JsValue]) =
+    values
+      .map(value =>
+        val num: Int | Mine.type =
+          (value \ "value").get.as[String].toIntOption match
+            case None      => Mine
+            case Some(res) => res
+        (getPosition(value) -> num)
+      )
+      .toMap
 
   def getPosition(value: JsValue) =
     val x = (value \ "x").get.as[Int]
     val y = (value \ "y").get.as[Int]
     Position(x, y)
   override def save(game: GameInterface): Unit =
+    Using(PrintWriter(File(Config.dataPath + "/saves/game.json"))) { writer =>
+      writer.write(Json.prettyPrint(gameToJSON(game)))
+    }
+
+  def gameToJSON(game: GameInterface) =
     val snapShot = game.getSnapShot
-    val json = Json.obj(
+    Json.obj(
       "game" -> Json.obj(
         "width" -> game.getWidth,
         "height" -> game.getHeight,
@@ -72,9 +81,6 @@ class FileIO extends FileIOInterface {
       "flaggedFields" -> Json.toJson(positionsToJson(snapShot.flaggedFields)),
       "mines" -> Json.toJson(positionsToJson(snapShot.mines))
     )
-    Using(PrintWriter(File(Config.dataPath + "/saves/game.json"))) { writer =>
-      writer.write(Json.prettyPrint(json))
-    }
 
   def positionToJSON(pos: Position, num: String) =
     Json.obj("x" -> pos.x, "y" -> pos.y, "value" -> num)
