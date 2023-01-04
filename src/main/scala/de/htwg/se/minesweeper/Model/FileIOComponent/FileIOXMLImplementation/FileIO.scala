@@ -49,13 +49,16 @@ class FileIO extends FileIOInterface {
       )
 
   override def load(path: File) =
+    val file = scala.xml.XML.loadFile(path)
+    XMLToGame(file)
+
+  def XMLToGame(xml: Elem) =
     Try {
-      val file = scala.xml.XML.loadFile(path)
       def getPositionSeq(field: String) =
-        file \\ field \ "position"
-      val width = (file \\ "game" \@ "width").toInt
-      val height = (file \\ "game" \@ "height").toInt
-      val state = (file \\ "game" \@ "state") match
+        xml \\ field \ "position"
+      val width = (xml \\ "game" \@ "width").toInt
+      val height = (xml \\ "game" \@ "height").toInt
+      val state = (xml \\ "game" \@ "state") match
         case "Won"     => State.Won
         case "Lost"    => State.Lost
         case "OnGoing" => State.OnGoing
