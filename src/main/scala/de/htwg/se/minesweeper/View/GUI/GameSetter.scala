@@ -5,7 +5,8 @@ import de.htwg.se.minesweeper.Config
 import scala.swing.event.*
 import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerInterface
 
-class GameSetter(var controller: ControllerInterface) extends Dialog {
+class GameSetter(var controller: ControllerInterface, parent: GUI)
+    extends Dialog {
   var buttonSizes = 60
 
   var percentage = new TextField() {
@@ -46,11 +47,7 @@ class GameSetter(var controller: ControllerInterface) extends Dialog {
           Dialog.showMessage(message = msg, title = "Error")
           Config.minePercentage
 
-        buttonSizes = (width * height) match
-          case result if result <= 100               => 60
-          case result if result <= 256               => 55
-          case result if result <= 480               => 45
-          case result if result <= Integer.MAX_VALUE => 30
+        buttonSizes = buttonSize(width, height)
 
         percentage.text.toIntOption match
           case None =>
@@ -58,6 +55,7 @@ class GameSetter(var controller: ControllerInterface) extends Dialog {
           case Some(value) => {
             if 0 < value && value < 100 then
               close()
+              parent.scaleFactor = buttonSizes
               controller.newGame(width, height, s"0.$value".toDouble)
             else err()
           }
@@ -65,3 +63,10 @@ class GameSetter(var controller: ControllerInterface) extends Dialog {
     }
   }
 }
+
+def buttonSize(width: Int, height: Int) =
+  (width * height) match
+    case result if result <= 100               => 60
+    case result if result <= 256               => 40
+    case result if result <= 480               => 30
+    case result if result <= Integer.MAX_VALUE => 20

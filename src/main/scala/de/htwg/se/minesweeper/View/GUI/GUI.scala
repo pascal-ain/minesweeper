@@ -21,21 +21,25 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
     resizable = false
     menuBar = new MenuBar {
       contents ++= Seq(
-        new MenuItem(Action("Save") {
-          tooltip =
-            "Save the current state of the game to the /data/saves/ directory"
-          controller.save()
-        }),
-        new MenuItem(Action("Load") {
-          val fileChooser =
-            new FileChooser(new File(Config.dataPath + "/saves/"))
-          fileChooser.showOpenDialog(this)
-          val file = fileChooser.selectedFile
-          if file != null then controller.load(file)
-        }),
+        new Menu("File") {
+          contents ++= Seq(
+            new MenuItem(Action("Save") {
+              controller.save()
+            }),
+            new MenuItem(Action("Load") {
+              val fileChooser =
+                new FileChooser(new File(Config.dataPath + "/saves/"))
+              fileChooser.showOpenDialog(this)
+              val file = fileChooser.selectedFile
+              if file != null then {
+                scaleFactor = buttonSize(gameWidth, gameHeight)
+                controller.load(file)
+              }
+            })
+          )
+        },
         new MenuItem(Action("New Game") {
-          val newData = new GameSetter(controller)
-          scaleFactor = newData.buttonSizes
+          val newData = new GameSetter(controller, GUI.this)
         }),
         new MenuItem(Action("Undo") {
           controller.handleTrigger(controller.undo)
