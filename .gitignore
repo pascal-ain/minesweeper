@@ -97,3 +97,14 @@ flycheck_*.el
 /.worksheet/
 
 *.log
+
+# The "build" and "bundle" directories are used when creating installers
+# via the `server', `client', and/or `farm' makefile targets.
+/build/
+/bundle/
+
+# It's common to configure the PLTADDONDIR to be here.
+/add-on/
+
+# This is where to put packages installed with `--clone`
+/extra-pkgs/

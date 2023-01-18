@@ -1,17 +1,17 @@
-package de.htwg.se.minesweeper.Model
+package de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation
+
 import scala.util.Random
+import de.htwg.se.minesweeper.Model.GameComponent.{Position, Mine}
 
 // Data representation of the game board
 final case class Board(
-    openFields: Map[Position, Int | "¤"],
+    openFields: Map[Position, Int | Mine.type],
     mines: Set[Position],
-    flaggedFields: Set[Position]
+    flaggedFields: Set[Position],
+    bounds: Bounds
 ):
 
-  def getSurroundingPositions(
-      pos: Position,
-      bounds: Bounds
-  ): Iterator[Position] =
+  def getSurroundingPositions(pos: Position): Iterator[Position] =
     val (x, y) = (pos.x, pos.y)
     val (width, height) = (bounds.width, bounds.height)
     /* from max(x - 1, 1) - 1 to min(x + 1, width - 1)
@@ -29,14 +29,20 @@ final case class Board(
       .filterNot(_ == pos) // exclude input pos
       .iterator
 
-  def surroundingMines(pos: Position, bounds: Bounds) =
-    getSurroundingPositions(pos, bounds).count(mines.contains(_))
+  def surroundingMines(pos: Position) =
+    getSurroundingPositions(pos).count(mines.contains(_))
+
+  def getAllPositions =
+    (0 until bounds.height)
+      .flatMap(posy => (0 until bounds.width).map(posx => Position(posx, posy)))
+      .iterator
 
 object Board:
-  def apply(mines: Set[Position]) =
-    new Board(Map.empty, mines, Set.empty)
+  def apply(mines: Int, bounds: Bounds) =
+    generateRandomPositions(mines, bounds)
 
-def generateRandomPositions(howMany: Int, width: Int, height: Int) =
+def generateRandomPositions(howMany: Int, bounds: Bounds) =
+  val (width, height) = (bounds.width, bounds.height)
   require(width * height > howMany)
   def recur(iteration: Int, accum: Set[Position]): Set[Position] =
     iteration match
@@ -47,4 +53,4 @@ def generateRandomPositions(howMany: Int, width: Int, height: Int) =
         if accum.contains(Position(x, y)) then recur(iteration, accum)
         else recur(iteration - 1, accum.incl(Position(x, y)))
       }
-  recur(howMany, Set.empty)
+  new Board(Map.empty, recur(howMany, Set.empty), Set.empty, bounds)

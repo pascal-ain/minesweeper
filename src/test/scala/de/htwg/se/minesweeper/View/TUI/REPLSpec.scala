@@ -2,33 +2,38 @@ package de.htwg.se.minesweeper.View.TUI
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
-import scala.collection.immutable.HashSet
-import de.htwg.se.minesweeper.Util.*
-import de.htwg.se.minesweeper.Model.*
+import de.htwg.se.minesweeper.Model.GameComponent.Position
+import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.*
+import de.htwg.se.minesweeper.Controller.ControllerComponent.ControllerBaseImplementation.*
+import de.htwg.se.minesweeper.Util.Helper
+import de.htwg.se.minesweeper.Config.{given}
 
 class REPLSpec extends AnyWordSpec {
-  "The REPL parses user input which" should {
-    val repl = new REPL(Game(10, 9, 0.2))
-    "only accept the right syntax" in {
-      repl.parseInput("Hello") shouldBe None
-      repl.parseInput("open this") shouldBe None
-      repl.parseInput("flag") shouldBe None
-      repl.parseInput("open 12.2") shouldBe None
-      repl.parseInput("flag   12,3") should not be None
-      repl.parseInput("open 2,3") should not be Some
-    }
-    "split them accordingly to get the meaning out of them" in {
-      repl.handleTokens(Array("open", "12,44")) should not be None
-      repl.handleTokens(Array("this", "cant", "be")) shouldBe None
-      repl.handleTokens(Array("flag", "12,44")) should not be None
-      repl.insertPosition(Array("no", "4,4")) shouldBe None
-      repl.insertPosition(Array("open", "2,2")) shouldBe a[
-        Some[(Position, Position => InsertResult)]
-      ]
-      repl.insertPosition(Array("flag", "2,2")) shouldBe a[Some[
-        (Position, Position => InsertResult)
-      ]]
+  "The REPL is the TUI and" should {
+    val game = Game(9, 10, 0.2)
+    "print the things configured from the decorator" in {
+      val mineSymbol = "[*]"
+      val flagSymbol = "[F]"
+      val closedSymbol = "[ ]"
+      def scoreSymbols(x: Int) = s"[$x]"
 
+      val flagged = game.flagField(Position(0, 0))
+      val openStuff = Helper.openFields(
+        using
+        flagged,
+        flagged.board.getAllPositions
+          .filterNot(pos => pos == Position(0, 0) || pos == Position(1, 1))
+      )
+      val controller = new Controller(using openStuff)
+      REPL(using controller).gameString() shouldBe sys.props(
+        "line.separator"
+      ) + REPLSymbolsDecorator(
+        controller,
+        mineSymbol,
+        flagSymbol,
+        closedSymbol,
+        scoreSymbols
+      ).toString
     }
   }
 }

@@ -1,8 +1,6 @@
 package de.htwg.se.minesweeper.Util
 
-import de.htwg.se.minesweeper.Model.Game
-
 enum Event:
-  case Success(game: Game)
-  case Lost, Won
-  case InvalidPosition(msg: String)
+  case Lost, Won, Success
+  case Failure(msg: String)
+  case Loading(width: Int, height: Int, event: Event)

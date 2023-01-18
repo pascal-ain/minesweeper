@@ -1,14 +1,16 @@
 package de.htwg.se.minesweeper.Util
 
-import de.htwg.se.minesweeper.Model.*
+import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.*
+import de.htwg.se.minesweeper.Model.GameComponent.*
 
 object Helper:
-  def getAllPositions(game: Game): Iterator[Position] =
-    (0 until game.bounds.height)
-      .flatMap(y => (0 until game.bounds.width).map(x => Position(x, y)))
+  def getAllPositions(using game: GameInterface): Iterator[Position] =
+    (0 until game.getHeight)
+      .flatMap(y => (0 until game.getWidth).map(x => Position(x, y)))
       .iterator
 
-  def openFields(game: Game, toOpen: Iterator[Position]): Game =
-    toOpen.foldLeft[Game](game)((iteration, pos) =>
-      won(iteration.copy(board = iteration.updateOpenFields(pos)))
-    ) // TODO: need to use another method because canOpen somehow removes things from the input iterator
+  def openFields(using
+      game: Game,
+      toOpen: Iterator[Position]
+  ): Game =
+    toOpen.foldLeft[Game](game)((iteration, pos) => iteration.openField(pos))
