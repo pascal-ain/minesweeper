@@ -4,6 +4,9 @@ lazy val root = project
   .in(file("."))
   .settings(
     name := "Minesweeper",
+    fork := true,
+    connectInput := true,
+    outputStrategy := Some(StdoutOutput),
     version := "0.1.0-SNAPSHOT",
     scalaVersion := scala3Version,
     libraryDependencies ++= Seq(
@@ -13,7 +16,8 @@ lazy val root = project
         .cross(CrossVersion.for3Use2_13),
       "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
       ("com.typesafe.play" %% "play-json" % "2.9.3")
-        .cross(CrossVersion.for3Use2_13)
+        .cross(CrossVersion.for3Use2_13),
+      ("tech.sparse" %% "toml-scala" % "0.2.2").cross(CrossVersion.for3Use2_13)
     )
   )
 scalacOptions ++= Seq("-deprecation", "-feature")
