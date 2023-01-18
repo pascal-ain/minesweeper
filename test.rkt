@@ -45,7 +45,7 @@
   (recur ""))
 
 (define (open-browser)
-  (printf "~n~a~n" (string-append bold-blue "[MAKING COVERAGE REPORT]" end))
+  (printf "~n~a~n" (string-append bold-blue "MAKING COVERAGE REPORT" end))
   (define-values (output error?) (run "sbt" "coverageReport"))
   (cond
     [(non-empty-string? error?) (exit)]
