@@ -38,7 +38,7 @@ class REPL(using
       }
 
   def gameString() =
-    REPLSymbolsDecorator(
+    eol + REPLSymbolsDecorator(
       controller,
       "[*]",
       "[F]",
