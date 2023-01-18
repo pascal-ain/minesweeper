@@ -13,6 +13,8 @@ import java.io.*
 import de.htwg.se.minesweeper.Config
 import scala.xml.*
 import scala.util.{Using, Try}
+import scala.util.Failure
+import scala.util.Success
 
 class FileIO extends FileIOInterface {
   override def save(game: GameInterface) =
@@ -49,8 +51,9 @@ class FileIO extends FileIOInterface {
       )
 
   override def load(path: File) =
-    val file = scala.xml.XML.loadFile(path)
-    XMLToGame(file)
+    Try(scala.xml.XML.loadFile(path)) match
+      case Failure(exception) => Failure(exception)
+      case Success(file)      => XMLToGame(file)
 
   def XMLToGame(xml: Elem) =
     Try {

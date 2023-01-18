@@ -13,12 +13,15 @@ import play.api.libs.json.*
 import de.htwg.se.minesweeper.Config
 import scala.io.Source
 import scala.util.{Try, Using}
+import scala.util.Failure
+import scala.util.Success
 
 class FileIO extends FileIOInterface {
 
   override def load(path: File) =
-    val file = Json.parse(Source.fromFile(path).getLines().mkString)
-    JSONtoGame(file)
+    Try(Json.parse(Source.fromFile(path).getLines().mkString)) match
+      case Failure(exception) => Failure(exception)
+      case Success(file)      => JSONtoGame(file)
 
   def JSONtoGame(json: JsValue) =
     Try {
