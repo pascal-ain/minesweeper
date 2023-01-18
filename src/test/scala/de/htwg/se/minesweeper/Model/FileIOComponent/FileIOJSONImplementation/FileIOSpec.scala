@@ -29,11 +29,14 @@ class FileIOSpec extends AnyWordSpec {
     "convert to JSON" in {
       (json \ "game" \ "width").get.as[Int] shouldBe game.getWidth
       (json \ "game" \ "height").get.as[Int] shouldBe game.getHeight
-      (json \ "game" \ "state").get.as[String] shouldBe "Lost"
 
-      fileIO.getOpenPositions(
-        (json \ "openPositions").get.as[JsArray].value
-      ) should contain allElementsOf gameBoard.openFields
+      (json \ "openFields").get
+        .as[JsArray]
+        .value
+        .map(
+          fileIO.getPosition(_)
+        ) should contain allElementsOf gameBoard.openFields.keySet
+
       (json \ "flaggedFields").get
         .as[JsArray]
         .value

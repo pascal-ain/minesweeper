@@ -1,20 +1,12 @@
 package de.htwg.se.minesweeper.Model.FileIOComponent.FileIOXMLImplementation
 
-import de.htwg.se.minesweeper.Model.GameComponent.{
-  Position,
-  Mine,
-  GameInterface,
-  SnapShot,
-  State
-}
+import de.htwg.se.minesweeper.Model.GameComponent.*
 import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.Game
 import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOInterface
 import java.io.*
 import de.htwg.se.minesweeper.Config
 import scala.xml.*
-import scala.util.{Using, Try}
-import scala.util.Failure
-import scala.util.Success
+import scala.util.{Using, Try, Success, Failure, Right => Ok, Left => Err}
 
 class FileIO extends FileIOInterface {
   override def save(game: GameInterface) =
@@ -24,11 +16,9 @@ class FileIO extends FileIOInterface {
 
   def gameToXML(game: GameInterface) =
     val snapShot = game.getSnapShot
-    <game width={game.getWidth.toString()} height={
-      game.getHeight.toString()
-    } state={snapShot.state.toString()}>
+    <game width={game.getWidth.toString()} height={game.getHeight.toString()}>
       <openFields>
-      {openFieldsToXML(snapShot.openFields)}
+      {positionsToXML(snapShot.openFields.keySet)}
       </openFields>
       <flaggedFields>
       {positionsToXML(snapShot.flaggedFields)}
@@ -36,7 +26,7 @@ class FileIO extends FileIOInterface {
       <mines>
       {positionsToXML(snapShot.mines)}
       </mines>
-      </game>
+    </game>
 
   def positionToXML(pos: Position, value: String) =
     <position x={pos.x.toString} y={pos.y.toString}>{value}</position>
@@ -44,54 +34,24 @@ class FileIO extends FileIOInterface {
   def positionsToXML(fields: Set[Position]) =
     fields.map(positionToXML(_, ""))
 
-  def openFieldsToXML(fields: Map[Position, Int | Mine.type]) =
-    fields
-      .map((pos: Position, at: Int | Mine.type) =>
-        positionToXML(pos, at.toString())
-      )
-
   override def load(path: File) =
     Try(scala.xml.XML.loadFile(path)) match
       case Failure(exception) => Failure(exception)
       case Success(file)      => XMLToGame(file)
 
-  def XMLToGame(xml: Elem) =
+  def XMLToGame(xml: Elem): Try[GameInterface] =
     Try {
-      def getPositionSeq(field: String) =
-        xml \\ field \ "position"
+      def getPositionSet(field: String) =
+        (xml \\ field \ "position").map(node => getNodePosition(node)).toSet
       val width = (xml \\ "game" \@ "width").toInt
       val height = (xml \\ "game" \@ "height").toInt
-      val state = (xml \\ "game" \@ "state") match
-        case "Won"     => State.Won
-        case "Lost"    => State.Lost
-        case "OnGoing" => State.OnGoing
-        case _ => throw new IOException("state attribute has an illegal value.")
-
-      val openFields = (getOpenFields(getPositionSeq("openFields")))
-      val flaggedFields =
-        getPositionSeq("flaggedFields").map(node => getNodePosition(node))
-      val mines = getPositionSeq("mines").map(node => getNodePosition(node))
-      Config
-        .newGame(width, height, 0.2)
-        .restore(
-          new SnapShot(openFields, flaggedFields.toSet, mines.toSet, state)
-        )
+      val openFields = getPositionSet("openFields")
+      val flaggedFields = getPositionSet("flaggedFields")
+      val mines = getPositionSet("mines")
+      verifyData(width, height, openFields, flaggedFields, mines) match
+        case Ok(game: GameInterface) => game
+        case Err(msg)                => throw new IOException(msg)
     }
-
-  def getOpenFields(nodes: NodeSeq) =
-    nodes
-      .map(node =>
-        getNodePosition(node) -> {
-          node.text.toIntOption match
-            case None      => Mine
-            case Some(num) => num
-        }
-      )
-      .collect {
-        case (pos, num: Int) => (pos, num)
-        case (pos, Mine)     => (pos, Mine)
-      }
-      .toMap[Position, Int | Mine.type]
 
   def getNodePosition(node: Node) =
     Position((node \@ "x").toInt, (node \@ "y").toInt)

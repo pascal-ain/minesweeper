@@ -37,13 +37,13 @@ class Controller(using var game: GameInterface)(using fileIO: FileIOInterface)
     fileIO.save(this.game)
 
   override def load(path: File) =
-    this.undoManager = new UndoManager[GameInterface]
     fileIO.load(path) match
       case Success(value) => {
+        this.undoManager = new UndoManager[GameInterface]
         this.game = value
-        notifyObservers(state)
+        notifyObservers(Event.Loading(game.getWidth, game.getHeight, state))
       }
-      case Failure(_) => notifyObservers(Event.Failure("Invalid file!"))
+      case Failure(e) => notifyObservers(Event.Failure(e.toString()))
 
   override def handleTrigger(undoRedo: () => Either[Which, GameInterface]) =
     val result = undoRedo() match

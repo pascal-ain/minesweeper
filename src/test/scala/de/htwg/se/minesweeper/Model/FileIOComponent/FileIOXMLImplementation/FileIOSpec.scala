@@ -28,11 +28,11 @@ class FileIOSpec extends AnyWordSpec {
     "convert to XML" in {
       (xml \\ "game" \@ "width").toInt.toInt shouldBe game.getWidth
       (xml \\ "game" \@ "height").toInt shouldBe game.getHeight
-      (xml \\ "game" \@ "state").toString shouldBe "Lost"
 
-      fileIO.getOpenFields(
-        (xml \\ "openFields" \ "position")
-      ) should contain allElementsOf gameBoard.openFields
+      (xml \\ "openFields" \ "position")
+        .map(
+          fileIO.getNodePosition(_)
+        ) should contain allElementsOf gameBoard.openFields.keySet
 
       (xml \\ "mines" \ "position")
         .map(

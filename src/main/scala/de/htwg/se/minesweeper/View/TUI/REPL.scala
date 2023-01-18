@@ -36,6 +36,7 @@ class REPL(using
         parseState = OnGoingState(controller)
         println(gameString())
       }
+      case Event.Loading(width, height, event) => update(event)
 
   def gameString() =
     eol + REPLSymbolsDecorator(

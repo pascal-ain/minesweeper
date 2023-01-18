@@ -25,7 +25,9 @@ class REPLSpec extends AnyWordSpec {
           .filterNot(pos => pos == Position(0, 0) || pos == Position(1, 1))
       )
       val controller = new Controller(using openStuff)
-      REPL(using controller).gameString() shouldBe REPLSymbolsDecorator(
+      REPL(using controller).gameString() shouldBe sys.props(
+        "line.separator"
+      ) + REPLSymbolsDecorator(
         controller,
         mineSymbol,
         flagSymbol,

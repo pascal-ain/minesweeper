@@ -32,7 +32,6 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
               fileChooser.showOpenDialog(this)
               val file = fileChooser.selectedFile
               if file != null then {
-                scaleFactor = buttonSize(gameWidth, gameHeight)
                 controller.load(file)
               }
             })
@@ -78,7 +77,9 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
       case Event.Lost =>
         contents = new GameBoardLostWon(gameWidth, gameHeight)
         showDialog(true)
-
+      case Event.Loading(width, height, event) =>
+        scaleFactor = buttonSize(width, height)
+        update(event)
   override def closeOperation(): Unit =
     sys.exit(0)
 
