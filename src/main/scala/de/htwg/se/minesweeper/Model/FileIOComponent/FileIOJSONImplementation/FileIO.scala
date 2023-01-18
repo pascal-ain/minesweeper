@@ -52,9 +52,6 @@ class FileIO extends FileIOInterface {
       "mines" -> Json.toJson(positionsToJson(snapShot.mines))
     )
 
-  def positionToJSON(pos: Position, num: String) =
-    Json.obj("x" -> pos.x, "y" -> pos.y, "value" -> num)
-
   def positionsToJson(fields: Iterable[Position]) =
     fields.map(pos => Json.obj("x" -> pos.x, "y" -> pos.y))
 }

@@ -123,6 +123,17 @@ class ControllerSpec extends AnyWordSpec {
       controllerToFlag.handleTrigger(controllerToFlag.openField, Position(1, 1))
       testFlagging.bing shouldBe a[Event.Failure]
     }
+    "let the client create a new game" in {
+      val controller = new Controller(using Game(12, 12, 0.2))
+      val oldUndo = controller.undoManager
+      val watch = new TestObserver(using controller)
+      controller.newGame(4, 2, 0.1)
+      watch.bing shouldBe Event.Success
+      controller.game.getWidth shouldBe 4
+      controller.game.getHeight shouldBe 2
+
+      oldUndo shouldNot be(controller.undoManager)
+    }
     "hold a vector of subscribers that can be added or removed" in {
       val game = Game(9, 12, 0.3)
       val controller = new Controller(using game)

@@ -9,7 +9,8 @@ import Model.GameComponent.{Symbols, Score, Mine, Flag, Closed, GameInterface}
 import de.htwg.se.minesweeper.Model.FileIOComponent.{
   FileIOInterface,
   FileIOJSONImplementation,
-  FileIOXMLImplementation
+  FileIOXMLImplementation,
+  FileIOTOMLImplementation
 }
 
 object Config {
@@ -29,7 +30,7 @@ object Config {
   def newGame(width: Int, height: Int, mines: Double) =
     Game(width, height, mines)
 
-  given FileIOInterface = FileIOJSONImplementation.FileIO()
+  given FileIOInterface = FileIOTOMLImplementation.FileIO()
   given GameInterface = game
   given ControllerInterface =
     ControllerBaseImplementation.Controller()

@@ -61,9 +61,33 @@ class FileIOSpec extends AnyWordSpec {
 
       fromJSON.getWidth shouldEqual game.getWidth
       fromJSON.getHeight shouldEqual game.getHeight
+      fromJSON.getSnapShot.state shouldBe gameBoard.state
     }
     "not be created from invalid JSON" in {
       fileIO.JSONtoGame(Json.obj("invalid" -> 1337)) shouldBe a[Failure[_]]
+      fileIO.JSONtoGame(
+        Json.obj(
+          "game" -> Json.obj("width" -> 9, "height" -> "10"),
+          "openFields" -> Json.toJson(
+            fileIO.positionsToJson(Set(Position(10, 10)))
+          ),
+          "flaggedFields" -> Json.toJson(fileIO.positionsToJson(Set.empty)),
+          "mines" -> Json.toJson(fileIO.positionsToJson(Set.empty))
+        )
+      )
+
+      fileIO.JSONtoGame(
+        Json.obj(
+          "game" -> Json.obj("width" -> 9, "height" -> "10"),
+          "openFields" -> Json.toJson(
+            fileIO.positionsToJson(Set(Position(2, 1)))
+          ),
+          "flaggedFields" -> Json.toJson(
+            fileIO.positionsToJson(Set(Position(2, 1)))
+          ),
+          "mines" -> Json.toJson(fileIO.positionsToJson(Set.empty))
+        )
+      )
     }
   }
 }

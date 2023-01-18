@@ -55,9 +55,26 @@ class FileIOSpec extends AnyWordSpec {
 
       fromXML.getWidth shouldEqual game.getWidth
       fromXML.getHeight shouldEqual game.getHeight
+      fromXML.getSnapShot.state shouldBe gameBoard.state
     }
     "not be created from invalid XML" in {
       fileIO.XMLToGame(<invalid></invalid>) shouldBe a[Failure[_]]
+      // out of bounds
+      fileIO.XMLToGame(
+        <game width="2" height="3">
+        <openFields><position x="4" y="0"></position></openFields>
+        <mines><position x="0" y="1"></position></mines>
+        <flaggedFields><position x="0" y="0"></position></flaggedFields>
+        </game>
+      ) shouldBe a[Failure[_]]
+      // intersection with flag and open
+      fileIO.XMLToGame(
+        <game width="2" height="3">
+        <openFields><position x="0" y="0"></position></openFields>
+        <mines><position x="0" y="1"></position></mines>
+        <flaggedFields><position x="0" y="0"></position></flaggedFields>
+        </game>
+      ) shouldBe a[Failure[_]]
     }
   }
 }
