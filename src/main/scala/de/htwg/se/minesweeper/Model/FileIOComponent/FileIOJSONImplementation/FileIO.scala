@@ -31,18 +31,18 @@ class FileIO extends FileIOInterface {
         case value =>
           throw new IOException(s"state: $value attribute is an illegal value.")
 
-      val openPositions =
-        getOpenPositions((json \ "openPositions").get.as[JsArray].value)
+      val openFields =
+        getOpenFields((json \ "openFields").get.as[JsArray].value)
       val flaggedFields =
         (json \ "flaggedFields").get.as[JsArray].value.map(getPosition(_)).toSet
       val mines =
         (json \ "mines").get.as[JsArray].value.map(getPosition(_)).toSet
       Config
         .newGame(width, height, 0)
-        .restore(SnapShot(openPositions, flaggedFields, mines, state))
+        .restore(SnapShot(openFields, flaggedFields, mines, state))
     }
 
-  def getOpenPositions(values: Iterable[JsValue]) =
+  def getOpenFields(values: Iterable[JsValue]) =
     values
       .map(value =>
         val num: Int | Mine.type =
@@ -57,6 +57,7 @@ class FileIO extends FileIOInterface {
     val x = (value \ "x").get.as[Int]
     val y = (value \ "y").get.as[Int]
     Position(x, y)
+
   override def save(game: GameInterface): Unit =
     Using(PrintWriter(File(Config.dataPath + "/saves/game.json"))) { writer =>
       writer.write(Json.prettyPrint(gameToJSON(game)))
@@ -70,7 +71,7 @@ class FileIO extends FileIOInterface {
         "height" -> game.getHeight,
         "state" -> snapShot.state.toString()
       ),
-      "openPositions" -> Json.toJson(
+      "openFields" -> Json.toJson(
         snapShot.openFields.map((pos: Position, value: Mine.type | Int) =>
           positionToJSON(
             pos,
