@@ -11,7 +11,7 @@ This project is being developed by [Huan Thieu Nguyen](https://github.com/huanie
 ## How to play
 
 `open <x,y>` to open a field \
-`flag <x,y>` to flag a field \ 
+`flag <x,y>` to flag a field \
 `undo | redo` undo or redo your latest move \
 `quit | q | exit` to end the game.
 
