@@ -99,8 +99,11 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
     this.peer.setIcon(
       resizeImage(
         new ImageIcon(
-          Config.dataPath + "/pictures/"
-            + Config.imagePath(controller.symbolAt(pos))
+          getClass
+            .getClassLoader()
+            .getResource(
+              "pictures/" + Config.imagePath(controller.symbolAt(pos))
+            )
         )
       )
     )
