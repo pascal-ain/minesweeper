@@ -10,10 +10,12 @@ import de.htwg.se.minesweeper.Model.GameComponent.GameBaseImplementation.Game
 import toml.*
 import scala.util.{Try, Using, Failure, Success, Left => Err, Right => Ok}
 import java.nio.file.{Files, Path}
+import java.text.ParseException
+import java.io.FileNotFoundException
 
-class FileIO extends FileIOInterface {
-  override def save(game: GameInterface) = {
-    Using(PrintWriter(File(Config.dataPath + "/saves/game.toml"))) { writer =>
+object FileIO extends FileIOInterface {
+  override def save(game: GameInterface, path: File) = {
+    Using(PrintWriter(path)) { writer =>
       writer.write(gameToTOML(game))
     }
   }
@@ -49,9 +51,11 @@ class FileIO extends FileIOInterface {
   }
 
   override def load(path: File) = {
-    Toml.parse(Files.readString(Path.of(path.toString))) match
-      case Err(exception) => Failure(new IOException("Invalid file!"))
-      case Ok(value)      => TOMLtoGame(value)
+    if path.exists() then
+      Toml.parse(Files.readString(Path.of(path.toString))) match
+        case Err(exception) => Failure(new ParseException("Invalid file!", 0))
+        case Ok(value)      => TOMLtoGame(value)
+    else Failure(new FileNotFoundException("File doesn't exist"))
   }
 
   def TOMLtoGame(file: Tbl): Try[GameInterface] = {

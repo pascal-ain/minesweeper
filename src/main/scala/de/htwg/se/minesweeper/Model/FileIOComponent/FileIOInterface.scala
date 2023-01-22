@@ -8,7 +8,11 @@ import scala.util.{Left => Err, Right => Ok}
 
 trait FileIOInterface {
   def load(path: File): Try[GameInterface]
-  def save(game: GameInterface): Unit
+  def save(game: GameInterface, path: File): Unit
+
+  // The function only looks long because of the functions defined in it.
+  // The functions are defined there because the interface should not expose them.
+  // All the function is doing is verifying all the contraints.
   def verifyData(
       width: Int,
       height: Int,
@@ -37,7 +41,7 @@ trait FileIOInterface {
               s"Position(${value.x},${value.y}) is out of bounds of Bounds(${width},${height})"
             )
 
-    checkEveryConstraint(
+    val result = checkEveryConstraint(
       List(
         outOfBounds_?(mines),
         outOfBounds_?(flaggedFields),
@@ -48,7 +52,8 @@ trait FileIOInterface {
           else Some("Flagged fields intersect with open fields!")
         }
       )
-    ) match
+    )
+    result match
       case None => {
         // make a game without openFields
         val game: GameInterface = Config

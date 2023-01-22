@@ -9,12 +9,16 @@ import de.htwg.se.minesweeper.Config
 import javax.swing.ImageIcon
 import java.io.File
 
+import de.htwg.se.minesweeper.View.GUI.{LoadFileChooser, SaveFileChooser}
 class GUI(using controller: ControllerInterface) extends Frame with Observer:
   controller.add(this)
   def gameWidth = controller.x
   def gameHeight = controller.y
 
   var scaleFactor = 60
+  var saveDirectory = File(sys.props("user.home"))
+  val loadFC = LoadFileChooser
+  val saveFC = SaveFileChooser
 
   def run =
     title = "Minesweeper"
@@ -24,16 +28,10 @@ class GUI(using controller: ControllerInterface) extends Frame with Observer:
         new Menu("File") {
           contents ++= Seq(
             new MenuItem(Action("Save") {
-              controller.save()
+              saveFC.action(this, controller)
             }),
             new MenuItem(Action("Load") {
-              val fileChooser =
-                new FileChooser(new File(Config.dataPath + "/saves/"))
-              fileChooser.showOpenDialog(this)
-              val file = fileChooser.selectedFile
-              if file != null then {
-                controller.load(file)
-              }
+              loadFC.action(this, controller)
             })
           )
         },

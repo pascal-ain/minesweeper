@@ -9,7 +9,7 @@ import de.htwg.se.minesweeper.Util.*
 import scala.util.{Either, Left => Err, Right => Ok, Failure, Success}
 import java.io.File
 
-class Controller(using var game: GameInterface)(using fileIO: FileIOInterface)
+class Controller(using var game: GameInterface)
     extends ControllerInterface
     with Observable:
   override def toString(): String = game.toString()
@@ -33,11 +33,11 @@ class Controller(using var game: GameInterface)(using fileIO: FileIOInterface)
       case Ok(newGame) => game = newGame; state
     notifyObservers(result)
 
-  override def save() =
-    fileIO.save(this.game)
+  override def save(path: File, implementation: FileIOInterface) =
+    implementation.save(this.game, path)
 
-  override def load(path: File) =
-    fileIO.load(path) match
+  override def load(path: File, implementation: FileIOInterface) =
+    implementation.load(path) match
       case Success(value) => {
         this.undoManager = new UndoManager[GameInterface]
         this.game = value

@@ -7,7 +7,7 @@ import scala.util.{Left => Err, Right => Ok}
 
 class FileIOInterfaceSpec extends AnyWordSpec {
   "FileIO" should {
-    val fileIO = FileIOTOMLImplementation.FileIO()
+    val fileIO = FileIOTOMLImplementation.FileIO
     val height = 9
     val width = 9
     val mineOutOfBounds = Set(Position(9, 9), Position(0, 0))

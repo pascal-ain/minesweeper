@@ -8,9 +8,9 @@ import de.htwg.se.minesweeper.Config
 import scala.xml.*
 import scala.util.{Using, Try, Success, Failure, Right => Ok, Left => Err}
 
-class FileIO extends FileIOInterface {
-  override def save(game: GameInterface) =
-    Using(PrintWriter(File(Config.dataPath + "/saves/game.xml"))) { writer =>
+object FileIO extends FileIOInterface {
+  override def save(game: GameInterface, path: File) =
+    Using(PrintWriter(path)) { writer =>
       writer.write(PrettyPrinter(100, 4).format(gameToXML(game)))
     }
 

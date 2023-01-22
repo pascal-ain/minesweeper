@@ -8,7 +8,7 @@ import de.htwg.se.minesweeper.Config
 import scala.io.Source
 import scala.util.{Try, Using, Left => Err, Right => Ok, Success, Failure}
 
-class FileIO extends FileIOInterface {
+object FileIO extends FileIOInterface {
 
   override def load(path: File) =
     Try(Json.parse(Source.fromFile(path).getLines().mkString)) match
@@ -35,8 +35,8 @@ class FileIO extends FileIOInterface {
     val y = (value \ "y").get.as[Int]
     Position(x, y)
 
-  override def save(game: GameInterface): Unit =
-    Using(PrintWriter(File(Config.dataPath + "/saves/game.json"))) { writer =>
+  override def save(game: GameInterface, path: File): Unit =
+    Using(PrintWriter(path)) { writer =>
       writer.write(Json.prettyPrint(gameToJSON(game)))
     }
 

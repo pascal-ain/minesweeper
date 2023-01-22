@@ -6,15 +6,12 @@ import Controller.ControllerComponent.{
   ControllerBaseImplementation
 }
 import Model.GameComponent.{Symbols, Score, Mine, Flag, Closed, GameInterface}
-import de.htwg.se.minesweeper.Model.FileIOComponent.{
-  FileIOInterface,
-  FileIOJSONImplementation,
-  FileIOXMLImplementation,
-  FileIOTOMLImplementation
-}
+import de.htwg.se.minesweeper.Model.FileIOComponent.FileIOTOMLImplementation.FileIO
 
 object Config {
-  val dataPath = System.getProperty("user.dir") + "/data/"
+  val defaultFileImplementation = FileIO
+  val defaultFileExtension = "toml"
+
   def imagePath(symbol: Symbols) =
     symbol match
       case Closed          => "closedField.png"
@@ -29,8 +26,6 @@ object Config {
 
   def newGame(width: Int, height: Int, mines: Double) =
     Game(width, height, mines)
-
-  given FileIOInterface = FileIOTOMLImplementation.FileIO()
   given GameInterface = game
   given ControllerInterface =
     ControllerBaseImplementation.Controller()

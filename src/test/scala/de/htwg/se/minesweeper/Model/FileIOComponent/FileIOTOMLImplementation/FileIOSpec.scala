@@ -11,7 +11,7 @@ import scala.util.Failure
 class FileIOSpec extends AnyWordSpec {
   class Injector(using val init: GameInterface)
   val init = Injector().init
-  val fileIO = new FileIO
+  val fileIO = FileIO
   val game = init.restore(
     SnapShot(
       Map(
