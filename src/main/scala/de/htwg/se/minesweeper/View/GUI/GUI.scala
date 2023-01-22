@@ -8,8 +8,8 @@ import scala.swing.event.MouseClicked
 import de.htwg.se.minesweeper.Config
 import javax.swing.ImageIcon
 import java.io.File
-
 import de.htwg.se.minesweeper.View.GUI.{LoadFileChooser, SaveFileChooser}
+
 class GUI(using controller: ControllerInterface) extends Frame with Observer:
   controller.add(this)
   def gameWidth = controller.x
