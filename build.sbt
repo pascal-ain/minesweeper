@@ -21,3 +21,8 @@ lazy val root = project
     )
   )
 scalacOptions ++= Seq("-deprecation", "-feature")
+
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", _*) => MergeStrategy.discard
+  case _                        => MergeStrategy.first
+}
