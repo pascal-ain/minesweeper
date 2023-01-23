@@ -6,6 +6,5 @@ WORKDIR /minesweeper
 ADD . /minesweeper
 COPY target/scala-3.2.2-RC2/Minesweeper-assembly-0.1.0-SNAPSHOT.jar target/
 EXPOSE 8080
-#CMD java -jar /minesweeper/Minesweeper-assembly-0.1.0-SNAPSHOT.jar
 CMD java -jar target/Minesweeper-assembly-0.1.0-SNAPSHOT.jar
 # CMD sbt run
