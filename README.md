@@ -15,7 +15,14 @@ This project is being developed by [Huan Thieu Nguyen](https://github.com/huanie
 `undo | redo` undo or redo your latest move \
 `quit | q | exit` to end the game.
 
+## Jar
+
+To create an executable jar file you can use \
+`sbt assembly`
+
 ## Docker
+
+Create the jar file before making the docker.
 
 For Windows you need to install [XMing](https://sourceforge.net/projects/xming/) \
 For Mac you need to install [XQuartz](https://www.xquartz.org/) 
@@ -29,7 +36,12 @@ then run it
 
 `docker run -it --rm -v /tmp/.X11-unix:/tmp/.X11-unix --device /dev/dri -p 8080:8080 --privileged -v :/minesweeper minesweeper-image`
 
-## Jar
+### GNU/Linux
 
-To create an executable jar file you can use \
-`sbt assembly`
+`xhost +local:` allow X11 connections.
+
+Consider using [podman](https://podman.io/)!
+
+`podman build -t minesweeper-image .`
+
+`podman run -e DISPLAY=$DISPLAY -it --rm -v /tmp/.X11-unix:/tmp/.X11-unix --device /dev/dri -p 8080:8080 --privileged localhost/minesweeper-image:latest`
