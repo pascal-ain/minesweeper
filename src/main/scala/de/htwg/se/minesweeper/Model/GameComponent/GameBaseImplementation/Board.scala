@@ -20,7 +20,6 @@ final case class Board(
      flatmap is required because otherwise a Vector(Range, Range) will be created
      then for one x it goes over each y to make the position like a nested for loop
      */
-
     (for { 
       posx <- (x.max(1) - 1 to (x + 1).min(width - 1))
       posy <- y.max(1) - 1 to (y + 1).min(height - 1)
@@ -31,10 +30,6 @@ final case class Board(
     getSurroundingPositions(pos).count(mines.contains(_))
 
   def getAllPositions =
-    // (0 until bounds.height)
-    //   .flatMap(posy => (0 until bounds.width).map(posx => Position(posx, posy)))
-    //   .iterator
-
     (for {
       posy <- (0 until bounds.height)
       posx <- (0 until bounds.width)
