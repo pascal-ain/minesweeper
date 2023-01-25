@@ -22,9 +22,8 @@ lazy val root = project
   )
 scalacOptions ++= Seq("-deprecation", "-feature")
 
-assembly/assemblyMergeStrategy := {
+assembly / assemblyMergeStrategy := {
   case PathList("META-INF", _*) => MergeStrategy.discard
   case _                        => MergeStrategy.first
 }
-
-assembly/assemblyOutputPath := baseDirectory.value
+assembly / target := baseDirectory.value
