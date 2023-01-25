@@ -31,9 +31,14 @@ final case class Board(
     getSurroundingPositions(pos).count(mines.contains(_))
 
   def getAllPositions =
-    (0 until bounds.height)
-      .flatMap(posy => (0 until bounds.width).map(posx => Position(posx, posy)))
-      .iterator
+    // (0 until bounds.height)
+    //   .flatMap(posy => (0 until bounds.width).map(posx => Position(posx, posy)))
+    //   .iterator
+
+    (for {
+      posy <- (0 until bounds.height)
+      posx <- (0 until bounds.width)
+    } yield (Position(posx, posy))).iterator
 
 object Board:
   def apply(mines: Int, bounds: Bounds) =
