@@ -1,4 +1,4 @@
-![MAIN status](https://github.com/leotschritter/kniffel/actions/workflows/scala.yml/badge.svg)
+![MAIN status](https://github.com/pascal-ain/minesweeper/actions/workflows/scala.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/pascal-ain/minesweeper/badge.svg)](https://coveralls.io/github/pascal-ain/minesweeper)
 
 # Scala 3 Minesweeper
