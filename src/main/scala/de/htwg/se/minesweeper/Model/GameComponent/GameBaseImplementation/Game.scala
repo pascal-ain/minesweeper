@@ -81,7 +81,7 @@ final case class Game(bounds: Bounds, state: State, board: Board)
     board.openFields.get(pos) match
       case Some(value) =>
         value match
-          case _: Mine.type => Mine
+          case Mine => Mine
           case x: Int       => Score(x)
       case None =>
         if board.flaggedFields.contains(pos) then Flag
